@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react';
 import TicketCard from '../components/TicketCard';
+import ChatBox from '../components/ChatBox';
+import Settings from '../components/Settings';
 import { TicketContext } from '../context/TicketContext';
 
-function Dashboard() {
+function Dashboard({ config, setConfig }) {
     const {
         tickets,
         actualizarEstadoTicket,
@@ -11,13 +13,9 @@ function Dashboard() {
         eliminarDefinitivamente
     } = useContext(TicketContext);
 
-    // Estado para alternar entre ver los Activos y la Papelera
-    const [vistaActual, setVistaActual] = useState('activos'); // 'activos' o 'papelera'
-
-    // Estado para el efecto visual de la papelera cuando se arrastra algo encima
+    const [vistaActual, setVistaActual] = useState('activos');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
-    // Filtramos los tickets según la vista
     const ticketsMostrados = tickets.filter(t => vistaActual === 'activos' ? !t.borrado : t.borrado);
 
     const ciclarEstado = (id, estadoActual) => {
@@ -27,136 +25,89 @@ function Dashboard() {
         actualizarEstadoTicket(id, SECUENCIA_ESTADOS[siguienteIndice]);
     };
 
-    // Lógica para cuando se suelta un ticket en el tacho
     const handleDropTrash = (e) => {
         e.preventDefault();
         setIsDragOverTrash(false);
         const ticketId = parseInt(e.dataTransfer.getData('ticketId'), 10);
-        if (ticketId) {
-            moverAPapelera(ticketId); // Lo marca como borrado y desaparece de la vista activa
-        }
+        if (ticketId) moverAPapelera(ticketId);
     };
 
     const handleDragOverTrash = (e) => {
-        e.preventDefault(); // Necesario para permitir el "drop"
+        e.preventDefault();
         setIsDragOverTrash(true);
     };
 
-    const handleDragLeaveTrash = () => {
-        setIsDragOverTrash(false);
-    };
+    const handleDragLeaveTrash = () => setIsDragOverTrash(false);
 
     return (
-        <main style={{ minHeight: '100vh', backgroundColor: '#000000', color: '#ffffff', padding: '30px', fontFamily: 'system-ui' }}>
+        <main style={{ display: 'flex', flexWrap: 'wrap', minHeight: '100vh', backgroundColor: '#000000', color: '#ffffff', fontFamily: 'system-ui' }}>
 
-            {/* Navegación superior (Tabs) */}
-            <header style={{ display: 'flex', gap: '20px', borderBottom: '1px solid #333', paddingBottom: '20px', marginBottom: '30px' }}>
-                <button
-                    onClick={() => setVistaActual('activos')}
-                    style={vistaActual === 'activos' ? tabActiva : tabInactiva}
-                >
-                    Tickets Activos
-                </button>
-                <button
-                    onClick={() => setVistaActual('papelera')}
-                    style={vistaActual === 'papelera' ? tabActiva : tabInactiva}
-                >
-                    Papelera ({tickets.filter(t => t.borrado).length})
-                </button>
-            </header>
+            {/* COLUMNA IZQUIERDA: Gestión de Tickets y Papelera (60%) */}
+            <section style={{ flex: '1 1 500px', padding: '30px', minWidth: '320px', display: 'flex', flexDirection: 'column' }}>
 
-            <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+                {/* Navegación de Pestañas */}
+                <header style={{ display: 'flex', gap: '15px', borderBottom: '1px solid #333', paddingBottom: '15px', marginBottom: '25px' }}>
+                    <button onClick={() => setVistaActual('activos')} style={vistaActual === 'activos' ? tabActiva : tabInactiva}>
+                        Tickets Activos
+                    </button>
+                    <button onClick={() => setVistaActual('papelera')} style={vistaActual === 'papelera' ? tabActiva : tabInactiva}>
+                        Papelera ({tickets.filter(t => t.borrado).length})
+                    </button>
+                </header>
 
-                {/* Columna Principal: Lista de Tickets */}
-                <section style={{ flex: '1 1 500px' }}>
-                    <h2 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>
-                        {vistaActual === 'activos' ? 'Gestión de Reparaciones' : 'Elementos Eliminados'}
-                    </h2>
-
-                    {ticketsMostrados.length === 0 && (
-                        <p style={{ color: '#666' }}>No hay elementos en esta vista.</p>
-                    )}
-
-                    <div className="lista-tickets">
-                        {ticketsMostrados.map(ticket => (
-                            <div key={ticket.id} style={{ position: 'relative' }}>
-                                <TicketCard
-                                    ticket={ticket}
-                                    onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null}
-                                />
-
-                                {/* Botones adicionales si estamos en la papelera */}
-                                {vistaActual === 'papelera' && (
-                                    <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '10px' }}>
-                                        <button onClick={() => restaurarTicket(ticket.id)} style={btnStyle('#4CAF50')}>Restaurar</button>
-                                        <button onClick={() => eliminarDefinitivamente(ticket.id)} style={btnStyle('#F44336')}>Borrar Permanente</button>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Columna Secundaria: Zona de Papelera (Solo visible en Activos) */}
-                {vistaActual === 'activos' && (
-                    <section style={{ flex: '0 0 300px' }}>
-                        <div
-                            onDrop={handleDropTrash}
-                            onDragOver={handleDragOverTrash}
-                            onDragLeave={handleDragLeaveTrash}
-                            className={isDragOverTrash ? 'trash-zone-active' : ''}
-                            style={{
-                                border: '2px dashed #444',
-                                borderRadius: '16px',
-                                height: '200px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: isDragOverTrash ? '#ff4d4d' : '#666',
-                                transition: 'all 0.3s ease',
-                                backgroundColor: '#111'
-                            }}
-                        >
-                            <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🗑️</div>
-                            <p style={{ margin: 0, fontWeight: 'bold' }}>Arrastra aquí para eliminar</p>
+                {/* Lista de Tickets */}
+                <div style={{ flex: 1, overflowY: 'auto', marginBottom: '20px' }}>
+                    {ticketsMostrados.length === 0 && <p style={{ color: '#666' }}>No hay elementos aquí.</p>}
+                    {ticketsMostrados.map(ticket => (
+                        <div key={ticket.id} style={{ position: 'relative' }}>
+                            <TicketCard
+                                ticket={ticket}
+                                onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null}
+                            />
+                            {vistaActual === 'papelera' && (
+                                <div style={{ position: 'absolute', top: '25px', right: '15px', display: 'flex', gap: '10px' }}>
+                                    <button onClick={() => restaurarTicket(ticket.id)} style={btnStyle('#66bb6a', '#000')}>Restaurar</button>
+                                    <button onClick={() => eliminarDefinitivamente(ticket.id)} style={btnStyle('#ff4d4d', '#fff')}>Eliminar</button>
+                                </div>
+                            )}
                         </div>
-                    </section>
-                )}
+                    ))}
+                </div>
 
-            </div>
+                {/* Zona de Papelera (Dropzone) - Solo en Activos */}
+                {vistaActual === 'activos' && (
+                    <div
+                        onDrop={handleDropTrash}
+                        onDragOver={handleDragOverTrash}
+                        onDragLeave={handleDragLeaveTrash}
+                        style={{
+                            border: `2px dashed ${isDragOverTrash ? '#ff4d4d' : '#333'}`,
+                            backgroundColor: isDragOverTrash ? '#1a0505' : '#0a0a0a',
+                            borderRadius: '12px', padding: '20px', textAlign: 'center', transition: 'all 0.2s', color: isDragOverTrash ? '#ff4d4d' : '#666'
+                        }}
+                    >
+                        <span style={{ fontSize: '2rem', display: 'block', marginBottom: '5px' }}>🗑️</span>
+                        Arrastrá un ticket aquí para enviarlo a la papelera
+                    </div>
+                )}
+            </section>
+
+            {/* COLUMNA DERECHA: Configuración y Chat (40%) */}
+            <section style={{ flex: '1 1 400px', padding: '30px', borderLeft: window.innerWidth > 800 ? '1px solid #222' : 'none', backgroundColor: '#050505' }}>
+                <Settings config={config} onUpdate={setConfig} />
+                <div style={{ marginTop: '30px', height: '450px' }}>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: '15px', color: '#aaa' }}>Asistente IA (Taller)</h3>
+                    <ChatBox onProcesarMensaje={() => { }} />
+                </div>
+            </section>
+
         </main>
     );
 }
 
-const tabActiva = {
-    backgroundColor: '#ffffff',
-    color: '#000000',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '8px',
-    fontWeight: 'bold',
-    cursor: 'pointer'
-};
-
-const tabInactiva = {
-    backgroundColor: 'transparent',
-    color: '#888',
-    padding: '10px 20px',
-    border: '1px solid #333',
-    borderRadius: '8px',
-    cursor: 'pointer'
-};
-
-const btnStyle = (color) => ({
-    backgroundColor: color,
-    color: 'white',
-    border: 'none',
-    padding: '6px 12px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '0.8rem',
-    fontWeight: 'bold'
-});
+// Estilos extraídos
+const tabActiva = { backgroundColor: '#fff', color: '#000', padding: '10px 20px', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' };
+const tabInactiva = { backgroundColor: 'transparent', color: '#888', padding: '10px 20px', border: '1px solid #333', borderRadius: '6px', cursor: 'pointer' };
+const btnStyle = (bg, color) => ({ backgroundColor: bg, color: color, border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem' });
 
 export default Dashboard;

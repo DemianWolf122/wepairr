@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ClientReception from './pages/ClientReception';
-import { TicketProvider } from './context/TicketContext'; // <-- 1. Importamos el proveedor
+import { TicketProvider } from './context/TicketContext';
 
-// (Mantenemos el Login temporal)
 function Login() {
   return (
     <div style={{ padding: '50px', backgroundColor: '#0f0f0f', height: '100vh', color: 'white', textAlign: 'center', fontFamily: 'sans-serif' }}>
@@ -15,17 +14,28 @@ function Login() {
 }
 
 function App() {
-  const [config, setConfig] = useState({
-    nombreNegocio: 'Wepairr Tech',
-    titulo: 'Reparaciones Profesionales',
-    descripcion: 'Especialistas en microelectrónica. Tu equipo en las mejores manos.',
-    colorTema: '#3b82f6',
-    redes: { instagram: '', whatsapp: '5491122334455' },
-    modoAvanzado: false
+  // Inicialización de la configuración desde localStorage
+  const [config, setConfig] = useState(() => {
+    const configGuardada = localStorage.getItem('wepairr_config');
+    if (configGuardada) {
+      return JSON.parse(configGuardada);
+    }
+    return {
+      nombreNegocio: 'Wepairr Tech',
+      titulo: 'Reparaciones Profesionales',
+      descripcion: 'Especialistas en microelectrónica. Tu equipo en las mejores manos.',
+      colorTema: '#3b82f6',
+      redes: { instagram: '', whatsapp: '5491122334455' },
+      modoAvanzado: false
+    };
   });
 
+  // Guardado automático al modificar cualquier ajuste
+  useEffect(() => {
+    localStorage.setItem('wepairr_config', JSON.stringify(config));
+  }, [config]);
+
   return (
-    // 2. Envolvemos absolutamente TODA la app con el TicketProvider
     <TicketProvider>
       <BrowserRouter>
         <Routes>
