@@ -14,7 +14,8 @@ function Login() {
 }
 
 function App() {
-  // Inicialización de la configuración desde localStorage
+  // Dentro de App.jsx, modifica la inicialización del useState de config:
+
   const [config, setConfig] = useState(() => {
     const configGuardada = localStorage.getItem('wepairr_config');
     if (configGuardada) {
@@ -24,11 +25,18 @@ function App() {
       nombreNegocio: 'Wepairr Tech',
       titulo: 'Reparaciones Profesionales',
       descripcion: 'Especialistas en microelectrónica. Tu equipo en las mejores manos.',
-      colorTema: '#3b82f6',
+      colorTema: '#ffffff',
       redes: { instagram: '', whatsapp: '5491122334455' },
-      modoAvanzado: false
+      modoAvanzado: false,
+      // NUEVO: Agregamos la tabla de precios al cerebro de la app
+      tablaPrecios: {
+        'iPhone 11': { 'Pantalla': 120000, 'Batería': 45000, 'Pin de Carga': 30000 },
+        'Samsung S23': { 'Pantalla': 250000, 'Batería': 60000, 'Pin de Carga': 40000 },
+        'Motorola G20': { 'Pantalla': 55000, 'Batería': 25000, 'Pin de Carga': 15000 }
+      }
     };
   });
+
 
   // Guardado automático al modificar cualquier ajuste
   useEffect(() => {
