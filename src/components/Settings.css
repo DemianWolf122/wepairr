@@ -1,17 +1,13 @@
-/* --- LAYOUT DE EDITOR MARKETPLACE --- */
 .settings-editor-layout {
     display: flex;
     height: 100%;
     width: 100%;
     overflow: hidden;
     background: var(--bg-main);
-
-    /* 🚀 LA MAGIA NATIVA: Evita el sombreado azul al hacer clics rápidos */
     user-select: none;
     -webkit-user-select: none;
 }
 
-/* PANEL IZQUIERDO: CONTROLES ANCLADOS */
 .settings-controls-panel {
     width: 420px;
     flex-shrink: 0;
@@ -26,7 +22,6 @@
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
 }
 
-/* LIENZO DERECHO: VISTA PREVIA FLEXIBLE */
 .settings-preview-canvas {
     flex: 1;
     display: flex;
@@ -43,7 +38,6 @@
     flex-shrink: 0;
 }
 
-/* ESCENARIO ANIMADO (GPU: Cross-Fade + Scale 60fps) */
 .preview-stage {
     flex: 1;
     display: flex;
@@ -62,8 +56,6 @@
     transform: scale(0.96);
 }
 
-
-/* --- MOCKUPS FÍSICOS MASIVOS --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -96,7 +88,6 @@
     margin: auto;
 }
 
-/* Headers de Mockups */
 .phone-header-bar {
     height: 40px;
     background: var(--shop-bg);
@@ -126,19 +117,6 @@
 
 .app-root.light .phone-notch {
     background: #e5e5e5;
-}
-
-.phone-home-bar {
-    height: 5px;
-    width: 120px;
-    background: var(--shop-text);
-    opacity: 0.3;
-    border-radius: 10px;
-    margin: 15px auto;
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .desktop-header-bar {
@@ -186,7 +164,6 @@
     text-align: center;
 }
 
-/* Controles de vista previa en el Canvas */
 .device-toggles {
     display: flex;
     gap: 10px;
@@ -213,8 +190,7 @@
     transform: scale(1.05);
 }
 
-
-/* --- PANTALLA RENDERIZADA INTERNA --- */
+/* OCULTAMOS LAS BARRAS DE SCROLL INTERNAS DEL CELULAR */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -226,10 +202,13 @@
     position: relative;
     font-family: var(--shop-font);
     transition: background-color 0.3s ease, color 0.3s ease;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .shop-screen::-webkit-scrollbar {
     display: none;
+    width: 0;
 }
 
 .shop-nav {
@@ -268,6 +247,8 @@
 
 .shop-menu-icon {
     font-size: 1.4rem;
+    display: flex;
+    align-items: center;
 }
 
 .shop-hero {
@@ -307,9 +288,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 800;
     margin: 0 auto 25px auto;
-    font-size: 2.5rem;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
@@ -379,6 +358,7 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+    margin-top: 20px;
 }
 
 .shop-section {
@@ -450,24 +430,6 @@
     border-top: 1px solid var(--shop-border);
 }
 
-.shop-social-links {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.social-badge {
-    background: var(--shop-bg);
-    border: 1px solid var(--shop-border);
-    padding: 8px 18px;
-    border-radius: 99px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: var(--shop-text);
-    cursor: pointer;
-}
-
 .floating-wa-btn {
     position: absolute;
     bottom: 30px;
@@ -485,7 +447,6 @@
     cursor: pointer;
 }
 
-/* Animación de entrada de contenido */
 .animate-pop-in {
     animation: popIn 0.5s var(--ease-bounce);
 }
@@ -502,8 +463,7 @@
     }
 }
 
-
-/* --- ESTILOS DE LOS CONTROLES DE LA IZQUIERDA --- */
+/* Controles de la izquierda */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -525,7 +485,6 @@
     font-size: 0.95rem;
 }
 
-/* REINICIAMOS LA SELECCIÓN SÓLO EN LOS INPUTS Y SELECTS PARA QUE SE PUEDA ESCRIBIR */
 .plan-select {
     background: transparent;
     border: none;
@@ -632,7 +591,6 @@
     margin-bottom: 8px;
 }
 
-/* REINICIAMOS LA SELECCIÓN EN LOS CAMPOS DE TEXTO */
 .settings-input {
     width: 100%;
     padding: 14px;
@@ -663,7 +621,6 @@
     -webkit-user-select: auto;
 }
 
-/* Botones de Instagram Autenticación */
 .btn-connect-ig {
     width: 100%;
     padding: 14px;
@@ -858,6 +815,7 @@ input:checked+.slider:before {
 
 .lock-icon {
     font-size: 2rem;
+    color: var(--text-primary);
 }
 
 .premium-label {

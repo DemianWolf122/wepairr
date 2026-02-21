@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import './Settings.css';
 
-// ==========================================
-// LIBRERÍA DE ICONOS SVG MINIMALISTAS
-// ==========================================
+// --- LIBRERÍA DE ICONOS SVG ---
 const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>;
 const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
@@ -17,9 +15,6 @@ const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke=
 const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
 const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
 
-// ==========================================
-// COMPONENTES Y LÓGICA DEL EDITOR
-// ==========================================
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
     return (
@@ -43,6 +38,14 @@ const ACCENT_COLORS = [
     { name: 'Verde Lima', hex: '#84cc16' }, { name: 'Rojo Ladrillo', hex: '#b91c1c' },
 ];
 
+const TEXT_COLORS = [
+    { name: 'Negro Absoluto', hex: '#000000' }, { name: 'Carbón Profundo', hex: '#0f172a' },
+    { name: 'Gris Pizarra', hex: '#334155' }, { name: 'Azul Marino', hex: '#1e3a8a' },
+    { name: 'Rojo Vino', hex: '#450a0a' }, { name: 'Blanco Puro', hex: '#ffffff' },
+    { name: 'Gris Nube', hex: '#f8fafc' }, { name: 'Plata', hex: '#cbd5e1' },
+    { name: 'Azul Hielo', hex: '#e0f2fe' }, { name: 'Ámbar Claro', hex: '#fef3c7' }
+];
+
 const FONTS = [
     { label: 'Inter (Corporativa)', value: '"Inter", system-ui, sans-serif' },
     { label: 'Helvetica (Premium)', value: '"Helvetica Neue", Helvetica, sans-serif' },
@@ -50,9 +53,19 @@ const FONTS = [
     { label: 'Poppins (Moderna)', value: '"Poppins", sans-serif' }
 ];
 
-// MATEMÁTICA DE CONTRASTE MEJORADA (WCAG)
+const BORDER_STYLES = [
+    { label: 'Suaves (Redondeados)', value: '16px' },
+    { label: 'Píldora (Ultra Redondos)', value: '30px' },
+    { label: 'Profesional (Cuadrados)', value: '4px' }
+];
+
+// MATEMÁTICA DE CONTRASTE BLINDADA (Cero Crashes)
 const getLuminance = (hex) => {
-    let rgb = parseInt(hex.replace('#', ''), 16);
+    if (!hex || typeof hex !== 'string') return 0;
+    let cleanHex = hex.replace('#', '');
+    if (cleanHex.length === 3) cleanHex = cleanHex.split('').map(x => x + x).join('');
+    let rgb = parseInt(cleanHex, 16);
+    if (isNaN(rgb)) return 0;
     let r = (rgb >> 16) & 0xff; let g = (rgb >> 8) & 0xff; let b = (rgb >> 0) & 0xff;
     let a = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
@@ -61,12 +74,9 @@ const getLuminance = (hex) => {
 function Settings({ config, onUpdate }) {
     const [currentPlan, setCurrentPlan] = useState(config.plan || 'standard');
     const isPremium = currentPlan === 'premium';
-
     const [previewMode, setPreviewMode] = useState('mobile');
     const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
     const [seccionAbierta, setSeccionAbierta] = useState('identidad');
-
-    // Estado simulado para la conexión a Instagram
     const [igConnecting, setIgConnecting] = useState(false);
 
     const handleChange = (e) => {
@@ -78,10 +88,7 @@ function Settings({ config, onUpdate }) {
 
     const handleConnectIg = () => {
         setIgConnecting(true);
-        setTimeout(() => {
-            setIgConnecting(false);
-            onUpdate({ ...config, instagramConnected: true });
-        }, 1200);
+        setTimeout(() => { setIgConnecting(false); onUpdate({ ...config, instagramConnected: true }); }, 1200);
     };
 
     const handlePreviewChange = (mode) => {
@@ -100,24 +107,27 @@ function Settings({ config, onUpdate }) {
         const accent = config.colorTema || '#2563eb';
         const isDarkMode = config.shopDarkMode;
 
-        // 1. Contraste de Texto sobre Botón (Garantiza lectura AAA)
         const accentLuminance = getLuminance(accent);
         const autoBtnText = accentLuminance > 0.179 ? '#000000' : '#ffffff';
 
-        // 2. Contraste de Iconos sobre Fondo (Ajusta el color si el acento se pierde en el fondo)
         let safeIconColor = accent;
         const bgLuminance = getLuminance(isDarkMode ? '#0f172a' : '#ffffff');
         const ratio = (Math.max(accentLuminance, bgLuminance) + 0.05) / (Math.min(accentLuminance, bgLuminance) + 0.05);
-
         if (ratio < 3.0) {
-            // Si el contraste es malo, oscurecemos o aclaramos dinámicamente
             let amt = isDarkMode ? 60 : -60;
-            let num = parseInt(accent.slice(1), 16);
-            let r = Math.min(255, Math.max(0, (num >> 16) + amt));
-            let b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
-            let g = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
-            safeIconColor = "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+            let c = accent.replace('#', '');
+            if (c.length === 3) c = c.split('').map(x => x + x).join('');
+            let num = parseInt(c, 16);
+            if (!isNaN(num)) {
+                let r = Math.min(255, Math.max(0, (num >> 16) + amt));
+                let b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+                let g = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+                safeIconColor = "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+            }
         }
+
+        const safeTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
+        const safeSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
 
         return {
             '--shop-accent': accent,
@@ -125,8 +135,8 @@ function Settings({ config, onUpdate }) {
             '--shop-btn-text': autoBtnText,
             '--shop-bg': isDarkMode ? '#0f172a' : '#ffffff',
             '--shop-bg-secondary': isDarkMode ? '#1e293b' : '#f8fafc',
-            '--shop-text': isDarkMode ? '#f8fafc' : '#0f172a',
-            '--shop-text-secondary': isDarkMode ? '#94a3b8' : '#64748b',
+            '--shop-text': safeTitleColor,
+            '--shop-text-secondary': safeSubtitleColor,
             '--shop-border': isDarkMode ? '#334155' : '#e2e8f0',
             '--shop-font': config.fontFamily || '"Inter", system-ui, sans-serif',
             '--shop-radius': config.borderRadius || '16px',
@@ -135,8 +145,6 @@ function Settings({ config, onUpdate }) {
 
     return (
         <div className="settings-editor-layout">
-
-            {/* === COLUMNA IZQUIERDA: CONTROLES ANCLADOS === */}
             <div className="settings-controls-panel glass-effect">
                 <div className="settings-header-row">
                     <div>
@@ -151,7 +159,7 @@ function Settings({ config, onUpdate }) {
 
                 <div className="accordions-container">
 
-                    {/* ACORDEÓN 1: IDENTIDAD */}
+                    {/* IDENTIDAD */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Identidad del Negocio</span>
@@ -174,7 +182,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* ACORDEÓN 2: APARIENCIA */}
+                    {/* APARIENCIA */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
                             <span className="accordion-title"><SvgPalette /> Apariencia y Colores</span>
@@ -223,7 +231,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* ACORDEÓN 3: MULTIMEDIA */}
+                    {/* MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
@@ -242,7 +250,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* ACORDEÓN 4: REDES Y FEED */}
+                    {/* REDES */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('redes')}>
                             <span className="accordion-title"><SvgShare /> Redes Sociales</span>
@@ -254,9 +262,7 @@ function Settings({ config, onUpdate }) {
                                     <label className="settings-label">WhatsApp de Contacto:
                                         <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 1123456789" />
                                     </label>
-
                                     <hr className="settings-divider-soft" />
-
                                     <label className="settings-label">Instagram Feed:</label>
                                     {!config.instagramConnected ? (
                                         <button type="button" onClick={handleConnectIg} className="btn-connect-ig" disabled={igConnecting}>
@@ -264,7 +270,7 @@ function Settings({ config, onUpdate }) {
                                         </button>
                                     ) : (
                                         <div className="ig-connected-box">
-                                            <div className="ig-status"><SvgInstagram /> Conectado exitosamente</div>
+                                            <div className="ig-status"><SvgInstagram /> Conectado</div>
                                             <button type="button" onClick={() => onUpdate({ ...config, instagramConnected: false })} className="btn-disconnect">Desvincular</button>
                                         </div>
                                     )}
@@ -273,7 +279,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* ACORDEÓN 5: FUNCIONALIDADES PREMIUM (NUEVO) */}
+                    {/* FUNCIONALIDADES */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Funcionalidades</span>
@@ -286,14 +292,13 @@ function Settings({ config, onUpdate }) {
                                         <div><strong className="toggle-title">Presupuestador Online</strong><span className="toggle-desc">Muestra tus precios.</span></div>
                                         <label className="switch"><input type="checkbox" name="mostrarPresupuestador" checked={config.mostrarPresupuestador !== false} onChange={handleChange} /><span className="slider round"></span></label>
                                     </div>
-
                                     <PremiumGate isPremium={isPremium}>
                                         <div className="toggle-box glass-input-effect">
-                                            <div><strong className="toggle-title">Agendar Turnos</strong><span className="toggle-desc">Permite reservar online.</span></div>
+                                            <div><strong className="toggle-title">Agendar Turnos</strong><span className="toggle-desc">Permite reservar.</span></div>
                                             <label className="switch"><input type="checkbox" name="mostrarTurnos" checked={config.mostrarTurnos || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                         <div className="toggle-box glass-input-effect">
-                                            <div><strong className="toggle-title">Sello de Confianza</strong><span className="toggle-desc">Muestra garantía destacada.</span></div>
+                                            <div><strong className="toggle-title">Sello de Confianza</strong><span className="toggle-desc">Destaca tu garantía.</span></div>
                                             <label className="switch"><input type="checkbox" name="mostrarGarantia" checked={config.mostrarGarantia || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                     </PremiumGate>
@@ -301,14 +306,11 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
                     </div>
-
                 </div>
             </div>
 
-
             {/* === COLUMNA DERECHA: LIENZO GIGANTE === */}
             <div className="settings-preview-canvas">
-
                 <div className="canvas-header">
                     <div className="device-toggles glass-effect">
                         <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}>📱 Celular</button>
@@ -318,7 +320,6 @@ function Settings({ config, onUpdate }) {
 
                 <div className={`preview-stage ${isAnimatingPreview ? 'animating-stage' : ''}`}>
                     <div className={previewMode === 'mobile' ? 'phone-mockup-final' : 'desktop-mockup-final'}>
-
                         {previewMode === 'mobile' ? (
                             <div className="phone-header-bar">
                                 <div className="phone-notch"></div>
@@ -329,13 +330,11 @@ function Settings({ config, onUpdate }) {
                                 <div className="mac-dot mac-red"></div>
                                 <div className="mac-dot mac-yellow"></div>
                                 <div className="mac-dot mac-green"></div>
-                                <div className="desktop-url-bar">wepairr.com/talleres/{config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-negocio'}</div>
+                                <div className="desktop-url-bar">wepairr.com/{config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-negocio'}</div>
                             </div>
                         )}
 
-                        {/* PANTALLA RENDERIZADA */}
                         <div className="shop-screen" style={shopStyles}>
-
                             <div className="shop-nav">
                                 <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
                                 <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
@@ -345,13 +344,12 @@ function Settings({ config, onUpdate }) {
                             <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
                                 <div className="shop-hero-overlay"></div>
                                 <div className="shop-hero-content animate-pop-in">
-                                    <div className="shop-avatar-placeholder">🔧</div>
+                                    <div className="shop-avatar-placeholder"><SvgBuilding /></div>
                                     <h1 className="shop-title">{config.titulo || 'Tu Título Principal'}</h1>
                                     <p className="shop-desc">{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
 
                                     <div className="shop-hero-actions">
                                         <button className="shop-cta-btn">Solicitar Reparación</button>
-                                        {/* NUEVA FUNCIONALIDAD: Turnos */}
                                         {config.mostrarTurnos && isPremium && (
                                             <button className="shop-secondary-btn"><SvgCalendar /> Agendar Turno</button>
                                         )}
@@ -359,11 +357,10 @@ function Settings({ config, onUpdate }) {
                                 </div>
                             </div>
 
-                            {/* NUEVA FUNCIONALIDAD: Sello de Garantía */}
                             {config.mostrarGarantia && isPremium && (
                                 <div className="shop-trust-badge">
                                     <SvgCheckShield />
-                                    <span>Taller Verificado · Garantía de 90 Días en todas las reparaciones.</span>
+                                    <span>Taller Verificado · Garantía de 90 Días</span>
                                 </div>
                             )}
 
@@ -385,7 +382,6 @@ function Settings({ config, onUpdate }) {
                                 </div>
                             )}
 
-                            {/* NUEVA FUNCIONALIDAD: Instagram Feed */}
                             {config.instagramConnected && (
                                 <div className="shop-section">
                                     <h2 className="shop-section-title"><SvgInstagram /> Nuestro Trabajo</h2>
@@ -404,9 +400,7 @@ function Settings({ config, onUpdate }) {
                             {config.whatsapp && (
                                 <div className="floating-wa-btn"><SvgWhatsApp /></div>
                             )}
-
                         </div>
-                        {previewMode === 'mobile' && <div className="phone-home-bar"></div>}
                     </div>
                 </div>
             </div>

@@ -1,176 +1,142 @@
-import React, { useState, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { TicketContext } from '../context/TicketContext';
-import BeforeAfterSlider from '../components/BeforeAfterSlider';
-import PriceEstimator from '../components/PriceEstimator';
-import './ClientReception.css'; // <-- IMPORTAMOS EL CSS AQUÍ
+import React, { useState, useMemo } from 'react';
+import './ClientReception.css';
+
+// SVG Icons
+const SvgBuilding = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
+const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
+const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
+const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
+const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect></svg>;
+const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
+const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
+
+const getLuminance = (hex) => {
+    if (!hex || typeof hex !== 'string') return 0;
+    let cleanHex = hex.replace('#', '');
+    if (cleanHex.length === 3) cleanHex = cleanHex.split('').map(x => x + x).join('');
+    let rgb = parseInt(cleanHex, 16);
+    if (isNaN(rgb)) return 0;
+    let r = (rgb >> 16) & 0xff; let g = (rgb >> 8) & 0xff; let b = (rgb >> 0) & 0xff;
+    let a = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+};
 
 function ClientReception({ config }) {
-    const { techId } = useParams();
-    const { agregarTicket } = useContext(TicketContext);
+    const isPremium = config.plan === 'premium';
 
-    const tituloSaaS = config?.titulo || 'Asistencia Técnica';
-    const descripcionSaaS = config?.descripcion || 'Completa los datos para iniciar tu consulta.';
-    const colorPrimario = config?.colorTema || '#ffffff';
-    const nombreTaller = config?.nombreNegocio || 'Taller Wepairr';
+    const shopStyles = useMemo(() => {
+        const accent = config.colorTema || '#2563eb';
+        const isDarkMode = config.shopDarkMode;
 
-    const imgAntes = config?.imagenAntes || "https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?q=80&w=600&auto=format&fit=crop";
-    const imgDespues = config?.imagenDespues || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop";
+        const accentLuminance = getLuminance(accent);
+        const autoBtnText = accentLuminance > 0.179 ? '#000000' : '#ffffff';
 
-    const [faseActiva, setFaseActiva] = useState(1);
-    const [datosDispositivo, setDatosDispositivo] = useState({ modelo: '', falla: '' });
-    const [mensaje, setMensaje] = useState('');
-    const [historial, setHistorial] = useState([]);
-    const [pasoChat, setPasoChat] = useState(1);
-    const [detalleFalla, setDetalleFalla] = useState('');
-
-    const iniciarConsulta = (e) => {
-        e.preventDefault();
-        if (!datosDispositivo.modelo.trim() || !datosDispositivo.falla.trim()) return;
-
-        setHistorial([
-            { actor: 'ia', texto: `Hola. Soy el asistente de ${nombreTaller}. Veo que tienes un problema con tu ${datosDispositivo.modelo} (${datosDispositivo.falla}). ¿Podrías brindarme más detalles de cómo ocurrió para que el técnico lo evalúe?` }
-        ]);
-        setFaseActiva(2);
-    };
-
-    const manejarMensajeChat = (e) => {
-        e.preventDefault();
-        if (!mensaje.trim()) return;
-
-        const textoCliente = mensaje;
-        setHistorial(prev => [...prev, { actor: 'cliente', texto: textoCliente }]);
-        setMensaje('');
-
-        setTimeout(() => {
-            if (pasoChat === 1) {
-                setDetalleFalla(textoCliente);
-                setHistorial(prev => [...prev, {
-                    actor: 'ia',
-                    texto: 'Comprendo la situación. Para generar la orden oficial y que el laboratorio pueda contactarte con el presupuesto exacto, ¿me podrías indicar un número de teléfono o WhatsApp?'
-                }]);
-                setPasoChat(2);
-
-            } else if (pasoChat === 2) {
-                setHistorial(prev => [...prev, {
-                    actor: 'ia',
-                    texto: '¡Excelente! He registrado tu número y el caso ha sido enviado a la bandeja de entrada del taller. El técnico revisará los detalles y se pondrá en contacto a la brevedad.'
-                }]);
-
-                const nuevoTicket = {
-                    id: Date.now(),
-                    equipo: datosDispositivo.modelo,
-                    falla: `${datosDispositivo.falla} - Detalle: ${detalleFalla} - Teléfono: ${textoCliente}`,
-                    presupuesto: 0,
-                    estado: 'Ingresado',
-                    tecnicoId: techId,
-                    tipo: 'consulta',
-                    borrado: false
-                };
-
-                agregarTicket(nuevoTicket);
-                setPasoChat(3);
-
-            } else {
-                setHistorial(prev => [...prev, {
-                    actor: 'ia',
-                    texto: 'Tu consulta ya se encuentra en revisión. Te contactaremos pronto al número indicado para continuar.'
-                }]);
+        let safeIconColor = accent;
+        const bgLuminance = getLuminance(isDarkMode ? '#0f172a' : '#ffffff');
+        const ratio = (Math.max(accentLuminance, bgLuminance) + 0.05) / (Math.min(accentLuminance, bgLuminance) + 0.05);
+        if (ratio < 3.0) {
+            let amt = isDarkMode ? 60 : -60;
+            let c = accent.replace('#', '');
+            if (c.length === 3) c = c.split('').map(x => x + x).join('');
+            let num = parseInt(c, 16);
+            if (!isNaN(num)) {
+                let r = Math.min(255, Math.max(0, (num >> 16) + amt));
+                let b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+                let g = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+                safeIconColor = "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
             }
-        }, 1200);
-    };
+        }
+
+        const safeTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
+        const safeSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
+
+        return {
+            '--shop-accent': accent,
+            '--shop-accent-icon': safeIconColor,
+            '--shop-btn-text': autoBtnText,
+            '--shop-bg': isDarkMode ? '#0f172a' : '#ffffff',
+            '--shop-bg-secondary': isDarkMode ? '#1e293b' : '#f8fafc',
+            '--shop-text': safeTitleColor,
+            '--shop-text-secondary': safeSubtitleColor,
+            '--shop-border': isDarkMode ? '#334155' : '#e2e8f0',
+            '--shop-font': config.fontFamily || '"Inter", system-ui, sans-serif',
+            '--shop-radius': config.borderRadius || '16px',
+        };
+    }, [config]);
 
     return (
-        <div className="client-reception-wrapper">
-            <div className="back-nav">
-                <Link to="/dashboard" className="back-link">← Volver al Dashboard</Link>
+        <div className="public-shop-wrapper" style={shopStyles}>
+            <div className="shop-nav">
+                <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
+                <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
             </div>
 
-            <header className="reception-header">
-                <div className="header-avatar">🔧</div>
-                <h1 className="header-title">{tituloSaaS}</h1>
-                <p className="header-desc">{descripcionSaaS}</p>
-            </header>
+            <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
+                <div className="shop-hero-overlay"></div>
+                <div className="shop-hero-content animate-pop-in">
+                    <div className="shop-avatar-placeholder"><SvgBuilding /></div>
+                    <h1 className="shop-title">{config.titulo || 'Tu Título Principal'}</h1>
+                    <p className="shop-desc">{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
 
-            {faseActiva === 1 && (
-                <div className="phase-container">
-                    <section>
-                        <h2 className="section-title">Nuestra Calidad</h2>
-                        <BeforeAfterSlider imageBefore={imgAntes} imageAfter={imgDespues} />
-                    </section>
+                    <div className="shop-hero-actions">
+                        <button className="shop-cta-btn" onClick={() => alert('Abriendo formulario de ingreso...')}>Solicitar Reparación</button>
+                        {config.mostrarTurnos && isPremium && (
+                            <button className="shop-secondary-btn"><SvgCalendar /> Agendar Turno</button>
+                        )}
+                    </div>
+                </div>
+            </div>
 
-                    {config?.mostrarPresupuestador !== false && (
-                        <section>
-                            <PriceEstimator config={config} />
-                        </section>
-                    )}
-
-                    <section className="form-container">
-                        <h2 className="section-title">Inicia tu Consulta</h2>
-                        <form onSubmit={iniciarConsulta} className="form-flex">
-                            <input
-                                type="text"
-                                className="minimalist-input"
-                                value={datosDispositivo.modelo}
-                                onChange={(e) => setDatosDispositivo({ ...datosDispositivo, modelo: e.target.value })}
-                                placeholder="Modelo del Dispositivo (Ej. iPhone 13 Pro)"
-                                required
-                            />
-                            <input
-                                type="text"
-                                className="minimalist-input"
-                                value={datosDispositivo.falla}
-                                onChange={(e) => setDatosDispositivo({ ...datosDispositivo, falla: e.target.value })}
-                                placeholder="Falla Principal (Ej. Pantalla astillada)"
-                                required
-                            />
-                            <button
-                                type="submit"
-                                className="minimalist-button"
-                                style={{ backgroundColor: colorPrimario, color: colorPrimario === '#ffffff' ? '#000' : '#fff' }}
-                            >
-                                Iniciar Chat de Recepción
-                            </button>
-                        </form>
-                    </section>
+            {config.mostrarGarantia && isPremium && (
+                <div className="shop-trust-badge">
+                    <SvgCheckShield />
+                    <span>Taller Verificado · Garantía Asegurada</span>
                 </div>
             )}
 
-            {faseActiva === 2 && (
-                <main className="chat-main">
-                    <div className="chat-layout">
-                        <div className="chat-history">
-                            {historial.map((msg, index) => (
-                                <div
-                                    key={index}
-                                    className={`chat-message ${msg.actor === 'cliente' ? 'msg-cliente' : 'msg-ia'}`}
-                                    style={msg.actor === 'cliente' ? { backgroundColor: colorPrimario !== '#ffffff' ? colorPrimario : '#222222' } : {}}
-                                >
-                                    {msg.texto}
-                                </div>
-                            ))}
+            {config.mostrarPresupuestador !== false && (
+                <div className="shop-section">
+                    <h2 className="shop-section-title">Nuestros Servicios</h2>
+                    <div className="shop-services-grid">
+                        <div className="shop-service-card">
+                            <div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div>
+                            <span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span>
+                            <strong style={{ color: 'var(--shop-text)' }}>Consultar</strong>
                         </div>
-
-                        <form onSubmit={manejarMensajeChat} className="chat-form">
-                            <input
-                                type="text"
-                                className="minimalist-input"
-                                value={mensaje}
-                                onChange={(e) => setMensaje(e.target.value)}
-                                placeholder="Escribe los detalles aquí..."
-                                disabled={pasoChat === 3}
-                            />
-                            <button
-                                type="submit"
-                                className="minimalist-button"
-                                style={{ backgroundColor: colorPrimario, color: colorPrimario === '#ffffff' ? '#000' : '#fff' }}
-                                disabled={pasoChat === 3}
-                            >
-                                Enviar
-                            </button>
-                        </form>
+                        <div className="shop-service-card">
+                            <div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div>
+                            <span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span>
+                            <strong style={{ color: 'var(--shop-text)' }}>Consultar</strong>
+                        </div>
                     </div>
-                </main>
+                </div>
+            )}
+
+            {config.instagramConnected && (
+                <div className="shop-section">
+                    <h2 className="shop-section-title"><SvgInstagram /> Nuestro Trabajo</h2>
+                    <div className="ig-feed-grid">
+                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=500&q=80)' }}></div>
+                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500&q=80)' }}></div>
+                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1629131726692-1accd0c53ce0?w=500&q=80)' }}></div>
+                    </div>
+                </div>
+            )}
+
+            <div className="shop-footer">
+                {(config.whatsapp || config.instagram) && (
+                    <div className="shop-social-links">
+                        {config.whatsapp && <span className="social-badge">WhatsApp</span>}
+                        {config.instagram && <span className="social-badge">Insta</span>}
+                    </div>
+                )}
+                <p>© 2024 {config.nombreNegocio}.</p>
+            </div>
+
+            {config.whatsapp && (
+                <a href={`https://wa.me/${config.whatsapp}`} target="_blank" rel="noreferrer" className="floating-wa-btn">
+                    <SvgWhatsApp />
+                </a>
             )}
         </div>
     );
