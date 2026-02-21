@@ -8,24 +8,10 @@ import InventoryView from './InventoryView';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
-// Componentes SVG Minimalistas
-const MoonIcon = () => (
+const ContrastIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-    </svg>
-);
-
-const SunIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="5"></circle>
-        <line x1="12" y1="1" x2="12" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="23"></line>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-        <line x1="1" y1="12" x2="3" y2="12"></line>
-        <line x1="21" y1="12" x2="23" y2="12"></line>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"></path>
     </svg>
 );
 
@@ -69,16 +55,15 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Wepairr <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
                 <div className="nav-menu">
-                    <button className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('gestion')}>Gestión</button>
-                    <button className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('metricas')}>Métricas</button>
-                    <button className={`nav-link-btn ${seccionPrincipal === 'inventario' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('inventario')}>Inventario</button>
-                    <button className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('comunidad')}>Comunidad</button>
-                    <button className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('configuracion')}>Ajustes</button>
+                    <button type="button" className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('gestion')}>Gestión</button>
+                    <button type="button" className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('metricas')}>Métricas</button>
+                    <button type="button" className={`nav-link-btn ${seccionPrincipal === 'inventario' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('inventario')}>Inventario</button>
+                    <button type="button" className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('comunidad')}>Comunidad</button>
+                    <button type="button" className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('configuracion')}>Ajustes</button>
                 </div>
                 <div className="nav-actions">
-                    {/* Botón con Iconos Minimalistas */}
-                    <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
-                        {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+                    <button type="button" onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
+                        <ContrastIcon />
                     </button>
                     <Link to="/taller/tu-local" target="_blank" className="btn-view-site">Mi Vidriera ↗</Link>
                 </div>
@@ -88,9 +73,9 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 {seccionPrincipal === 'gestion' && (
                     <>
                         <header className="dashboard-tabs">
-                            <button onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}>📥 Inbox ({consultasNuevas.length})</button>
-                            <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}>🔧 Taller Activo ({reparacionesActivas.length})</button>
-                            <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}>🗑️ Papelera ({ticketsPapelera.length})</button>
+                            <button type="button" onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}>📥 Inbox ({consultasNuevas.length})</button>
+                            <button type="button" onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}>🔧 Taller Activo ({reparacionesActivas.length})</button>
+                            <button type="button" onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}>🗑️ Papelera ({ticketsPapelera.length})</button>
                         </header>
 
                         <div className="ticket-list">
@@ -102,15 +87,15 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
                                     {vistaActual === 'inbox' && (
                                         <div className="ticket-actions-absolute ticket-actions-inbox">
-                                            <button onClick={() => convertirATicket(ticket.id)} className="action-btn btn-green">Aceptar</button>
-                                            <button onClick={() => moverAPapelera(ticket.id)} className="action-btn btn-dark">Ignorar</button>
+                                            <button type="button" onClick={() => convertirATicket(ticket.id)} className="action-btn btn-green">Aceptar</button>
+                                            <button type="button" onClick={() => moverAPapelera(ticket.id)} className="action-btn btn-dark">Ignorar</button>
                                         </div>
                                     )}
 
                                     {vistaActual === 'papelera' && (
                                         <div className="ticket-actions-absolute ticket-actions-trash">
-                                            <button onClick={() => restaurarTicket(ticket.id)} className="action-btn btn-green">Restaurar</button>
-                                            <button onClick={() => eliminarDefinitivamente(ticket.id)} className="action-btn btn-red">Eliminar</button>
+                                            <button type="button" onClick={() => restaurarTicket(ticket.id)} className="action-btn btn-green">Restaurar</button>
+                                            <button type="button" onClick={() => eliminarDefinitivamente(ticket.id)} className="action-btn btn-red">Eliminar</button>
                                         </div>
                                     )}
                                 </div>

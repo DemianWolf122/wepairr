@@ -1,5 +1,6 @@
-:root {
-    /* MODO CLARO (Corporate Clean) */
+/* FORZAMOS LA PRIORIDAD DEL TEMA CLARO POR DEFECTO */
+:root,
+[data-theme="light"] {
     --bg-main: #f8fafc;
     --bg-panel: #ffffff;
     --bg-input: #f1f5f9;
@@ -8,7 +9,6 @@
     --text-secondary: #64748b;
     --border-color: #e2e8f0;
 
-    /* Estados y Acentos */
     --accent-color: #2563eb;
     /* Azul Corporativo */
     --accent-hover: #1d4ed8;
@@ -17,8 +17,8 @@
     --warning: #f59e0b;
 }
 
+/* PRIORIDAD DEL TEMA OSCURO */
 [data-theme="dark"] {
-    /* MODO OSCURO (Corporate Deep Slate) */
     --bg-main: #0B0F19;
     --bg-panel: #131B2F;
     --bg-input: #1C2640;
@@ -34,15 +34,15 @@
     --warning: #fbbf24;
 }
 
+/* El !important asegura que NINGÚN otro estilo rompa el fondo global */
 body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
     margin: 0;
     font-family: system-ui, -apple-system, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Animaciones globales */
 @keyframes fadeIn {
     from {
         opacity: 0;

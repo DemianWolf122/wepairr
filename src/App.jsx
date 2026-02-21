@@ -9,7 +9,7 @@ import { TicketProvider } from './context/TicketContext';
 function Login() {
   return (
     <div style={{ padding: '50px', backgroundColor: 'var(--bg-main)', height: '100vh', color: 'var(--text-primary)', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
-      <h1 style={{ fontSize: '2.5rem', margin: '0 0 10px 0' }}>Acceso Técnicos</h1>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Acceso Técnicos</h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
       <Link to="/dashboard" style={{ display: 'inline-block', padding: '15px 30px', backgroundColor: 'var(--accent-color)', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
         Entrar a mi Cuenta
@@ -19,22 +19,25 @@ function Login() {
 }
 
 function App() {
-  // MOTOR DE TEMAS: Forzamos la lectura inmediata del localStorage
+  // LECTURA DIRECTA DEL TEMA
   const [theme, setTheme] = useState(() => {
-    const savedTheme = localStorage.getItem('wepairr_theme');
-    return savedTheme ? savedTheme : 'dark';
+    return localStorage.getItem('wepairr_theme') || 'dark';
   });
 
-  // Este efecto es el que "engancha" las variables de index.css a toda la app
+  // APLICACIÓN INMEDIATA AL DOM
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    document.body.setAttribute('data-theme', theme); // Redundancia para evitar fallos de renderizado
-    localStorage.setItem('wepairr_theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  // FUNCIÓN DE CAMBIO BLINDADA
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('wepairr_theme', nextTheme);
+      return nextTheme;
+    });
+  };
 
-  // CONFIGURACIÓN DEL TALLER
   const [config, setConfig] = useState(() => {
     const configGuardada = localStorage.getItem('wepairr_config');
     if (configGuardada) return JSON.parse(configGuardada);
