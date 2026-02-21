@@ -9,27 +9,14 @@ import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
 const MoonIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-    </svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
 );
-
 const SunIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="5"></circle>
-        <line x1="12" y1="1" x2="12" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="23"></line>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-        <line x1="1" y1="12" x2="3" y2="12"></line>
-        <line x1="21" y1="12" x2="23" y2="12"></line>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-    </svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
 );
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
-    const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
+    const [seccionPrincipal, setSeccionPrincipal] = useState('configuracion'); // Inicia en ajustes para que lo pruebes directo
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket } = useContext(TicketContext);
 
     const [vistaActual, setVistaActual] = useState('inbox');
@@ -78,11 +65,12 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </button>
-                    <Link to="/taller/tu-local" target="_blank" className="btn-view-site">Mi Vidriera ↗</Link>
+                    <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="btn-view-site">Mi Vidriera ↗</Link>
                 </div>
             </nav>
 
-            <main className="dashboard-content">
+            {/* LA MAGIA SUCEDE AQUÍ: Inyectamos una clase si estamos en Ajustes */}
+            <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
                 {seccionPrincipal === 'gestion' && (
                     <>
                         <header className="dashboard-tabs">
@@ -97,14 +85,12 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             {ticketsMostrados.map(ticket => (
                                 <div key={ticket.id} className="ticket-item-wrapper">
                                     <TicketCard ticket={ticket} vista={vistaActual} onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null} onBudgetChange={actualizarPresupuesto} />
-
                                     {vistaActual === 'inbox' && (
                                         <div className="ticket-actions-absolute ticket-actions-inbox">
                                             <button onClick={() => convertirATicket(ticket.id)} className="action-btn btn-green">Aceptar</button>
                                             <button onClick={() => moverAPapelera(ticket.id)} className="action-btn btn-dark">Ignorar</button>
                                         </div>
                                     )}
-
                                     {vistaActual === 'papelera' && (
                                         <div className="ticket-actions-absolute ticket-actions-trash">
                                             <button onClick={() => restaurarTicket(ticket.id)} className="action-btn btn-green">Restaurar</button>
@@ -127,10 +113,10 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 {seccionPrincipal === 'metricas' && <MetricsView tickets={tickets} />}
                 {seccionPrincipal === 'inventario' && <InventoryView />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
+
+                {/* Renderizamos Settings directamente, sin contenedores trampa */}
                 {seccionPrincipal === 'configuracion' && (
-                    <div className="settings-full-container">
-                        <Settings config={config} onUpdate={setConfig} />
-                    </div>
+                    <Settings config={config} onUpdate={setConfig} />
                 )}
             </main>
         </div>

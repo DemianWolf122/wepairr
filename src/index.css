@@ -2,31 +2,18 @@
    FÍSICA DE ANIMACIÓN PREMIUM (GLOBAL)
 ========================================= */
 :root {
-    /* Esta curva empieza rápido y frena muy suavemente (como un auto de lujo frenando) */
     --ease-premium: cubic-bezier(0.23, 1, 0.32, 1);
-    /* Esta curva tiene un pequeño rebote al final, para interacciones vivas */
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-    /* Velocidades estándar */
     --speed-fast: 0.3s;
     --speed-normal: 0.5s;
     --speed-slow: 0.8s;
 }
 
-/* Aplicamos la nueva física a TODO lo que se mueva en la app */
-* {
-    transition-timing-function: var(--ease-premium) !important;
-}
-
-
 /* =========================================
    VARIABLES DE TEMA (GAMA ALTA GLASS)
 ========================================= */
-
-/* --- TEMA CLARO (POR DEFECTO) --- */
 :root,
 .app-root.light {
-    /* 1. VARIABLES NUEVAS (GLASSMORPHISM) */
     --bg-main-gradient: linear-gradient(135deg, #f6f7ff 0%, #eef1f5 100%);
     --bg-panel-glass: rgba(255, 255, 255, 0.65);
     --bg-input-glass: rgba(255, 255, 255, 0.9);
@@ -34,14 +21,12 @@
     --border-glass: rgba(255, 255, 255, 0.5);
     --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
 
-    /* 2. CAPA DE SEGURIDAD (Evita que componentes viejos se rompan) */
     --bg-main: #f8fafc;
     --bg-panel: #ffffff;
     --bg-input: #f1f5f9;
     --bg-hover: #e2e8f0;
     --border-color: #cbd5e1;
 
-    /* 3. VARIABLES DE TEXTO Y ACENTOS */
     --text-primary: #1e293b;
     --text-secondary: #64748b;
     --accent-color: #2563eb;
@@ -51,10 +36,8 @@
     --warning: #f59e0b;
 }
 
-/* --- TEMA OSCURO --- */
 html[data-theme="dark"],
 .app-root.dark {
-    /* 1. VARIABLES NUEVAS (GLASSMORPHISM) */
     --bg-main-gradient: linear-gradient(135deg, #0f172a 0%, #000000 100%);
     --bg-panel-glass: rgba(17, 25, 40, 0.75);
     --bg-input-glass: rgba(30, 41, 59, 0.8);
@@ -62,14 +45,12 @@ html[data-theme="dark"],
     --border-glass: rgba(255, 255, 255, 0.125);
     --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 
-    /* 2. CAPA DE SEGURIDAD */
     --bg-main: #0B0F19;
     --bg-panel: #131B2F;
     --bg-input: #1C2640;
     --bg-hover: #27344D;
     --border-color: #27344D;
 
-    /* 3. VARIABLES DE TEXTO Y ACENTOS */
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
     --accent-color: #3b82f6;
@@ -79,37 +60,31 @@ html[data-theme="dark"],
     --warning: #fbbf24;
 }
 
-/* RESET BÁSICO */
 body {
     margin: 0;
     padding: 0;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: #0B0F19;
-    /* Evita pantallazos blancos al cargar */
 }
 
-/* CONTENEDOR MAESTRO */
 .app-root {
     min-height: 100vh;
     width: 100vw;
     overflow-x: hidden;
-    /* AQUI APLICAMOS LOS FONDOS PARA QUE LA PÁGINA LOS DIBUJE */
     background: var(--bg-main-gradient);
     background-attachment: fixed;
     color: var(--text-primary);
     transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* =========================================
-   CLASES DE UTILIDAD GLOBAL (EL EFECTO)
-========================================= */
 .glass-effect {
     background: var(--bg-panel-glass);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-glass);
     box-shadow: var(--shadow-glass);
-    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+    /* Purgado el !important */
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .glass-input-effect {
