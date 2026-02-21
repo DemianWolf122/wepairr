@@ -148,7 +148,9 @@
 }
 
 .wiki-modal-content {
-    background-color: var(--bg-panel) opacity(80%);
+    background: color-mix(in srgb, var(--bg-panel), transparent 20%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     width: 100%;
