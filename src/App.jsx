@@ -8,10 +8,10 @@ import { TicketProvider } from './context/TicketContext';
 
 function Login() {
   return (
-    <div style={{ padding: '50px', backgroundColor: 'var(--bg-main)', height: '100vh', color: 'var(--text-primary)', textAlign: 'center' }}>
+    <div style={{ padding: '50px', backgroundColor: 'var(--bg-main)', height: '100vh', color: 'var(--text-primary)', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
       <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Acceso Técnicos</h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
-      <Link to="/dashboard" style={{ display: 'inline-block', padding: '15px 30px', backgroundColor: 'var(--accent-color)', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' }}>
+      <Link to="/dashboard" style={{ display: 'inline-block', padding: '15px 30px', backgroundColor: 'var(--accent-color)', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
         Entrar a mi Cuenta
       </Link>
     </div>
@@ -19,7 +19,7 @@ function Login() {
 }
 
 function App() {
-  // Lógica del Tema (Modo Claro / Oscuro)
+  // MOTOR DE TEMAS
   const [theme, setTheme] = useState(() => localStorage.getItem('wepairr_theme') || 'dark');
 
   useEffect(() => {
@@ -29,7 +29,7 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  // Lógica de Configuración del Taller
+  // CONFIGURACIÓN DEL TALLER
   const [config, setConfig] = useState(() => {
     const configGuardada = localStorage.getItem('wepairr_config');
     if (configGuardada) return JSON.parse(configGuardada);
@@ -55,9 +55,9 @@ function App() {
     <TicketProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* Le enviamos theme y toggleTheme al componente Home */}
+          <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
           <Route path="/login" element={<Login />} />
-          {/* Pasamos el control de tema al Dashboard */}
           <Route path="/dashboard" element={<Dashboard config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />} />
           <Route path="/taller/:techId" element={<ClientReception config={config} />} />
           <Route path="/tracking" element={<StatusTracking />} />

@@ -2,18 +2,21 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
-function Home() {
+// Recibimos las propiedades del tema desde App.jsx
+function Home({ theme, toggleTheme }) {
     return (
         <div className="home-wrapper">
-            {/* Barra de Navegación de Wepairr */}
             <nav className="home-nav">
                 <div className="home-logo">Wepairr<span>.</span></div>
                 <div className="home-links">
+                    {/* BOTÓN DE TEMA EN LA HOME */}
+                    <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema" style={{ marginRight: '15px' }}>
+                        {theme === 'dark' ? '☀️' : '🌙'}
+                    </button>
                     <Link to="/login" className="btn-login-nav">Iniciar Sesión</Link>
                 </div>
             </nav>
 
-            {/* Sección Principal (Hero) */}
             <main className="home-hero">
                 <div className="hero-content">
                     <h1 className="hero-title">El sistema operativo para servicios técnicos.</h1>

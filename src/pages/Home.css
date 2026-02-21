@@ -1,10 +1,12 @@
+/* Usamos var() para que se adapte al modo Claro u Oscuro automáticamente */
 .home-wrapper {
     min-height: 100vh;
-    background-color: #000000;
-    color: #ffffff;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
     font-family: system-ui, -apple-system, sans-serif;
     display: flex;
     flex-direction: column;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .home-nav {
@@ -12,7 +14,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px;
-    border-bottom: 1px solid #222;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-panel);
 }
 
 .home-logo {
@@ -22,24 +25,50 @@
 }
 
 .home-logo span {
-    color: #66bb6a;
+    color: var(--accent-color);
+}
+
+.home-links {
+    display: flex;
+    align-items: center;
+}
+
+/* Botón de cambio de tema */
+.theme-toggle-btn {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--bg-hover);
+    transform: scale(1.05);
 }
 
 .btn-login-nav {
-    color: #fff;
+    color: var(--text-primary);
     text-decoration: none;
     font-size: 1rem;
     font-weight: 500;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
     padding: 8px 20px;
     border-radius: 99px;
     transition: background 0.2s;
 }
 
 .btn-login-nav:hover {
-    background-color: #111;
+    background-color: var(--bg-hover);
 }
 
+/* Fondo del Hero dinámico */
 .home-hero {
     flex: 1;
     display: flex;
@@ -47,7 +76,7 @@
     align-items: center;
     text-align: center;
     padding: 0 20px;
-    background: radial-gradient(circle at center, #111 0%, #000 70%);
+    background: radial-gradient(circle at center, var(--bg-panel) 0%, var(--bg-main) 70%);
 }
 
 .hero-content {
@@ -61,11 +90,12 @@
     margin: 0 0 20px 0;
     line-height: 1.1;
     letter-spacing: -2px;
+    color: var(--text-primary);
 }
 
 .hero-desc {
     font-size: 1.3rem;
-    color: #888;
+    color: var(--text-secondary);
     margin: 0 auto 40px auto;
     max-width: 600px;
     line-height: 1.6;
@@ -78,24 +108,25 @@
 }
 
 .btn-primary-hero {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--text-primary);
+    color: var(--bg-main);
     text-decoration: none;
     padding: 16px 32px;
     border-radius: 8px;
     font-weight: 700;
     font-size: 1.1rem;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
 .btn-primary-hero:hover {
     transform: translateY(-2px);
+    opacity: 0.9;
 }
 
 .btn-secondary-hero {
     background-color: transparent;
-    color: #ffffff;
-    border: 1px solid #555;
+    color: var(--text-primary);
+    border: 1px solid var(--text-secondary);
     text-decoration: none;
     padding: 16px 32px;
     border-radius: 8px;
@@ -105,5 +136,17 @@
 }
 
 .btn-secondary-hero:hover {
-    background-color: #111;
+    background-color: var(--bg-hover);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

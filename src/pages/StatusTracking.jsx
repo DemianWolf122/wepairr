@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { TicketContext } from '../context/TicketContext';
 
 function StatusTracking() {
@@ -9,16 +10,17 @@ function StatusTracking() {
 
     const handleBuscar = (e) => {
         e.preventDefault();
-        // Busca por ID exacto (el cliente lo vería en su PDF)
         const ticketEncontrado = tickets.find(t => t.id.toString() === busqueda && t.tipo === 'ticket');
         setResultado(ticketEncontrado || null);
         setBuscado(true);
     };
 
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#000', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10vh 20px', fontFamily: 'system-ui' }}>
+        <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-main)', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10vh 20px', fontFamily: 'system-ui', transition: 'background-color 0.3s, color 0.3s' }}>
+            <Link to="/" style={{ position: 'absolute', top: '30px', left: '30px', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 'bold' }}>← Volver</Link>
+
             <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Seguimiento de Reparación</h1>
-            <p style={{ color: '#888', marginBottom: '40px' }}>Ingresá tu N° de Ticket para conocer el estado actual.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '40px' }}>Ingresá tu N° de Ticket para conocer el estado actual.</p>
 
             <form onSubmit={handleBuscar} style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '400px', marginBottom: '40px' }}>
                 <input
@@ -26,24 +28,26 @@ function StatusTracking() {
                     placeholder="Ej. 1708560000000"
                     value={busqueda}
                     onChange={e => setBusqueda(e.target.value)}
-                    style={{ flex: 1, padding: '15px', borderRadius: '8px', border: '1px solid #333', background: '#111', color: '#fff', outline: 'none' }}
+                    style={{ flex: 1, padding: '15px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-input)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem' }}
                 />
-                <button type="submit" style={{ padding: '0 25px', backgroundColor: '#fff', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Buscar</button>
+                <button type="submit" style={{ padding: '0 25px', backgroundColor: 'var(--text-primary)', color: 'var(--bg-main)', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Buscar</button>
             </form>
 
             {buscado && resultado && (
-                <div style={{ backgroundColor: '#111', padding: '30px', borderRadius: '12px', border: '1px solid #333', width: '100%', maxWidth: '500px', animation: 'fadeIn 0.3s' }}>
-                    <h2 style={{ margin: '0 0 10px 0', color: '#66bb6a' }}>{resultado.equipo}</h2>
-                    <p style={{ color: '#aaa', margin: '0 0 20px 0' }}>Falla reportada: {resultado.falla}</p>
-                    <div style={{ padding: '15px', backgroundColor: '#0a0a0a', borderRadius: '8px', border: '1px solid #222' }}>
-                        <span style={{ display: 'block', color: '#888', fontSize: '0.9rem', marginBottom: '5px' }}>Estado Actual:</span>
-                        <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{resultado.estado}</span>
+                <div style={{ backgroundColor: 'var(--bg-panel)', padding: '30px', borderRadius: '12px', border: '1px solid var(--border-color)', width: '100%', maxWidth: '500px', animation: 'fadeIn 0.3s', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                    <h2 style={{ margin: '0 0 10px 0', color: 'var(--accent-color)' }}>{resultado.equipo}</h2>
+                    <p style={{ color: 'var(--text-secondary)', margin: '0 0 20px 0', lineHeight: '1.5' }}>Falla reportada: {resultado.falla}</p>
+                    <div style={{ padding: '15px', backgroundColor: 'var(--bg-input)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                        <span style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '5px' }}>Estado Actual:</span>
+                        <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>{resultado.estado}</span>
                     </div>
                 </div>
             )}
 
             {buscado && !resultado && (
-                <p style={{ color: '#ff4d4d' }}>No se encontró ninguna reparación activa con ese código.</p>
+                <p style={{ color: 'var(--danger)', fontWeight: '500', padding: '15px', backgroundColor: 'var(--bg-input)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    No se encontró ninguna reparación activa con ese código.
+                </p>
             )}
         </div>
     );
