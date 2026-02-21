@@ -9,7 +9,6 @@
     position: relative;
 }
 
-/* El Dev-Toggle Flotante e Independiente */
 .dev-plan-selector {
     position: absolute;
     bottom: 20px;
@@ -22,6 +21,7 @@
     align-items: center;
     gap: 10px;
     box-shadow: var(--shadow-glass);
+    background: var(--bg-panel);
 }
 
 .settings-controls-panel {
@@ -72,6 +72,7 @@
     transform: scale(0.96);
 }
 
+/* --- MOCKUPS FÍSICOS ARREGLADOS PARA MODO CLARO Y OSCURO --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -86,22 +87,11 @@
     margin: auto;
 }
 
+/* ARREGLO SMARTPHONE MODO CLARO (Bisel Plateado y Sombras Suaves) */
 .app-root.light .phone-mockup-final {
-    border-color: #e5e5e5;
-}
-
-.desktop-mockup-final {
-    width: 95%;
-    max-width: 1200px;
-    height: 700px;
-    border-radius: 16px;
-    border: 2px solid var(--border-glass);
-    background: var(--bg-panel-glass);
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.25);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    margin: auto;
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+    box-shadow: 0 30px 60px rgba(31, 38, 135, 0.15);
 }
 
 .phone-header-bar {
@@ -131,8 +121,41 @@
     z-index: 11;
 }
 
+/* El notch en modo claro siempre es negro porque aloja las cámaras reales */
 .app-root.light .phone-notch {
-    background: #e5e5e5;
+    background: #0f172a;
+}
+
+.phone-home-bar {
+    height: 5px;
+    width: 120px;
+    background: var(--shop-text);
+    opacity: 0.3;
+    border-radius: 10px;
+    margin: 15px auto;
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.desktop-mockup-final {
+    width: 95%;
+    max-width: 1200px;
+    height: 700px;
+    border-radius: 16px;
+    border: 2px solid var(--border-glass);
+    background: var(--bg-panel-glass);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: auto;
+}
+
+.app-root.light .desktop-mockup-final {
+    box-shadow: 0 40px 80px rgba(31, 38, 135, 0.1);
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 .desktop-header-bar {
@@ -210,7 +233,7 @@
     transform: scale(1.05);
 }
 
-/* OCULTAMOS SCROLL DE CELULAR */
+/* --- PANTALLA RENDERIZADA BASE --- */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -235,7 +258,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 25px;
     background: var(--shop-bg);
     position: sticky;
     top: 0;
@@ -245,43 +267,26 @@
 
 .shop-logo {
     font-weight: 900;
-    font-size: 1.3rem;
     letter-spacing: -0.5px;
 }
 
 .shop-nav-links {
     display: none;
-    gap: 25px;
-    font-size: 1rem;
     font-weight: 700;
     color: var(--shop-text-secondary);
 }
 
-.desktop-mockup-final .shop-nav-links {
-    display: flex;
-}
-
-.desktop-mockup-final .shop-menu-icon {
-    display: none;
-}
-
 .shop-menu-icon {
-    font-size: 1.4rem;
     display: flex;
     align-items: center;
 }
 
 .shop-hero {
-    padding: 60px 30px;
     text-align: center;
     position: relative;
     background-size: cover;
     background-position: center;
     background-color: var(--shop-bg-secondary);
-}
-
-.desktop-mockup-final .shop-hero {
-    padding: 100px 60px;
 }
 
 .shop-hero-overlay {
@@ -297,34 +302,29 @@
 .shop-hero-content {
     position: relative;
     z-index: 2;
+    margin: 0 auto;
 }
 
 .shop-avatar-placeholder {
-    width: 80px;
-    height: 80px;
     background: var(--shop-accent);
     color: var(--shop-btn-text);
     border-radius: var(--shop-radius);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 25px auto;
+    font-weight: 800;
+    margin: 0 auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .shop-title {
-    margin: 0 0 15px 0;
-    font-size: 2.2rem;
     font-weight: 900;
     line-height: 1.1;
 }
 
 .shop-desc {
-    font-size: 1.1rem;
     color: var(--shop-text-secondary);
-    margin: 0 auto 30px auto;
     line-height: 1.6;
-    max-width: 500px;
 }
 
 .shop-hero-actions {
@@ -338,10 +338,8 @@
     background: var(--shop-accent);
     color: var(--shop-btn-text);
     border: none;
-    padding: 16px 36px;
     border-radius: var(--shop-radius);
     font-weight: 800;
-    font-size: 1.05rem;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     transition: transform 0.2s var(--ease-bounce);
@@ -355,10 +353,8 @@
     background: var(--shop-bg);
     border: 2px solid var(--shop-border);
     color: var(--shop-text);
-    padding: 14px 28px;
     border-radius: var(--shop-radius);
     font-weight: 700;
-    font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -366,30 +362,46 @@
     transition: all 0.2s var(--ease-premium);
 }
 
+.shop-tracking-widget {
+    margin: -40px auto 30px auto;
+    position: relative;
+    z-index: 10;
+    max-width: 90%;
+}
+
+.tracking-inner {
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid var(--shop-border);
+    background: var(--shop-bg-secondary);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
 .shop-trust-badge {
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.3);
     color: #10b981;
-    padding: 12px 20px;
     text-align: center;
-    font-size: 0.9rem;
     font-weight: 700;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    margin-top: 20px;
+    margin: 20px auto 0 auto;
+    max-width: max-content;
+    border-radius: 99px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
 .shop-section {
-    padding: 40px 30px;
     border-top: 1px solid var(--shop-border);
 }
 
 .shop-section-title {
-    font-size: 1.5rem;
     font-weight: 900;
-    margin-bottom: 25px;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -397,17 +409,32 @@
     gap: 10px;
 }
 
+.shop-video-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    padding-bottom: 56.25%;
+    border-radius: var(--shop-radius);
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--shop-border);
+}
+
+.shop-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .shop-services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    max-width: 900px;
     margin: 0 auto;
 }
 
 .shop-service-card {
     background: var(--shop-bg-secondary);
-    padding: 25px;
     border-radius: var(--shop-radius);
     display: flex;
     flex-direction: column;
@@ -427,8 +454,6 @@
 .ig-feed-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-width: 600px;
     margin: 0 auto;
 }
 
@@ -441,51 +466,216 @@
 }
 
 .shop-footer {
-    padding: 40px 30px;
     text-align: center;
     color: var(--shop-text-secondary);
-    font-size: 0.9rem;
     margin-top: auto;
     background: var(--shop-bg-secondary);
     border-top: 1px solid var(--shop-border);
 }
 
-.shop-social-links {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.social-badge {
-    background: var(--shop-bg);
-    border: 1px solid var(--shop-border);
-    padding: 8px 18px;
-    border-radius: 99px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: var(--shop-text);
-    cursor: pointer;
-}
-
 .floating-wa-btn {
     position: absolute;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
     background: #25D366;
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
     z-index: 100;
     cursor: pointer;
 }
 
+
+/* =========================================================
+   ARTIFICIAL RESPONSIVE: MAGIA DE TAMAÑOS
+   Aquí dictamos cómo crecen los elementos según el dispositivo
+========================================================= */
+
+/* --- MOBILE SIZING --- */
+.phone-mockup-final .shop-nav {
+    padding: 15px 25px;
+}
+
+.phone-mockup-final .shop-logo {
+    font-size: 1.3rem;
+}
+
+.phone-mockup-final .shop-hero {
+    padding: 60px 20px;
+}
+
+.phone-mockup-final .shop-avatar-placeholder {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.phone-mockup-final .shop-title {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+}
+
+.phone-mockup-final .shop-desc {
+    font-size: 1.05rem;
+    margin-bottom: 25px;
+}
+
+.phone-mockup-final .shop-cta-btn {
+    padding: 14px 28px;
+    font-size: 1rem;
+}
+
+.phone-mockup-final .shop-secondary-btn {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+}
+
+.phone-mockup-final .shop-trust-badge {
+    padding: 10px 18px;
+    font-size: 0.85rem;
+}
+
+.phone-mockup-final .shop-section {
+    padding: 40px 20px;
+}
+
+.phone-mockup-final .shop-section-title {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+}
+
+.phone-mockup-final .shop-services-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    max-width: 900px;
+}
+
+.phone-mockup-final .shop-service-card {
+    padding: 20px;
+}
+
+.phone-mockup-final .service-icon svg {
+    width: 30px;
+    height: 30px;
+}
+
+.phone-mockup-final .ig-feed-grid {
+    gap: 10px;
+    max-width: 600px;
+}
+
+.phone-mockup-final .shop-footer {
+    padding: 40px 20px;
+    font-size: 0.9rem;
+}
+
+.phone-mockup-final .floating-wa-btn {
+    bottom: 25px;
+    right: 25px;
+    width: 55px;
+    height: 55px;
+    font-size: 1.5rem;
+}
+
+/* --- DESKTOP SIZING --- */
+.desktop-mockup-final .shop-nav {
+    padding: 20px 50px;
+}
+
+.desktop-mockup-final .shop-nav-links {
+    display: flex;
+    gap: 35px;
+    font-size: 1.1rem;
+}
+
+.desktop-mockup-final .shop-logo {
+    font-size: 1.8rem;
+}
+
+.desktop-mockup-final .shop-hero {
+    padding: 120px 60px;
+}
+
+.desktop-mockup-final .shop-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+}
+
+.desktop-mockup-final .shop-title {
+    font-size: 3.8rem;
+    margin-bottom: 20px;
+}
+
+.desktop-mockup-final .shop-desc {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    max-width: 600px;
+}
+
+.desktop-mockup-final .shop-cta-btn {
+    padding: 18px 45px;
+    font-size: 1.2rem;
+}
+
+.desktop-mockup-final .shop-secondary-btn {
+    padding: 16px 35px;
+    font-size: 1.1rem;
+}
+
+.desktop-mockup-final .shop-trust-badge {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    margin-top: 30px;
+}
+
+.desktop-mockup-final .shop-section {
+    padding: 80px 40px;
+}
+
+.desktop-mockup-final .shop-section-title {
+    font-size: 2.2rem;
+    margin-bottom: 40px;
+}
+
+.desktop-mockup-final .shop-services-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    max-width: 1000px;
+}
+
+.desktop-mockup-final .shop-service-card {
+    padding: 35px;
+}
+
+.desktop-mockup-final .service-icon svg {
+    width: 45px;
+    height: 45px;
+    margin-bottom: 10px;
+}
+
+.desktop-mockup-final .ig-feed-grid {
+    gap: 20px;
+    max-width: 1000px;
+}
+
+.desktop-mockup-final .shop-footer {
+    padding: 60px 40px;
+    font-size: 1rem;
+}
+
+.desktop-mockup-final .floating-wa-btn {
+    bottom: 40px;
+    right: 40px;
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+}
+
+/* Animación pop-in */
 .animate-pop-in {
     animation: popIn 0.5s var(--ease-bounce);
 }
@@ -502,7 +692,8 @@
     }
 }
 
-/* Controles Izquierda */
+
+/* --- ESTILOS DE LOS CONTROLES (SIDEBAR ARREGLADO LUZ/SOMBRA) --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -550,13 +741,21 @@
     transition: all 0.3s var(--ease-premium);
 }
 
+/* ARREGLO BORDES ACORDEÓN MODO CLARO */
 .app-root.light .accordion-item {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(0, 0, 0, 0.05);
 }
 
 .accordion-item.active {
     background: transparent;
     border-color: var(--accent-color);
+}
+
+.app-root.light .accordion-item.active {
+    background: #ffffff;
+    border-color: var(--accent-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
 .accordion-title {
@@ -716,7 +915,7 @@
     grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
 }
 
-/* SOMBRA DE BOTÓN DE COLOR (Arreglado para Modo Claro) */
+/* ARREGLO SOMBRAS MODO CLARO EN PALETAS */
 .color-preset-btn {
     width: 100%;
     aspect-ratio: 1/1;
@@ -724,15 +923,14 @@
     border: 3px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
     transition: all 0.2s var(--ease-bounce);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .app-root.light .color-preset-btn {
     border-color: rgba(0, 0, 0, 0.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Sombra sutil en light mode */
 .color-preset-btn:hover {
     transform: scale(1.15);
 }
@@ -747,8 +945,6 @@
 .app-root.light .color-preset-btn.active {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
-
-/* Corrección luz */
 
 .toggle-box {
     padding: 18px;
@@ -869,16 +1065,4 @@ input:checked+.slider:before {
     font-weight: 800;
     font-size: 1.1rem;
     color: var(--text-primary);
-}
-
-.btn-upgrade-tiny {
-    background: linear-gradient(135deg, #f59e0b, #ea580c);
-    border: none;
-    color: #fff;
-    font-weight: bold;
-    font-size: 0.9rem;
-    padding: 10px 20px;
-    border-radius: 99px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
 }

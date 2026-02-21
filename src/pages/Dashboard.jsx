@@ -5,10 +5,11 @@ import Settings from '../components/Settings';
 import CommunityWiki from './CommunityWiki';
 import MetricsView from './MetricsView';
 import InventoryView from './InventoryView';
+import ToolsView from './ToolsView'; // <-- NUEVA IMPORTACIÓN
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
-// LIBRERÍA DE ICONOS SVG
+// SVG Icons... (Mantenemos los que ya tenías)
 const MoonIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
 const SunIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const SvgInbox = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>;
@@ -33,7 +34,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     };
 
     const ticketsMostrados = obtenerTicketsAMostrar();
-
     const ciclarEstado = (id, estadoActual) => {
         const SECUENCIA_ESTADOS = ['Ingresado', 'En Proceso', 'Finalizado', 'Entregado'];
         const indiceActual = SECUENCIA_ESTADOS.indexOf(estadoActual);
@@ -58,6 +58,10 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <button onClick={() => setSeccionPrincipal('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
                     <button onClick={() => setSeccionPrincipal('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
                     <button onClick={() => setSeccionPrincipal('inventario')} className={`nav-link-btn ${seccionPrincipal === 'inventario' ? 'nav-link-active' : ''}`}>Inventario</button>
+
+                    {/* NUEVA PESTAÑA HERRAMIENTAS */}
+                    <button onClick={() => setSeccionPrincipal('herramientas')} className={`nav-link-btn ${seccionPrincipal === 'herramientas' ? 'nav-link-active' : ''}`}>Herramientas</button>
+
                     <button onClick={() => setSeccionPrincipal('comunidad')} className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`}>Comunidad</button>
                     <button onClick={() => setSeccionPrincipal('configuracion')} className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`}>Ajustes</button>
                 </div>
@@ -94,18 +98,12 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 </div>
                             ))}
                         </div>
-
-                        {vistaActual !== 'papelera' && (
-                            <div onDrop={handleDropTrash} onDragOver={(e) => { e.preventDefault(); setIsDragOverTrash(true); }} onDragLeave={() => setIsDragOverTrash(false)} className={`dropzone ${isDragOverTrash ? 'dropzone-active' : 'dropzone-idle'}`}>
-                                <SvgTrash />
-                                <span>Arrastrá un ticket acá para descartarlo</span>
-                            </div>
-                        )}
                     </>
                 )}
 
                 {seccionPrincipal === 'metricas' && <MetricsView tickets={tickets} />}
                 {seccionPrincipal === 'inventario' && <InventoryView />}
+                {seccionPrincipal === 'herramientas' && <ToolsView />} {/* <-- RENDERIZAMOS HERRAMIENTAS */}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
                 {seccionPrincipal === 'configuracion' && <Settings config={config} onUpdate={setConfig} />}
             </main>

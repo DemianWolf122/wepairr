@@ -1,0 +1,191 @@
+.tools-wrapper {
+    padding: 20px;
+    animation: fadeIn 0.4s var(--ease-premium);
+}
+
+.tools-header {
+    margin-bottom: 40px;
+}
+
+.tools-header h2 {
+    font-size: 2.2rem;
+    color: var(--text-primary);
+    margin: 0 0 10px 0;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.tools-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.tool-card {
+    padding: 30px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.tool-icon {
+    background: var(--accent-color);
+    color: #fff;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.tool-card h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.tool-desc {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+.upload-zone {
+    border: 2px dashed var(--border-glass);
+    border-radius: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+    margin-top: auto;
+}
+
+.app-root.light .upload-zone {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.upload-zone:hover {
+    border-color: var(--accent-color);
+    background: var(--bg-hover-glass);
+}
+
+.btn-tool-action {
+    background: var(--text-primary);
+    color: var(--bg-main);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+}
+
+.btn-tool-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-tool-ghost {
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-tool-ghost:hover {
+    background: var(--bg-hover-glass);
+}
+
+.ohm-calculator {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--bg-input-glass);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
+}
+
+.ohm-input-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ohm-input-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.ohm-input-group input {
+    width: 120px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-panel);
+    color: var(--text-primary);
+    text-align: right;
+    font-weight: bold;
+    outline: none;
+}
+
+.ohm-input-group input:focus {
+    border-color: var(--accent-color);
+}
+
+.ohm-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.ohm-actions button {
+    flex: 1;
+}
+
+.datasheet-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: auto;
+}
+
+.datasheet-input {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: bold;
+    outline: none;
+    text-align: center;
+}
+
+.datasheet-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}

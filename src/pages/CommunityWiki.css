@@ -1,3 +1,4 @@
+/* ... Conserva todo el CSS superior de CommunityWiki.css ... (Desde .wiki-wrapper hasta .btn-like.liked) */
 .wiki-wrapper {
     padding: 20px;
     animation: fadeIn 0.4s ease;
@@ -146,14 +147,15 @@
     background: rgba(37, 99, 235, 0.1);
 }
 
-/* --- MODAL CORPORATIVO ARREGLADO (MODO CLARO PERFECTO) --- */
+
+/* --- SOLUCIÓN DE CONTRASTE DEL MODAL DE COMUNIDAD --- */
 .wiki-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(8px);
     z-index: 9999;
     display: flex;
@@ -164,16 +166,16 @@
     animation: fadeIn 0.4s var(--ease-premium);
 }
 
-/* El fondo en modo claro para la superposición debe ser blanquecino */
+/* Fondo más nítido en modo claro */
 .app-root.light .wiki-modal-overlay {
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .wiki-modal-container {
     background: var(--bg-panel-glass);
-    backdrop-filter: blur(25px);
+    backdrop-filter: blur(30px);
     border: 1px solid var(--border-glass);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
     border-radius: 24px;
     width: 100%;
     max-width: 800px;
@@ -183,11 +185,12 @@
     overflow: hidden;
 }
 
-/* Arreglo de contraste y sombras en modo claro */
+/* MODO CLARO PERFECTO: Sombra neutral negra (no azul) y fondo super claro */
 .app-root.light .wiki-modal-container {
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 30px 60px rgba(31, 38, 135, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.95);
+    /* Casi sólido para legibilidad */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    border: none;
 }
 
 .wiki-modal-header-fixed {
@@ -195,13 +198,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 25px 40px;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.2);
     border-bottom: 1px solid var(--border-glass);
 }
 
 .app-root.light .wiki-modal-header-fixed {
-    background: rgba(255, 255, 255, 0.6);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .btn-close-modal {
@@ -219,9 +222,10 @@
 }
 
 .app-root.light .btn-close-modal {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border-color: #cbd5e1;
     color: var(--text-primary);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .btn-close-modal:hover {

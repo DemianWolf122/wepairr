@@ -2,13 +2,13 @@ import React, { useMemo } from 'react';
 import './ClientReception.css';
 
 // SVG Icons
-const SvgBuilding = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
-const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
-const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
-const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
-const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect></svg>;
-const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
-const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
+const SvgBuilding = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
+const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
+const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
+const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
+const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect></svg>;
+const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
+const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 
 const getLuminance = (hex) => {
     if (!hex || typeof hex !== 'string') return 0;
@@ -47,22 +47,26 @@ function ClientReception({ config }) {
             }
         }
 
-        const safeTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
-        const safeSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
-
         return {
             '--shop-accent': accent,
             '--shop-accent-icon': safeIconColor,
             '--shop-btn-text': autoBtnText,
             '--shop-bg': isDarkMode ? '#090e17' : '#ffffff',
             '--shop-bg-secondary': isDarkMode ? '#141c2f' : '#f8fafc',
-            '--shop-text': safeTitleColor,
-            '--shop-text-secondary': safeSubtitleColor,
+            '--shop-text': config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a'),
+            '--shop-text-secondary': config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b'),
             '--shop-border': isDarkMode ? '#1e293b' : '#e2e8f0',
             '--shop-font': config.fontFamily || '"Inter", system-ui, sans-serif',
             '--shop-radius': config.borderRadius || '16px',
         };
     }, [config]);
+
+    const getEmbedUrl = (url) => {
+        if (!url) return null;
+        if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
+        if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
+        return url;
+    };
 
     return (
         <div className="public-shop-wrapper" style={shopStyles}>
@@ -87,10 +91,23 @@ function ClientReception({ config }) {
                 </div>
             </div>
 
+            {config.mostrarTracking && (
+                <div className="shop-tracking-widget">
+                    <div className="tracking-inner glass-effect">
+                        <h3 style={{ margin: '0 0 10px 0', fontSize: '1.5rem', color: 'var(--shop-text)' }}>Seguimiento de Equipo</h3>
+                        <p style={{ fontSize: '1rem', color: 'var(--shop-text-secondary)', marginBottom: '20px' }}>Ingresá tu N° de orden para ver el estado.</p>
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                            <input type="text" placeholder="#12345" style={{ flex: 1, padding: '16px', borderRadius: '12px', border: '1px solid var(--shop-border)', background: 'var(--shop-bg)', color: 'var(--shop-text)', fontSize: '1.1rem' }} disabled />
+                            <button className="shop-cta-btn" style={{ padding: '16px 30px', fontSize: '1.1rem' }}>Buscar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {config.mostrarGarantia && isPremium && (
                 <div className="shop-trust-badge">
                     <SvgCheckShield />
-                    <span>Taller Verificado · Garantía Asegurada</span>
+                    <span>Taller Verificado · Garantía de 90 Días</span>
                 </div>
             )}
 
@@ -112,6 +129,15 @@ function ClientReception({ config }) {
                 </div>
             )}
 
+            {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
+                <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
+                    <h2 className="shop-section-title">Sobre Nosotros</h2>
+                    <div className="shop-video-wrapper">
+                        <iframe src={getEmbedUrl(config.videoUrl)} title="Video promocional" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="shop-iframe"></iframe>
+                    </div>
+                </div>
+            )}
+
             {config.instagramConnected && (
                 <div className="shop-section">
                     <h2 className="shop-section-title"><SvgInstagram /> Nuestro Trabajo</h2>
@@ -119,6 +145,16 @@ function ClientReception({ config }) {
                         <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=500&q=80)' }}></div>
                         <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500&q=80)' }}></div>
                         <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1629131726692-1accd0c53ce0?w=500&q=80)' }}></div>
+                    </div>
+                </div>
+            )}
+
+            {config.mostrarFaq && isPremium && (
+                <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
+                    <h2 className="shop-section-title">Preguntas Frecuentes</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '800px', margin: '0 auto' }}>
+                        <div style={{ padding: '25px', background: 'var(--shop-bg)', borderRadius: '16px', border: '1px solid var(--shop-border)' }}><strong style={{ fontSize: '1.2rem' }}>¿Tienen garantía las reparaciones?</strong><p style={{ color: 'var(--shop-text-secondary)', fontSize: '1.05rem', marginTop: '10px' }}>Sí, todas nuestras reparaciones cuentan con 90 días de garantía escrita.</p></div>
+                        <div style={{ padding: '25px', background: 'var(--shop-bg)', borderRadius: '16px', border: '1px solid var(--shop-border)' }}><strong style={{ fontSize: '1.2rem' }}>¿Cuánto demora un cambio de pantalla?</strong><p style={{ color: 'var(--shop-text-secondary)', fontSize: '1.05rem', marginTop: '10px' }}>En la mayoría de modelos, el cambio se realiza en el día (aprox. 2 horas).</p></div>
                     </div>
                 </div>
             )}

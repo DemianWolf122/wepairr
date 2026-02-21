@@ -1,21 +1,21 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import './Settings.css';
 
-// --- LIBRERÍA DE ICONOS SVG MINIMALISTAS ---
-const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
-const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>;
-const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
-const SvgMedia = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>;
-const SvgZap = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-const SvgShare = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>;
-const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
-const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
-const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
-const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>;
-const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
-const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
-const SvgMobileDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
-const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
+// SVG Icons...
+const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
+const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>;
+const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
+const SvgMedia = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>;
+const SvgZap = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
+const SvgShare = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>;
+const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>;
+const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
+const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
+const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>;
+const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
+const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
+const SvgMobileDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
+const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -61,7 +61,6 @@ const BORDER_STYLES = [
     { label: 'Profesional (Cuadrados)', value: '4px' }
 ];
 
-// MATEMÁTICA DE CONTRASTE BLINDADA
 const getLuminance = (hex) => {
     if (!hex || typeof hex !== 'string') return 0;
     let cleanHex = hex.replace('#', '');
@@ -108,7 +107,6 @@ function Settings({ config, onUpdate }) {
         }, 350);
     };
 
-    // EL NUEVO CEREBRO DE AUTO-CORRECCIÓN DE CONTRASTE
     const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
     const currentAccentColor = config.colorTema || '#2563eb';
 
@@ -119,23 +117,17 @@ function Settings({ config, onUpdate }) {
     useEffect(() => {
         let updates = {};
         const isDark = config.shopDarkMode;
-        // Colores estándar corporativos de seguridad absolutos
         const defaultText = isDark ? '#ffffff' : '#0f172a';
         const defaultSub = isDark ? '#f8fafc' : '#334155';
 
-        // Si el color actual es inválido o se vuelve inválido, forzamos el mejor fallback
         if (config.colorTitulo && !checkColorSafety(config.colorTitulo, currentBgColor)) {
             updates.colorTitulo = defaultText;
         }
         if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo, currentBgColor)) {
             updates.colorSubtitulo = defaultSub;
         }
-
-        if (Object.keys(updates).length > 0) {
-            onUpdate({ ...config, ...updates });
-        }
-    }, [config.shopDarkMode, config.colorTema]); // Evalúa cada vez que cambia el modo o el acento
-
+        if (Object.keys(updates).length > 0) onUpdate({ ...config, ...updates });
+    }, [config.shopDarkMode, config.colorTema]);
 
     const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
@@ -167,7 +159,7 @@ function Settings({ config, onUpdate }) {
             '--shop-accent': accent,
             '--shop-accent-icon': safeIconColor,
             '--shop-btn-text': autoBtnText,
-            '--shop-bg': isDarkMode ? '#090e17' : '#ffffff', // Más premium oscuro
+            '--shop-bg': isDarkMode ? '#090e17' : '#ffffff',
             '--shop-bg-secondary': isDarkMode ? '#141c2f' : '#f8fafc',
             '--shop-text': safeTitleColor,
             '--shop-text-secondary': safeSubtitleColor,
@@ -177,10 +169,15 @@ function Settings({ config, onUpdate }) {
         };
     }, [config]);
 
+    const getEmbedUrl = (url) => {
+        if (!url) return null;
+        if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
+        if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
+        return url;
+    };
+
     return (
         <div className="settings-editor-layout">
-
-            {/* SELECTOR DE PLAN FLOTANTE (Fuera del Sidebar para no dañar el diseño) */}
             <div className="dev-plan-selector glass-effect">
                 <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>DEV: PLAN</span>
                 <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select">
@@ -313,6 +310,9 @@ function Settings({ config, onUpdate }) {
                                         <label className="settings-label">URL Imagen de Portada:
                                             <input type="text" name="bannerUrl" value={config.bannerUrl || ''} onChange={handleChange} className="settings-input" />
                                         </label>
+                                        <label className="settings-label">Video Promocional (YouTube):
+                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="Ej. https://youtube.com/watch?v=..." />
+                                        </label>
                                     </div>
                                 </PremiumGate>
                             </div>
@@ -348,7 +348,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* FUNCIONALIDADES */}
+                    {/* FUNCIONALIDADES MARKETING */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Funcionalidades</span>
@@ -361,14 +361,23 @@ function Settings({ config, onUpdate }) {
                                         <div><strong className="toggle-title">Presupuestador Online</strong><span className="toggle-desc">Muestra tus precios.</span></div>
                                         <label className="switch"><input type="checkbox" name="mostrarPresupuestador" checked={config.mostrarPresupuestador !== false} onChange={handleChange} /><span className="slider round"></span></label>
                                     </div>
+                                    <div className="toggle-box glass-input-effect">
+                                        <div><strong className="toggle-title">Estado de Reparación</strong><span className="toggle-desc">Widget de tracking de tickets.</span></div>
+                                        <label className="switch"><input type="checkbox" name="mostrarTracking" checked={config.mostrarTracking || false} onChange={handleChange} /><span className="slider round"></span></label>
+                                    </div>
+
                                     <PremiumGate isPremium={isPremium}>
                                         <div className="toggle-box glass-input-effect">
-                                            <div><strong className="toggle-title">Agendar Turnos</strong><span className="toggle-desc">Permite reservar.</span></div>
+                                            <div><strong className="toggle-title">Agendar Turnos</strong><span className="toggle-desc">Permite reservar online.</span></div>
                                             <label className="switch"><input type="checkbox" name="mostrarTurnos" checked={config.mostrarTurnos || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                         <div className="toggle-box glass-input-effect">
                                             <div><strong className="toggle-title">Sello de Confianza</strong><span className="toggle-desc">Destaca tu garantía.</span></div>
                                             <label className="switch"><input type="checkbox" name="mostrarGarantia" checked={config.mostrarGarantia || false} onChange={handleChange} /><span className="slider round"></span></label>
+                                        </div>
+                                        <div className="toggle-box glass-input-effect">
+                                            <div><strong className="toggle-title">Preguntas Frecuentes</strong><span className="toggle-desc">Sección de FAQ.</span></div>
+                                            <label className="switch"><input type="checkbox" name="mostrarFaq" checked={config.mostrarFaq || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                     </PremiumGate>
                                 </div>
@@ -399,7 +408,7 @@ function Settings({ config, onUpdate }) {
                                 <div className="mac-dot mac-red"></div>
                                 <div className="mac-dot mac-yellow"></div>
                                 <div className="mac-dot mac-green"></div>
-                                <div className="desktop-url-bar">wepairr.com/talleres/{config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-negocio'}</div>
+                                <div className="desktop-url-bar">wepairr.com/{config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-negocio'}</div>
                             </div>
                         )}
 
@@ -426,6 +435,20 @@ function Settings({ config, onUpdate }) {
                                 </div>
                             </div>
 
+                            {/* WIDGET TRACKING */}
+                            {config.mostrarTracking && (
+                                <div className="shop-tracking-widget">
+                                    <div className="tracking-inner glass-effect">
+                                        <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>Seguimiento de Equipo</h3>
+                                        <p style={{ fontSize: '0.9rem', color: 'var(--shop-text-secondary)', marginBottom: '15px' }}>Ingresá tu N° de orden para ver el estado.</p>
+                                        <div style={{ display: 'flex', gap: '10px' }}>
+                                            <input type="text" placeholder="#12345" style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--shop-border)', background: 'var(--shop-bg)' }} disabled />
+                                            <button className="shop-cta-btn" style={{ padding: '12px 20px', fontSize: '0.9rem' }}>Buscar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {config.mostrarGarantia && isPremium && (
                                 <div className="shop-trust-badge">
                                     <SvgCheckShield />
@@ -451,6 +474,16 @@ function Settings({ config, onUpdate }) {
                                 </div>
                             )}
 
+                            {/* VIDEO (NUEVO) */}
+                            {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
+                                <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
+                                    <h2 className="shop-section-title">Sobre Nosotros</h2>
+                                    <div className="shop-video-wrapper">
+                                        <iframe src={getEmbedUrl(config.videoUrl)} title="Video promocional" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="shop-iframe"></iframe>
+                                    </div>
+                                </div>
+                            )}
+
                             {config.instagramConnected && (
                                 <div className="shop-section">
                                     <h2 className="shop-section-title"><SvgInstagram /> Nuestro Trabajo</h2>
@@ -458,6 +491,17 @@ function Settings({ config, onUpdate }) {
                                         <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=500&q=80)' }}></div>
                                         <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500&q=80)' }}></div>
                                         <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1629131726692-1accd0c53ce0?w=500&q=80)' }}></div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* FAQ (NUEVO) */}
+                            {config.mostrarFaq && isPremium && (
+                                <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
+                                    <h2 className="shop-section-title">Preguntas Frecuentes</h2>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '800px', margin: '0 auto' }}>
+                                        <div style={{ padding: '20px', background: 'var(--shop-bg)', borderRadius: '12px', border: '1px solid var(--shop-border)' }}><strong>¿Tienen garantía las reparaciones?</strong><p style={{ color: 'var(--shop-text-secondary)', fontSize: '0.9rem', marginTop: '5px' }}>Sí, todas nuestras reparaciones cuentan con 90 días de garantía escrita.</p></div>
+                                        <div style={{ padding: '20px', background: 'var(--shop-bg)', borderRadius: '12px', border: '1px solid var(--shop-border)' }}><strong>¿Cuánto demora un cambio de pantalla?</strong><p style={{ color: 'var(--shop-text-secondary)', fontSize: '0.9rem', marginTop: '5px' }}>En la mayoría de modelos, el cambio se realiza en el día (aprox. 2 horas).</p></div>
                                     </div>
                                 </div>
                             )}
