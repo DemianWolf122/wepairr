@@ -1,9 +1,9 @@
 .inventory-wrapper {
     padding: 20px;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.4s ease;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 35px;
 }
 
 .inventory-header {
@@ -14,24 +14,38 @@
 
 .inventory-header h2 {
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--text-primary);
+    font-weight: 800;
+    letter-spacing: -1px;
 }
 
 .inventory-stats {
     display: flex;
-    gap: 20px;
+    gap: 25px;
 }
 
+/* Stats con efecto glass */
 .stat-box {
-    background-color: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    padding: 20px 30px;
-    border-radius: 12px;
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-glass);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+
+    padding: 25px 35px;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
-    min-width: 180px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    min-width: 200px;
+    transition: all 0.3s;
+}
+
+.stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent-color);
 }
 
 .border-red {
@@ -40,38 +54,46 @@
 
 .stat-label {
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    font-weight: 600;
+    letter-spacing: 1.2px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    opacity: 0.8;
 }
 
 .stat-value {
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 2.2rem;
+    font-weight: 800;
 }
 
 .text-green {
     color: var(--success);
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
 }
 
 .text-red {
     color: var(--danger);
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
 }
 
+/* Sección de agregar con glass */
 .inventory-add-section {
-    background-color: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-glass);
+
+    border-radius: 16px;
+    padding: 30px;
 }
 
 .inventory-add-section h3 {
-    margin: 0 0 20px 0;
-    font-size: 1.2rem;
+    margin: 0 0 25px 0;
+    font-size: 1.3rem;
     color: var(--text-primary);
+    font-weight: 700;
 }
 
 .inventory-form {
@@ -79,18 +101,24 @@
     gap: 15px;
 }
 
+/* Inputs glass */
 .inv-input {
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
     color: var(--text-primary);
-    padding: 14px 18px;
-    border-radius: 8px;
+    padding: 16px 20px;
+    border-radius: 12px;
     outline: none;
-    font-size: 1rem;
+    font-size: 1.05rem;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
 }
 
 .inv-input:focus {
     border-color: var(--accent-color);
+    background: var(--bg-hover-glass);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    transform: translateY(-2px);
 }
 
 .flex-2 {
@@ -102,69 +130,89 @@
 }
 
 .flex-small {
-    width: 90px;
+    width: 100px;
 }
 
 .inv-btn-add {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     color: #fff;
     border: none;
-    padding: 0 30px;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 1rem;
+    padding: 0 35px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1.05rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .inv-btn-add:hover {
-    background-color: var(--accent-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
 }
 
+/* Tabla con glass */
 .inventory-list-section {
-    background-color: var(--bg-panel);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-glass);
+
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 .inventory-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     text-align: left;
 }
 
 .inventory-table th {
-    background-color: var(--bg-input);
+    background: rgba(0, 0, 0, 0.2);
     color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.95rem;
-    padding: 18px 25px;
-    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-glass);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    backdrop-filter: blur(20px);
 }
 
 .inventory-table td {
-    padding: 18px 25px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-glass);
     vertical-align: middle;
     color: var(--text-primary);
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.inventory-table tr:hover td {
+    background: var(--bg-hover-glass);
+}
+
+.inventory-table tr:last-child td {
+    border-bottom: none;
 }
 
 .row-empty td {
     opacity: 0.5;
+    filter: grayscale(1);
 }
 
 .inv-badge {
-    background-color: var(--bg-input);
-    color: var(--text-secondary);
-    padding: 6px 12px;
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--accent-color);
+    padding: 8px 14px;
     border-radius: 99px;
     font-size: 0.85rem;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
+    font-weight: 700;
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    backdrop-filter: blur(5px);
 }
 
 .stock-controls {
@@ -174,28 +222,31 @@
 }
 
 .btn-qty {
-    background-color: var(--bg-input);
+    background: var(--bg-input-glass);
     color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
+    border: 1px solid var(--border-glass);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    backdrop-filter: blur(5px);
 }
 
 .btn-qty:hover {
-    background-color: var(--bg-hover);
+    background: var(--bg-hover-glass);
+    border-color: var(--accent-color);
+    transform: scale(1.1);
 }
 
 .stock-number {
-    font-weight: bold;
-    font-size: 1.15rem;
-    min-width: 25px;
+    font-weight: 800;
+    font-size: 1.25rem;
+    min-width: 30px;
     text-align: center;
 }
 
@@ -204,10 +255,16 @@
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 1.2rem;
-    transition: color 0.2s;
+    font-size: 1.3rem;
+    transition: all 0.2s;
+    opacity: 0.7;
+    padding: 8px;
+    border-radius: 8px;
 }
 
 .btn-inv-delete:hover {
     color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    opacity: 1;
+    transform: scale(1.1);
 }

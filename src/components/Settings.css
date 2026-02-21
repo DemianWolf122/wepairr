@@ -1,99 +1,133 @@
+/* Aplicamos glass al contenedor principal de ajustes */
 .settings-wrapper {
-    background-color: var(--bg-panel);
-    padding: 30px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-glass);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+
+    padding: 40px;
+    border-radius: 20px;
     color: var(--text-primary);
     box-sizing: border-box;
+    animation: fadeIn 0.4s ease;
 }
 
 .settings-section-title {
     margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.2rem;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
     color: var(--text-primary);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .settings-form-group {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-bottom: 40px;
+    gap: 25px;
+    margin-bottom: 50px;
 }
 
 .settings-label {
     display: block;
     color: var(--text-secondary);
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
+/* Inputs estilo glass */
 .settings-input {
     width: 100%;
-    padding: 14px;
-    margin-top: 8px;
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
+    padding: 16px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
     color: var(--text-primary);
-    border-radius: 8px;
+    border-radius: 12px;
     outline: none;
-    font-size: 1rem;
-    transition: border-color 0.2s;
+    font-size: 1.05rem;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
 }
 
 .settings-input:focus {
     border-color: var(--accent-color);
+    background: var(--bg-hover-glass);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    transform: translateY(-2px);
 }
 
 .settings-textarea {
-    min-height: 100px;
+    min-height: 120px;
     resize: vertical;
 }
 
 .color-picker-wrapper {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
+    background: var(--bg-input-glass);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    backdrop-filter: blur(10px);
 }
 
 .color-picker {
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     padding: 0;
     cursor: pointer;
-    border: none;
-    border-radius: 8px;
+    border: 3px solid var(--bg-panel-glass);
+    border-radius: 10px;
     background-color: transparent;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.color-picker:hover {
+    transform: scale(1.1);
 }
 
 .toggle-box {
-    padding: 20px;
-    background-color: var(--bg-input);
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
+    padding: 25px;
+    background: var(--bg-input-glass);
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+}
+
+.toggle-box:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
 }
 
 .toggle-title {
     display: block;
-    margin-bottom: 5px;
-    font-size: 1.05rem;
-    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: var(--text-primary);
 }
 
 .toggle-desc {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-secondary);
+    opacity: 0.8;
 }
 
 .toggle-checkbox {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     accent-color: var(--accent-color);
     cursor: pointer;
 }
@@ -101,119 +135,171 @@
 .price-list-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
 }
 
 .equipment-card {
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 20px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-glass);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Borde superior brillante sutil */
+.equipment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 .equipment-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 15px;
 }
 
 .equipment-title {
     margin: 0;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     color: var(--accent-color);
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .btn-delete-equipment {
-    background-color: transparent;
+    background: rgba(239, 68, 68, 0.1);
     color: var(--danger);
-    border: none;
+    border: 1px solid rgba(239, 68, 68, 0.3);
     cursor: pointer;
     font-size: 0.9rem;
-    padding: 0;
-    font-weight: 500;
+    padding: 8px 12px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
 }
 
 .btn-delete-equipment:hover {
-    text-decoration: underline;
+    background: rgba(239, 68, 68, 0.2);
+    transform: translateY(-2px);
 }
 
 .fault-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 25px;
 }
 
 .fault-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-panel);
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
+    background: var(--bg-panel-glass);
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+}
+
+.fault-item:hover {
+    border-color: var(--accent-color);
+    transform: translateX(5px);
+    background: var(--bg-hover-glass);
 }
 
 .fault-name {
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
 .fault-price-wrapper {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .fault-price {
-    font-weight: bold;
-    font-size: 1.05rem;
+    font-weight: 800;
+    font-size: 1.15rem;
     color: var(--text-primary);
+    background: linear-gradient(90deg, var(--text-primary), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .btn-delete-fault {
-    background: transparent;
-    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 1.2rem;
-    transition: color 0.2s;
+    font-size: 1rem;
+    transition: all 0.2s;
 }
 
 .btn-delete-fault:hover {
     color: var(--danger);
+    border-color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    transform: rotate(90deg);
 }
 
 .empty-faults {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text-secondary);
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    opacity: 0.7;
 }
 
 .add-fault-form {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .add-equipment-form {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-glass);
 }
 
 .btn-add {
-    background-color: var(--text-primary);
-    color: var(--bg-panel);
+    background: var(--text-primary);
+    color: var(--bg-main);
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: bold;
-    padding: 0 20px;
-    transition: opacity 0.2s ease;
+    font-weight: 800;
+    padding: 0 25px;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-add:hover {
-    opacity: 0.85;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
 }

@@ -1,48 +1,64 @@
+/* APLICAMOS EL EFECTO GLASS A LA TARJETA PRINCIPAL */
 .ticket-card {
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    /* Usamos las mismas propiedades que .glass-effect */
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-glass);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    /* Brillo superior */
+
+    border-radius: 16px;
     padding: 25px;
     margin: 0;
-    background-color: var(--bg-panel);
-    color: var(--text-primary);
     cursor: grab;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* Transición suave tipo iOS */
     position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    /* Para contener el brillo */
 }
 
+/* Efecto de "levantar" la tarjeta al pasar el mouse */
 .ticket-card:hover {
-    border-color: var(--text-secondary);
+    transform: translateY(-5px) scale(1.01);
+    border-color: var(--accent-color);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 .ticket-card:active {
     cursor: grabbing;
+    transform: scale(0.98);
 }
 
 .ticket-dragging {
-    opacity: 0.5;
-    border: 1px dashed var(--accent-color);
+    opacity: 0.6;
+    border: 2px dashed var(--accent-color);
+    transform: scale(0.95);
 }
 
 .ticket-title {
-    margin: 0 0 8px 0;
-    font-size: 1.2rem;
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
     padding-right: 120px;
     color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .ticket-desc {
-    margin: 0 0 20px 0;
+    margin: 0 0 25px 0;
     color: var(--text-secondary);
     font-size: 0.95rem;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .ticket-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-glass);
     padding-top: 20px;
 }
 
@@ -60,47 +76,66 @@
 
 .budget-currency {
     font-size: 1.1rem;
-    color: var(--text-secondary);
+    color: var(--accent-color);
 }
 
+/* Input estilo glass */
 .budget-input {
-    width: 90px;
-    padding: 8px;
-    border-radius: 6px;
+    width: 100px;
+    padding: 10px;
+    border-radius: 10px;
     border: 1px solid var(--accent-color);
-    background-color: var(--bg-input);
+    background: var(--bg-input-glass);
+    backdrop-filter: blur(5px);
     color: var(--text-primary);
     outline: none;
     font-weight: bold;
+    font-size: 1.1rem;
 }
 
 .btn-save-budget {
-    background-color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-weight: bold;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
 }
 
 .budget-display {
     display: flex;
     align-items: center;
     gap: 8px;
+    background: var(--bg-input-glass);
+    padding: 8px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    transition: all 0.2s;
+}
+
+.budget-display:hover {
+    border-color: var(--accent-color);
+    background: var(--bg-hover-glass);
 }
 
 .budget-value {
-    font-weight: bold;
-    font-size: 1.3rem;
+    font-weight: 800;
+    font-size: 1.4rem;
+    letter-spacing: -1px;
 }
 
 .budget-value-empty {
     color: var(--text-secondary);
+    opacity: 0.7;
 }
 
 .budget-value-filled {
     color: var(--text-primary);
+    background: linear-gradient(90deg, var(--text-primary), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .budget-edit-icon {
@@ -109,62 +144,61 @@
     opacity: 0.5;
 }
 
-.budget-display:hover .budget-edit-icon {
-    opacity: 1;
-}
-
 .footer-actions {
     display: flex;
     gap: 10px;
 }
 
-.btn-pdf {
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 8px 12px;
+/* Botones de acción estilo glass */
+.btn-pdf,
+.btn-whatsapp {
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 10px 14px;
     color: var(--text-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: background-color 0.2s;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
 }
 
 .btn-pdf:hover {
-    background-color: var(--bg-hover);
+    background: var(--bg-hover-glass);
+    transform: translateY(-2px);
 }
 
 .btn-whatsapp {
-    background-color: #128C7E;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    transition: opacity 0.2s;
+    color: #25D366;
+    border-color: rgba(37, 211, 102, 0.3);
+    background: rgba(37, 211, 102, 0.1);
 }
 
 .btn-whatsapp:hover {
-    opacity: 0.85;
+    background: rgba(37, 211, 102, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
 }
 
 .btn-status {
     border: none;
-    border-radius: 6px;
-    padding: 8px 16px;
-    font-weight: bold;
-    transition: opacity 0.2s ease;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .btn-status:hover {
-    opacity: 0.85;
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
