@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
+import { generarReciboPDF } from '../utils/generarPDF'; // Importamos el generador
 
 function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
     const [isDragging, setIsDragging] = useState(false);
-
-    // Estados para manejar la edición del presupuesto
     const [editandoPrecio, setEditandoPrecio] = useState(false);
     const [montoLocal, setMontoLocal] = useState(ticket.presupuesto || 0);
 
     const getStatusColor = (estado) => {
         switch (estado) {
-            case 'Ingresado': return '#ff4d4d'; // Rojo
-            case 'En Proceso': return '#ffca28'; // Amarillo
-            case 'Finalizado': return '#66bb6a'; // Verde
-            case 'Entregado': return '#42a5f5'; // Azul
+            case 'Ingresado': return '#ff4d4d';
+            case 'En Proceso': return '#ffca28';
+            case 'Finalizado': return '#66bb6a';
+            case 'Entregado': return '#42a5f5';
             default: return '#ccc';
         }
     };
@@ -51,14 +50,12 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
         >
             <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', paddingRight: '120px' }}>{ticket.equipo}</h3>
 
-            {/* Mostrar detalles adicionales si es una consulta con teléfono */}
             <p style={{ margin: '0 0 15px 0', color: '#aaa', fontSize: '0.9rem', lineHeight: '1.4' }}>
                 {ticket.falla}
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #333', paddingTop: '15px' }}>
 
-                {/* ZONA DE PRESUPUESTO */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {editandoPrecio ? (
                         <div style={{ display: 'flex', gap: '5px' }}>
@@ -74,7 +71,6 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
                         </div>
                     ) : (
                         <div
-                            // Solo permitimos editar si estamos en la vista de taller activos
                             onClick={() => vista === 'activos' && setEditandoPrecio(true)}
                             style={{ cursor: vista === 'activos' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '8px' }}
                             title={vista === 'activos' ? "Haz clic para editar precio" : ""}
@@ -87,22 +83,45 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
                     )}
                 </div>
 
-                {/* BOTÓN DE ESTADO (Solo interactivo en vista de taller) */}
-                <button
-                    onClick={() => vista === 'activos' && onStatusChange(ticket.id)}
-                    style={{
-                        backgroundColor: getStatusColor(ticket.estado),
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '8px 16px',
-                        color: 'black',
-                        fontWeight: 'bold',
-                        cursor: vista === 'activos' ? 'pointer' : 'default',
-                        opacity: vista === 'activos' ? 1 : 0.7
-                    }}
-                >
-                    {ticket.estado}
-                </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    {/* NUEVO BOTÓN: PDF (Solo en el taller) */}
+                    {vista === 'activos' && (
+                        <button
+                            onClick={() => generarReciboPDF(ticket)}
+                            style={{
+                                backgroundColor: '#333',
+                                border: '1px solid #555',
+                                borderRadius: '6px',
+                                padding: '8px 12px',
+                                color: 'white',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '5px',
+                                fontSize: '0.85rem'
+                            }}
+                            title="Descargar Comprobante PDF"
+                        >
+                            📄 PDF
+                        </button>
+                    )}
+
+                    <button
+                        onClick={() => vista === 'activos' && onStatusChange(ticket.id)}
+                        style={{
+                            backgroundColor: getStatusColor(ticket.estado),
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '8px 16px',
+                            color: 'black',
+                            fontWeight: 'bold',
+                            cursor: vista === 'activos' ? 'pointer' : 'default',
+                            opacity: vista === 'activos' ? 1 : 0.7
+                        }}
+                    >
+                        {ticket.estado}
+                    </button>
+                </div>
             </div>
         </div>
     );
