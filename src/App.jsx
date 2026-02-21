@@ -19,20 +19,28 @@ function Login() {
 }
 
 function App() {
-  // MOTOR DE TEMAS BLINDADO
+  // 1. LEER TEMA GUARDADO
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('wepairr_theme') || 'dark';
   });
 
+  // 2. APLICAR AL CARGAR LA PÁGINA
   useEffect(() => {
-    // Aplicamos DOBLE inyección: Atributo HTML y Clase en el Body
     document.documentElement.setAttribute('data-theme', theme);
-    document.body.className = theme;
-    localStorage.setItem('wepairr_theme', theme);
-  }, [theme]);
+  }, []); // Solo se ejecuta una vez al iniciar
 
+  // 3. FUNCIÓN DE CAMBIO INSTANTÁNEO
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    const nuevoTema = theme === 'dark' ? 'light' : 'dark';
+
+    // Cambiamos el estado de React
+    setTheme(nuevoTema);
+
+    // Forzamos el cambio en el HTML en el mismo milisegundo
+    document.documentElement.setAttribute('data-theme', nuevoTema);
+
+    // Lo guardamos en memoria
+    localStorage.setItem('wepairr_theme', nuevoTema);
   };
 
   const [config, setConfig] = useState(() => {
