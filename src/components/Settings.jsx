@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './Settings.css';
 
 // --- COMPONENTE PREMIUM GATE ---
@@ -16,7 +16,6 @@ const PremiumGate = ({ children, isPremium }) => {
     );
 };
 
-// --- MEGA PALETA DE COLORES (Alta Conversión) ---
 const COLOR_PRESETS = [
     { name: 'Azul Wepairr', hex: '#2563eb' }, { name: 'Esmeralda Tech', hex: '#10b981' },
     { name: 'Púrpura Pro', hex: '#8b5cf6' }, { name: 'Rojo Carmesí', hex: '#e11d48' },
@@ -43,10 +42,28 @@ function Settings({ config, onUpdate }) {
     const [currentPlan, setCurrentPlan] = useState(config.plan || 'standard');
     const isPremium = currentPlan === 'premium';
 
+    // Estados para la lógica del cambio de vista previa
     const [previewMode, setPreviewMode] = useState('mobile');
+    const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
+    const [nextPreviewMode, setNextPreviewMode] = useState(null);
 
-    // ESTADO PARA LOS ACORDEONES (Qué sección está abierta)
     const [seccionAbierta, setSeccionAbierta] = useState('identidad');
+
+    // --- LÓGICA DE LA ANIMACIÓN DE TRANSICIÓN ---
+    const handlePreviewChange = (mode) => {
+        if (mode === previewMode || isAnimatingPreview) return;
+        // 1. Iniciamos la animación de salida
+        setIsAnimatingPreview(true);
+        setNextPreviewMode(mode);
+
+        // 2. Esperamos a que termine la animación de salida (400ms) antes de cambiar el DOM
+        setTimeout(() => {
+            setPreviewMode(mode);
+            setNextPreviewMode(null);
+            // 3. El estado 'isAnimatingPreview' sigue true un momento para la animación de entrada
+            setTimeout(() => setIsAnimatingPreview(false), 50);
+        }, 400); // Este tiempo debe coincidir con la duración de la animación CSS
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -57,7 +74,6 @@ function Settings({ config, onUpdate }) {
         setSeccionAbierta(prev => prev === seccion ? null : seccion);
     };
 
-    // --- LÓGICA DE VARIABLES CSS INTELIGENTES ---
     const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
         const isDarkMode = config.shopDarkMode;
@@ -95,6 +111,9 @@ function Settings({ config, onUpdate }) {
         return url;
     };
 
+    // Clase dinámica para el contenedor de vista previa según el estado de animación
+    const previewContainerClass = `settings-preview-container ${isAnimatingPreview && nextPreviewMode ? 'animating-out' : 'animating-in'}`;
+
     return (
         <div className={`settings-layout ${previewMode === 'desktop' ? 'layout-desktop' : ''}`}>
 
@@ -115,7 +134,6 @@ function Settings({ config, onUpdate }) {
                 </div>
 
                 <div className="accordions-container">
-
                     {/* ACORDEÓN 1: IDENTIDAD */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
@@ -239,19 +257,20 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
                     </div>
-
                 </div>
             </div>
 
 
-            {/* --- COLUMNA DERECHA: VISTA PREVIA --- */}
-            <div className="settings-preview-container animate-fade-in">
+            {/* --- COLUMNA DERECHA: VISTA PREVIA CON ANIMACIÓN PREMIUM --- */}
+            <div className={previewContainerClass}>
 
                 <div className="device-toggles glass-effect">
-                    <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => setPreviewMode('mobile')}>📱 Celular</button>
-                    <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => setPreviewMode('desktop')}>💻 Monitor</button>
+                    {/* Usamos la nueva función handlePreviewChange */}
+                    <button type="button" className={`device-btn ${previewMode === 'mobile' && !nextPreviewMode ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}>📱 Celular</button>
+                    <button type="button" className={`device-btn ${previewMode === 'desktop' || nextPreviewMode === 'desktop' ? 'active' : ''}`} onClick={() => handlePreviewChange('desktop')}>💻 Monitor</button>
                 </div>
 
+                {/* EL MOCKUP QUE SE RENDERIZA (Móvil o Desktop) */}
                 <div className={previewMode === 'mobile' ? 'phone-mockup' : 'desktop-mockup'}>
 
                     {previewMode === 'mobile' ? (
@@ -309,7 +328,6 @@ function Settings({ config, onUpdate }) {
                         )}
 
                         <div className="shop-footer">
-                            {/* Inyección de Redes Sociales (Premium) */}
                             {isPremium && (config.whatsapp || config.instagram) && (
                                 <div className="shop-social-links">
                                     {config.whatsapp && <span className="social-badge">WhatsApp</span>}
@@ -319,7 +337,6 @@ function Settings({ config, onUpdate }) {
                             <p>© 2024 {config.nombreNegocio}.</p>
                         </div>
 
-                        {/* Botón flotante de WhatsApp (Premium) */}
                         {isPremium && config.whatsapp && (
                             <div className="floating-wa-btn">💬</div>
                         )}
