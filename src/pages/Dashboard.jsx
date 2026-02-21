@@ -46,7 +46,10 @@ function Dashboard({ config, setConfig }) {
             {/* --- NAVBAR DEL TÉCNICO --- */}
             <nav className="tech-navbar">
                 <div className="tech-brand">
-                    Wepairr <span>Workspace</span>
+                    {/* Convertimos el logo en un Link que lleva a Home */}
+                    <Link to="/" style={{ color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        Wepairr <span style={{ color: '#666', fontWeight: 'normal' }}>Workspace</span>
+                    </Link>
                 </div>
                 <div className="nav-menu">
                     <button
