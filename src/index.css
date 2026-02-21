@@ -1,81 +1,28 @@
-/* RESET BÁSICO */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    /* El fondo base necesita un gradiente sutil para que el glassmorphism se note */
-    background: var(--bg-main-gradient);
-    background-attachment: fixed;
-    /* Mantiene el fondo fijo al hacer scroll */
-    color: var(--text-primary);
-    transition: background 0.3s ease, color 0.3s ease;
-    min-height: 100vh;
-}
-
-/* CONTENEDOR MAESTRO */
-.app-root {
-    min-height: 100vh;
-    width: 100vw;
-    overflow-x: hidden;
-}
-
 /* =========================================
    VARIABLES DE TEMA (GAMA ALTA GLASS)
 ========================================= */
 
-/* --- MODO OSCURO --- */
-.app-root.dark {
-    /* Fondo Principal: Gradiente oscuro profundo y sutil */
-    --bg-main-gradient: linear-gradient(135deg, #0f172a 0%, #000000 100%);
-
-    /* Paneles de Vidrio (Tarjetas, Barra lateral): Oscuro y transparente */
-    --bg-panel-glass: rgba(17, 25, 40, 0.75);
-
-    /* Inputs: Un poco más opacos para facilitar la lectura */
-    --bg-input-glass: rgba(30, 41, 59, 0.8);
-    --bg-hover-glass: rgba(51, 65, 85, 0.6);
-
-    /* Textos */
-    --text-primary: #ffffff;
-    --text-secondary: #94a3b8;
-
-    /* Bordes de Vidrio: Finos y brillantes para definir los bordes en lo oscuro */
-    --border-glass: rgba(255, 255, 255, 0.125);
-
-    /* Sombra de Vidrio: Suave para dar profundidad */
-    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-
-    /* Acentos (Se mantienen sólidos) */
-    --accent-color: #3b82f6;
-    --accent-hover: #60a5fa;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #fbbf24;
-}
-
-/* --- MODO CLARO --- */
+/* --- TEMA CLARO (POR DEFECTO) --- */
+:root,
 .app-root.light {
-    /* Fondo Principal: Gradiente luminoso y limpio */
+    /* 1. VARIABLES NUEVAS (GLASSMORPHISM) */
     --bg-main-gradient: linear-gradient(135deg, #f6f7ff 0%, #eef1f5 100%);
-
-    /* Paneles de Vidrio: Blanco y muy transparente */
     --bg-panel-glass: rgba(255, 255, 255, 0.65);
-
-    /* Inputs */
     --bg-input-glass: rgba(255, 255, 255, 0.9);
     --bg-hover-glass: rgba(241, 245, 249, 0.8);
-
-    /* Textos */
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-
-    /* Bordes de Vidrio: Muy sutil en modo claro para no ensuciar */
     --border-glass: rgba(255, 255, 255, 0.5);
-
-    /* Sombra de Vidrio: Colorida y muy difuminada para un look "limpio" */
     --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
 
-    /* Acentos */
+    /* 2. CAPA DE SEGURIDAD (Evita que componentes viejos se rompan) */
+    --bg-main: #f8fafc;
+    --bg-panel: #ffffff;
+    --bg-input: #f1f5f9;
+    --bg-hover: #e2e8f0;
+    --border-color: #cbd5e1;
+
+    /* 3. VARIABLES DE TEXTO Y ACENTOS */
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
     --accent-color: #2563eb;
     --accent-hover: #1d4ed8;
     --success: #10b981;
@@ -83,25 +30,67 @@ body {
     --warning: #f59e0b;
 }
 
+/* --- TEMA OSCURO --- */
+html[data-theme="dark"],
+.app-root.dark {
+    /* 1. VARIABLES NUEVAS (GLASSMORPHISM) */
+    --bg-main-gradient: linear-gradient(135deg, #0f172a 0%, #000000 100%);
+    --bg-panel-glass: rgba(17, 25, 40, 0.75);
+    --bg-input-glass: rgba(30, 41, 59, 0.8);
+    --bg-hover-glass: rgba(51, 65, 85, 0.6);
+    --border-glass: rgba(255, 255, 255, 0.125);
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+    /* 2. CAPA DE SEGURIDAD */
+    --bg-main: #0B0F19;
+    --bg-panel: #131B2F;
+    --bg-input: #1C2640;
+    --bg-hover: #27344D;
+    --border-color: #27344D;
+
+    /* 3. VARIABLES DE TEXTO Y ACENTOS */
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --accent-color: #3b82f6;
+    --accent-hover: #60a5fa;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #fbbf24;
+}
+
+/* RESET BÁSICO */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #0B0F19;
+    /* Evita pantallazos blancos al cargar */
+}
+
+/* CONTENEDOR MAESTRO */
+.app-root {
+    min-height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+    /* AQUI APLICAMOS LOS FONDOS PARA QUE LA PÁGINA LOS DIBUJE */
+    background: var(--bg-main-gradient);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    transition: background 0.3s ease, color 0.3s ease;
+}
 
 /* =========================================
    CLASES DE UTILIDAD GLOBAL (EL EFECTO)
 ========================================= */
-
-/* Aplica esta clase a cualquier contenedor que quieras que sea de cristal */
 .glass-effect {
     background: var(--bg-panel-glass);
-    /* El corazón del glassmorphism: desenfoque del fondo */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    /* Soporte para Safari */
     border: 1px solid var(--border-glass);
     box-shadow: var(--shadow-glass);
-    /* Un borde superior brillante sutil para efecto 3D */
     border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
-/* Para inputs o elementos secundarios dentro de un panel de cristal */
 .glass-input-effect {
     background: var(--bg-input-glass);
     backdrop-filter: blur(10px);
