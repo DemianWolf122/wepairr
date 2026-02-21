@@ -16,6 +16,7 @@ const PremiumGate = ({ children, isPremium }) => {
     );
 };
 
+// --- MEGA PALETA DE COLORES (Fondos/Acentos) ---
 const COLOR_PRESETS = [
     { name: 'Azul Wepairr', hex: '#2563eb' }, { name: 'Esmeralda Tech', hex: '#10b981' },
     { name: 'Púrpura Pro', hex: '#8b5cf6' }, { name: 'Rojo Carmesí', hex: '#e11d48' },
@@ -25,11 +26,21 @@ const COLOR_PRESETS = [
     { name: 'Verde Lima', hex: '#84cc16' }, { name: 'Rojo Ladrillo', hex: '#b91c1c' },
 ];
 
+// --- PALETA DE COLORES DE TEXTO ---
+const TEXT_COLORS = [
+    { name: 'Negro Absoluto', hex: '#000000' }, { name: 'Carbón Profundo', hex: '#0f172a' },
+    { name: 'Gris Pizarra', hex: '#334155' }, { name: 'Azul Marino', hex: '#1e3a8a' },
+    { name: 'Rojo Vino', hex: '#450a0a' }, { name: 'Blanco Puro', hex: '#ffffff' },
+    { name: 'Gris Nube', hex: '#f8fafc' }, { name: 'Plata', hex: '#cbd5e1' },
+    { name: 'Azul Hielo', hex: '#e0f2fe' }, { name: 'Ámbar Claro', hex: '#fef3c7' }
+];
+
+// --- TIPOGRAFÍAS DE MARKETING CORPORATIVO ---
 const FONTS = [
-    { label: 'Moderna (Por defecto)', value: 'system-ui, -apple-system, sans-serif' },
-    { label: 'Elegante (Serif)', value: 'Georgia, "Times New Roman", serif' },
-    { label: 'Tech (Monospace)', value: '"Fira Code", "Courier New", monospace' },
-    { label: 'Geométrica', value: '"Trebuchet MS", "Lucida Grande", sans-serif' }
+    { label: 'Inter (Corporativa Limpia)', value: '"Inter", system-ui, -apple-system, sans-serif' },
+    { label: 'Helvetica Neue (Premium)', value: '"Helvetica Neue", Helvetica, Arial, sans-serif' },
+    { label: 'Montserrat (Tech Moderna)', value: '"Montserrat", "Segoe UI", sans-serif' },
+    { label: 'Poppins (Amigable y Bold)', value: '"Poppins", Roboto, sans-serif' }
 ];
 
 const BORDER_STYLES = [
@@ -38,32 +49,32 @@ const BORDER_STYLES = [
     { label: 'Profesional (Cuadrados)', value: '4px' }
 ];
 
+// --- ALGORITMO MATEMÁTICO DE CONTRASTE (WCAG) ---
+const getLuminance = (hex) => {
+    let rgb = parseInt(hex.replace('#', ''), 16);
+    let r = (rgb >> 16) & 0xff; let g = (rgb >> 8) & 0xff; let b = (rgb >> 0) & 0xff;
+    let a = [r, g, b].map(v => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+};
+
+const getContrastRatio = (hex1, hex2) => {
+    const l1 = getLuminance(hex1);
+    const l2 = getLuminance(hex2);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+};
+
+
 function Settings({ config, onUpdate }) {
     const [currentPlan, setCurrentPlan] = useState(config.plan || 'standard');
     const isPremium = currentPlan === 'premium';
 
-    // Estados para la lógica del cambio de vista previa
+    // Estados para animación de estudio (Soft Transitions)
     const [previewMode, setPreviewMode] = useState('mobile');
     const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
-    const [nextPreviewMode, setNextPreviewMode] = useState(null);
-
     const [seccionAbierta, setSeccionAbierta] = useState('identidad');
-
-    // --- LÓGICA DE LA ANIMACIÓN DE TRANSICIÓN ---
-    const handlePreviewChange = (mode) => {
-        if (mode === previewMode || isAnimatingPreview) return;
-        // 1. Iniciamos la animación de salida
-        setIsAnimatingPreview(true);
-        setNextPreviewMode(mode);
-
-        // 2. Esperamos a que termine la animación de salida (400ms) antes de cambiar el DOM
-        setTimeout(() => {
-            setPreviewMode(mode);
-            setNextPreviewMode(null);
-            // 3. El estado 'isAnimatingPreview' sigue true un momento para la animación de entrada
-            setTimeout(() => setIsAnimatingPreview(false), 50);
-        }, 400); // Este tiempo debe coincidir con la duración de la animación CSS
-    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -74,6 +85,30 @@ function Settings({ config, onUpdate }) {
         setSeccionAbierta(prev => prev === seccion ? null : seccion);
     };
 
+    // ANIMACIÓN SUAVE: Usamos Blur y Opacidad en lugar de Traslación diagonal
+    const handlePreviewChange = (mode) => {
+        if (mode === previewMode || isAnimatingPreview) return;
+        setIsAnimatingPreview(true);
+        setTimeout(() => {
+            setPreviewMode(mode);
+            setTimeout(() => setIsAnimatingPreview(false), 50);
+        }, 300); // Rápido pero sedoso
+    };
+
+    const currentBgColor = config.shopDarkMode ? '#0f172a' : '#ffffff';
+
+    // EFECTO DE SEGURIDAD: Resetea colores de texto si el usuario cambia el modo oscuro y el contraste falla
+    useEffect(() => {
+        let updates = {};
+        if (config.colorTitulo && getContrastRatio(config.colorTitulo, currentBgColor) < 3.5) updates.colorTitulo = null;
+        if (config.colorSubtitulo && getContrastRatio(config.colorSubtitulo, currentBgColor) < 3.5) updates.colorSubtitulo = null;
+
+        if (Object.keys(updates).length > 0) {
+            onUpdate({ ...config, ...updates });
+        }
+    }, [config.shopDarkMode, currentBgColor]);
+
+
     const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
         const isDarkMode = config.shopDarkMode;
@@ -82,9 +117,7 @@ function Settings({ config, onUpdate }) {
             let usePound = false;
             if (col[0] === "#") { col = col.slice(1); usePound = true; }
             let num = parseInt(col, 16);
-            let r = (num >> 16) + amt;
-            let b = ((num >> 8) & 0x00FF) + amt;
-            let g = (num & 0x0000FF) + amt;
+            let r = (num >> 16) + amt; let b = ((num >> 8) & 0x00FF) + amt; let g = (num & 0x0000FF) + amt;
             if (r > 255) r = 255; else if (r < 0) r = 0;
             if (b > 255) b = 255; else if (b < 0) b = 0;
             if (g > 255) g = 255; else if (g < 0) g = 0;
@@ -96,13 +129,13 @@ function Settings({ config, onUpdate }) {
             '--shop-accent-hover': adjustColor(accent, isDarkMode ? 20 : -20),
             '--shop-bg': isDarkMode ? '#0f172a' : '#ffffff',
             '--shop-bg-secondary': isDarkMode ? '#1e293b' : '#f8fafc',
-            '--shop-text': isDarkMode ? '#f8fafc' : '#0f172a',
-            '--shop-text-secondary': isDarkMode ? '#94a3b8' : '#64748b',
+            '--shop-text': config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a'),
+            '--shop-text-secondary': config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b'),
             '--shop-border': isDarkMode ? '#334155' : '#e2e8f0',
-            '--shop-font': config.fontFamily || 'system-ui, -apple-system, sans-serif',
+            '--shop-font': config.fontFamily || '"Inter", system-ui, -apple-system, sans-serif',
             '--shop-radius': config.borderRadius || '16px',
         };
-    }, [config.colorTema, config.shopDarkMode, config.fontFamily, config.borderRadius]);
+    }, [config]);
 
     const getEmbedUrl = (url) => {
         if (!url) return null;
@@ -110,9 +143,6 @@ function Settings({ config, onUpdate }) {
         if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
         return url;
     };
-
-    // Clase dinámica para el contenedor de vista previa según el estado de animación
-    const previewContainerClass = `settings-preview-container ${isAnimatingPreview && nextPreviewMode ? 'animating-out' : 'animating-in'}`;
 
     return (
         <div className={`settings-layout ${previewMode === 'desktop' ? 'layout-desktop' : ''}`}>
@@ -122,22 +152,22 @@ function Settings({ config, onUpdate }) {
                 <div className="settings-header-row">
                     <div>
                         <h2 className="settings-main-title">Editor Visual</h2>
-                        <p className="settings-subtitle">Personaliza tu vidriera digital.</p>
+                        <p className="settings-subtitle">Diseña tu experiencia premium.</p>
                     </div>
                     <div className="plan-selector-wrapper">
-                        <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>PLAN:</span>
                         <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select glass-input-effect">
-                            <option value="standard">Standard (Gratis)</option>
-                            <option value="premium">Premium (PRO)</option>
+                            <option value="standard">PLAN GRATIS</option>
+                            <option value="premium">PLAN PRO</option>
                         </select>
                     </div>
                 </div>
 
                 <div className="accordions-container">
+
                     {/* ACORDEÓN 1: IDENTIDAD */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
-                            <span>🏢 Identidad del Negocio</span>
+                            <span>🏢 Textos e Identidad</span>
                             <span className="accordion-chevron">{seccionAbierta === 'identidad' ? '▲' : '▼'}</span>
                         </div>
                         {seccionAbierta === 'identidad' && (
@@ -157,28 +187,16 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* ACORDEÓN 2: APARIENCIA */}
+                    {/* ACORDEÓN 2: APARIENCIA GLOBAL */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
-                            <span>🎨 Apariencia Global</span>
+                            <span>🎨 Apariencia y Colores</span>
                             <span className="accordion-chevron">{seccionAbierta === 'apariencia' ? '▲' : '▼'}</span>
                         </div>
                         {seccionAbierta === 'apariencia' && (
                             <div className="accordion-content">
-                                <label className="settings-label" style={{ marginBottom: '15px' }}>Color de Marca (Alta Conversión):</label>
-                                <div className="color-presets-grid">
-                                    {COLOR_PRESETS.map(preset => (
-                                        <button
-                                            key={preset.hex} type="button"
-                                            className={`color-preset-btn ${config.colorTema === preset.hex ? 'active' : ''}`}
-                                            style={{ backgroundColor: preset.hex }}
-                                            onClick={() => onUpdate({ ...config, colorTema: preset.hex })}
-                                            title={preset.name}
-                                        />
-                                    ))}
-                                </div>
 
-                                <div className="toggle-box glass-input-effect" style={{ marginTop: '25px', marginBottom: '25px' }}>
+                                <div className="toggle-box glass-input-effect" style={{ marginBottom: '25px' }}>
                                     <div>
                                         <strong className="toggle-title">Modo Oscuro en Vidriera</strong>
                                         <span className="toggle-desc">Fondo oscuro elegante.</span>
@@ -189,14 +207,52 @@ function Settings({ config, onUpdate }) {
                                     </label>
                                 </div>
 
+                                <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Acento (Botones):</label>
+                                <div className="color-presets-grid" style={{ marginBottom: '25px' }}>
+                                    {COLOR_PRESETS.map(preset => (
+                                        <button key={preset.hex} type="button" className={`color-preset-btn ${config.colorTema === preset.hex ? 'active' : ''}`} style={{ backgroundColor: preset.hex }} onClick={() => onUpdate({ ...config, colorTema: preset.hex })} title={preset.name} />
+                                    ))}
+                                </div>
+
+                                {/* MOTOR DE RESTRICCIÓN DE CONTRASTE */}
                                 <PremiumGate isPremium={isPremium}>
+                                    <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Títulos Principales:</label>
+                                    <div className="color-presets-grid" style={{ marginBottom: '20px' }}>
+                                        {TEXT_COLORS.map(preset => {
+                                            const hasGoodContrast = getContrastRatio(preset.hex, currentBgColor) >= 4.0;
+                                            return (
+                                                <button key={'tit-' + preset.hex} type="button"
+                                                    className={`color-preset-btn text-color-btn ${config.colorTitulo === preset.hex ? 'active' : ''} ${!hasGoodContrast ? 'disabled-contrast' : ''}`}
+                                                    style={{ backgroundColor: preset.hex }}
+                                                    onClick={() => hasGoodContrast && onUpdate({ ...config, colorTitulo: preset.hex })}
+                                                    title={hasGoodContrast ? preset.name : 'Bloqueado: Bajo Contraste'}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+
+                                    <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Subtítulos y Descripciones:</label>
+                                    <div className="color-presets-grid" style={{ marginBottom: '25px' }}>
+                                        {TEXT_COLORS.map(preset => {
+                                            const hasGoodContrast = getContrastRatio(preset.hex, currentBgColor) >= 3.5;
+                                            return (
+                                                <button key={'sub-' + preset.hex} type="button"
+                                                    className={`color-preset-btn text-color-btn ${config.colorSubtitulo === preset.hex ? 'active' : ''} ${!hasGoodContrast ? 'disabled-contrast' : ''}`}
+                                                    style={{ backgroundColor: preset.hex }}
+                                                    onClick={() => hasGoodContrast && onUpdate({ ...config, colorSubtitulo: preset.hex })}
+                                                    title={hasGoodContrast ? preset.name : 'Bloqueado: Bajo Contraste'}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+
                                     <div className="settings-form-group">
-                                        <label className="settings-label">Estilo de Tipografía:
+                                        <label className="settings-label">Tipografía (Marketing):
                                             <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input">
                                                 {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                                             </select>
                                         </label>
-                                        <label className="settings-label">Estilo de Botones y Tarjetas:
+                                        <label className="settings-label">Estilo de Formas:
                                             <select name="borderRadius" value={config.borderRadius || '16px'} onChange={handleChange} className="settings-input">
                                                 {BORDER_STYLES.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
                                             </select>
@@ -207,7 +263,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* ACORDEÓN 3: MULTIMEDIA & REDES */}
+                    {/* ACORDEÓN 3: MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
                             <span>🖼️ Multimedia & Redes (Pro)</span>
@@ -235,42 +291,19 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
                     </div>
-
-                    {/* ACORDEÓN 4: FUNCIONALIDADES */}
-                    <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
-                            <span>⚡ Funcionalidades</span>
-                            <span className="accordion-chevron">{seccionAbierta === 'funcionalidades' ? '▲' : '▼'}</span>
-                        </div>
-                        {seccionAbierta === 'funcionalidades' && (
-                            <div className="accordion-content">
-                                <div className="toggle-box glass-input-effect">
-                                    <div>
-                                        <strong className="toggle-title">Presupuestador Online</strong>
-                                        <span className="toggle-desc">Muestra tu lista de precios.</span>
-                                    </div>
-                                    <label className="switch">
-                                        <input type="checkbox" name="mostrarPresupuestador" checked={config.mostrarPresupuestador !== false} onChange={handleChange} />
-                                        <span className="slider round"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 </div>
             </div>
 
 
-            {/* --- COLUMNA DERECHA: VISTA PREVIA CON ANIMACIÓN PREMIUM --- */}
-            <div className={previewContainerClass}>
+            {/* --- COLUMNA DERECHA: VISTA PREVIA FLUIDA (TAMAÑOS MAXIMIZADOS) --- */}
+            <div className={`settings-preview-container ${isAnimatingPreview ? 'preview-animating' : ''}`}>
 
                 <div className="device-toggles glass-effect">
-                    {/* Usamos la nueva función handlePreviewChange */}
-                    <button type="button" className={`device-btn ${previewMode === 'mobile' && !nextPreviewMode ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}>📱 Celular</button>
-                    <button type="button" className={`device-btn ${previewMode === 'desktop' || nextPreviewMode === 'desktop' ? 'active' : ''}`} onClick={() => handlePreviewChange('desktop')}>💻 Monitor</button>
+                    <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}>📱 Celular</button>
+                    <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => handlePreviewChange('desktop')}>💻 Monitor</button>
                 </div>
 
-                {/* EL MOCKUP QUE SE RENDERIZA (Móvil o Desktop) */}
+                {/* MOCKUPS GIGANTES */}
                 <div className={previewMode === 'mobile' ? 'phone-mockup' : 'desktop-mockup'}>
 
                     {previewMode === 'mobile' ? (
@@ -287,11 +320,10 @@ function Settings({ config, onUpdate }) {
                         </div>
                     )}
 
-                    {/* LA PANTALLA RENDERIZADA */}
                     <div className="shop-screen" style={shopStyles}>
 
                         <div className="shop-nav">
-                            <span className="shop-logo">{config.nombreNegocio || 'Tu Negocio'}</span>
+                            <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
                             <div className="shop-nav-links">
                                 <span>Inicio</span> <span>Servicios</span>
                             </div>
@@ -300,16 +332,16 @@ function Settings({ config, onUpdate }) {
 
                         <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
                             <div className="shop-hero-overlay"></div>
-                            <div className="shop-hero-content animate-slide-up">
+                            <div className="shop-hero-content animate-pop-in">
                                 <div className="shop-avatar-placeholder">Logo</div>
                                 <h1 className="shop-title">{config.titulo || 'Tu Título Principal'}</h1>
-                                <p className="shop-desc animate-delayed">{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
+                                <p className="shop-desc">{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
                                 <button className="shop-cta-btn">Solicitar Reparación</button>
                             </div>
                         </div>
 
                         {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
-                            <div className="shop-section animate-slide-up-delayed" style={{ background: 'var(--shop-bg-secondary)' }}>
+                            <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
                                 <h2 className="shop-section-title">Sobre Nosotros</h2>
                                 <div className="shop-video-wrapper">
                                     <iframe src={getEmbedUrl(config.videoUrl)} title="Video promocional" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="shop-iframe"></iframe>
@@ -317,12 +349,12 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
-                        {config.mostrarPresupuestador && (
-                            <div className="shop-section animate-slide-up-delayed">
+                        {config.mostrarPresupuestador !== false && (
+                            <div className="shop-section">
                                 <h2 className="shop-section-title">Nuestros Servicios</h2>
                                 <div className="shop-services-grid">
-                                    <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>📱</span><span>Pantallas</span><strong>Consultar</strong></div>
-                                    <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>🔋</span><span>Baterías</span><strong>Consultar</strong></div>
+                                    <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>📱</span><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span><strong style={{ color: 'var(--shop-text)' }}>Consultar</strong></div>
+                                    <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>🔋</span><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span><strong style={{ color: 'var(--shop-text)' }}>Consultar</strong></div>
                                 </div>
                             </div>
                         )}
