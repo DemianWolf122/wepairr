@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { QRCodeCanvas } from 'qrcode.react'; // IMPORTAMOS LA LIBRERÍA
 import './Settings.css';
 
 function Settings({ config, onUpdate }) {
     const [nuevoEquipo, setNuevoEquipo] = useState('');
     const [nuevaFalla, setNuevaFalla] = useState({ equipo: '', nombre: '', precio: '' });
+
+    // Referencia para capturar el QR y descargarlo
+    const qrRef = useRef(null);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -39,6 +43,23 @@ function Settings({ config, onUpdate }) {
         onUpdate({ ...config, tablaPrecios: nuevaTabla });
     };
 
+    // FUNCIÓN PARA DESCARGAR EL QR
+    const descargarQR = () => {
+        const canvas = qrRef.current.querySelector('canvas');
+        if (canvas) {
+            const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            const downloadLink = document.createElement("a");
+            downloadLink.href = pngUrl;
+            downloadLink.download = "Wepairr_QR_Local.png";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    };
+
+    // URL dinámica de la vidriera del técnico (usamos electro-fix temporalmente para la demo)
+    const urlVidriera = `${window.location.origin}/taller/electro-fix`;
+
     return (
         <div className="settings-wrapper">
             <h3 className="settings-section-title">Configuración de tu Vidriera</h3>
@@ -69,6 +90,28 @@ function Settings({ config, onUpdate }) {
                     </div>
                     <label><input type="checkbox" name="mostrarPresupuestador" checked={config.mostrarPresupuestador !== false} onChange={handleChange} className="toggle-checkbox" /></label>
                 </div>
+            </div>
+
+            {/* NUEVA SECCIÓN: CÓDIGO QR */}
+            <h3 className="settings-section-title" style={{ marginTop: '30px' }}>Tu Código QR</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#0a0a0a', padding: '20px', borderRadius: '8px', border: '1px solid #333', marginBottom: '40px' }}>
+                <p style={{ color: '#888', fontSize: '0.9rem', textAlign: 'center', marginBottom: '15px' }}>
+                    Imprimí este código y pegalo en tu local. Los clientes podrán auto-ingresar sus equipos sin hacer fila.
+                </p>
+
+                <div ref={qrRef} style={{ padding: '15px', backgroundColor: '#fff', borderRadius: '8px', marginBottom: '15px' }}>
+                    <QRCodeCanvas
+                        value={urlVidriera}
+                        size={180}
+                        bgColor={"#ffffff"}
+                        fgColor={"#000000"}
+                        level={"H"} // Alta corrección de errores para lectura rápida
+                    />
+                </div>
+
+                <button onClick={descargarQR} className="btn-add" style={{ padding: '12px 24px', width: '100%' }}>
+                    Descargar QR para Imprimir
+                </button>
             </div>
 
             {config.mostrarPresupuestador !== false && (
@@ -110,4 +153,5 @@ function Settings({ config, onUpdate }) {
         </div>
     );
 }
+
 export default Settings;
