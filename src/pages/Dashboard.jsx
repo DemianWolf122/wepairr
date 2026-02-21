@@ -8,7 +8,7 @@ import InventoryView from './InventoryView';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
-function Dashboard({ config, setConfig }) {
+function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket } = useContext(TicketContext);
 
@@ -45,7 +45,7 @@ function Dashboard({ config, setConfig }) {
         <div className="dashboard-wrapper">
             <nav className="tech-navbar">
                 <div className="tech-brand">
-                    <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Wepairr <span style={{ color: '#666', fontWeight: 'normal' }}>Workspace</span></Link>
+                    <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Wepairr <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
                 <div className="nav-menu">
                     <button className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('gestion')}>Gestión</button>
@@ -55,6 +55,10 @@ function Dashboard({ config, setConfig }) {
                     <button className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('configuracion')}>Ajustes</button>
                 </div>
                 <div className="nav-actions">
+                    {/* Botón de Modo Claro / Oscuro */}
+                    <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
+                        {theme === 'dark' ? '☀️' : '🌙'}
+                    </button>
                     <Link to="/taller/tu-local" target="_blank" className="btn-view-site">Mi Vidriera ↗</Link>
                 </div>
             </nav>

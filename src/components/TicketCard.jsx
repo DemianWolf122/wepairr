@@ -9,11 +9,11 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
 
     const getStatusColor = (estado) => {
         switch (estado) {
-            case 'Ingresado': return '#ff4d4d';
-            case 'En Proceso': return '#ffca28';
-            case 'Finalizado': return '#66bb6a';
-            case 'Entregado': return '#42a5f5';
-            default: return '#ccc';
+            case 'Ingresado': return 'var(--danger)';
+            case 'En Proceso': return 'var(--warning)';
+            case 'Finalizado': return 'var(--success)';
+            case 'Entregado': return 'var(--accent-color)';
+            default: return 'var(--text-secondary)';
         }
     };
 
@@ -71,7 +71,7 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
                             <button onClick={() => generarReciboPDF(ticket)} className="btn-pdf" title="Descargar Comprobante PDF">📄 PDF</button>
                         </>
                     )}
-                    <button onClick={() => vista === 'activos' && onStatusChange(ticket.id)} className="btn-status" style={{ backgroundColor: getStatusColor(ticket.estado), cursor: vista === 'activos' ? 'pointer' : 'default', opacity: vista === 'activos' ? 1 : 0.7 }}>
+                    <button onClick={() => vista === 'activos' && onStatusChange(ticket.id)} className="btn-status" style={{ backgroundColor: getStatusColor(ticket.estado), color: '#fff', cursor: vista === 'activos' ? 'pointer' : 'default', opacity: vista === 'activos' ? 1 : 0.7 }}>
                         {ticket.estado}
                     </button>
                 </div>

@@ -15,7 +15,7 @@
 .inventory-header h2 {
     margin: 0;
     font-size: 1.8rem;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 .inventory-stats {
@@ -24,51 +24,54 @@
 }
 
 .stat-box {
-    background-color: #111;
-    border: 1px solid #333;
-    padding: 15px 25px;
-    border-radius: 8px;
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    padding: 20px 30px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
-    min-width: 150px;
+    min-width: 180px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 .border-red {
-    border-color: #ff4d4d33;
+    border-color: rgba(239, 68, 68, 0.3);
 }
 
 .stat-label {
-    color: #888;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-weight: 600;
 }
 
 .stat-value {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: bold;
 }
 
 .text-green {
-    color: #66bb6a;
+    color: var(--success);
 }
 
 .text-red {
-    color: #ff4d4d;
+    color: var(--danger);
 }
 
 .inventory-add-section {
-    background-color: #0a0a0a;
-    border: 1px solid #222;
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 20px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 .inventory-add-section h3 {
-    margin: 0 0 15px 0;
-    font-size: 1.1rem;
-    color: #aaa;
+    margin: 0 0 20px 0;
+    font-size: 1.2rem;
+    color: var(--text-primary);
 }
 
 .inventory-form {
@@ -77,17 +80,17 @@
 }
 
 .inv-input {
-    background-color: #111;
-    border: 1px solid #333;
-    color: #fff;
-    padding: 12px 15px;
-    border-radius: 6px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 14px 18px;
+    border-radius: 8px;
     outline: none;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
 .inv-input:focus {
-    border-color: #66bb6a;
+    border-color: var(--accent-color);
 }
 
 .flex-2 {
@@ -99,29 +102,31 @@
 }
 
 .flex-small {
-    width: 80px;
+    width: 90px;
 }
 
 .inv-btn-add {
-    background-color: #fff;
-    color: #000;
+    background-color: var(--accent-color);
+    color: #fff;
     border: none;
-    padding: 0 25px;
-    border-radius: 6px;
+    padding: 0 30px;
+    border-radius: 8px;
     font-weight: bold;
+    font-size: 1rem;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: background 0.2s;
 }
 
 .inv-btn-add:hover {
-    opacity: 0.85;
+    background-color: var(--accent-hover);
 }
 
 .inventory-list-section {
-    background-color: #111;
-    border: 1px solid #333;
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 .inventory-table {
@@ -131,18 +136,21 @@
 }
 
 .inventory-table th {
-    background-color: #1a1a1a;
-    color: #888;
-    font-weight: 500;
-    font-size: 0.9rem;
-    padding: 15px 20px;
-    border-bottom: 1px solid #333;
+    background-color: var(--bg-input);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 18px 25px;
+    border-bottom: 1px solid var(--border-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .inventory-table td {
-    padding: 15px 20px;
-    border-bottom: 1px solid #222;
+    padding: 18px 25px;
+    border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
+    color: var(--text-primary);
 }
 
 .row-empty td {
@@ -150,53 +158,56 @@
 }
 
 .inv-badge {
-    background-color: #222;
-    color: #aaa;
-    padding: 4px 10px;
+    background-color: var(--bg-input);
+    color: var(--text-secondary);
+    padding: 6px 12px;
     border-radius: 99px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
 }
 
 .stock-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
 }
 
 .btn-qty {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
 }
 
 .btn-qty:hover {
-    background-color: #444;
+    background-color: var(--bg-hover);
 }
 
 .stock-number {
     font-weight: bold;
-    font-size: 1.1rem;
-    min-width: 20px;
+    font-size: 1.15rem;
+    min-width: 25px;
     text-align: center;
 }
 
 .btn-inv-delete {
     background: transparent;
     border: none;
-    color: #666;
+    color: var(--text-secondary);
     cursor: pointer;
     font-size: 1.2rem;
     transition: color 0.2s;
 }
 
 .btn-inv-delete:hover {
-    color: #ff4d4d;
+    color: var(--danger);
 }

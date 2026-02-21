@@ -1,11 +1,9 @@
 .settings-wrapper {
-    background-color: #111;
-    padding: 25px;
+    background-color: var(--bg-panel);
+    padding: 30px;
     border-radius: 12px;
-    border: 1px solid #222;
-    color: white;
-    height: 100%;
-    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     box-sizing: border-box;
 }
 
@@ -13,8 +11,8 @@
     margin-top: 0;
     margin-bottom: 25px;
     font-size: 1.2rem;
-    color: #fff;
-    border-bottom: 1px solid #333;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 15px;
 }
 
@@ -27,8 +25,8 @@
 
 .settings-label {
     display: block;
-    color: #ccc;
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
     font-weight: 500;
 }
 
@@ -36,23 +34,21 @@
     width: 100%;
     padding: 14px;
     margin-top: 8px;
-    background-color: #0a0a0a;
-    border: 1px solid #333;
-    color: white;
-    border-radius: 6px;
-    box-sizing: border-box;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
     outline: none;
-    font-family: inherit;
     font-size: 1rem;
     transition: border-color 0.2s;
 }
 
 .settings-input:focus {
-    border-color: #66bb6a;
+    border-color: var(--accent-color);
 }
 
 .settings-textarea {
-    min-height: 80px;
+    min-height: 100px;
     resize: vertical;
 }
 
@@ -63,20 +59,20 @@
 }
 
 .color-picker {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     padding: 0;
     cursor: pointer;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     background-color: transparent;
 }
 
 .toggle-box {
-    padding: 15px;
-    background-color: #1a1a1a;
-    border-radius: 8px;
-    border: 1px solid #333;
+    padding: 20px;
+    background-color: var(--bg-input);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -85,18 +81,20 @@
 .toggle-title {
     display: block;
     margin-bottom: 5px;
-    font-size: 1rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .toggle-desc {
-    font-size: 0.85rem;
-    color: #888;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
 .toggle-checkbox {
-    width: 20px;
-    height: 20px;
-    accent-color: #ffffff;
+    width: 22px;
+    height: 22px;
+    accent-color: var(--accent-color);
     cursor: pointer;
 }
 
@@ -107,10 +105,10 @@
 }
 
 .equipment-card {
-    background-color: #0a0a0a;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 15px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
 }
 
 .equipment-header {
@@ -122,17 +120,19 @@
 
 .equipment-title {
     margin: 0;
-    font-size: 1.1rem;
-    color: #66bb6a;
+    font-size: 1.15rem;
+    color: var(--accent-color);
+    font-weight: bold;
 }
 
 .btn-delete-equipment {
     background-color: transparent;
-    color: #ff4d4d;
+    color: var(--danger);
     border: none;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     padding: 0;
+    font-weight: 500;
 }
 
 .btn-delete-equipment:hover {
@@ -142,22 +142,24 @@
 .fault-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 15px;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 .fault-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #111;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #222;
+    background-color: var(--bg-panel);
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
 }
 
 .fault-name {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .fault-price-wrapper {
@@ -168,21 +170,26 @@
 
 .fault-price {
     font-weight: bold;
+    font-size: 1.05rem;
+    color: var(--text-primary);
 }
 
 .btn-delete-fault {
     background: transparent;
     border: none;
-    color: #ff4d4d;
+    color: var(--text-secondary);
     cursor: pointer;
     font-size: 1.2rem;
-    line-height: 1;
-    padding: 0;
+    transition: color 0.2s;
+}
+
+.btn-delete-fault:hover {
+    color: var(--danger);
 }
 
 .empty-faults {
-    font-size: 0.85rem;
-    color: #666;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
 .add-fault-form {
@@ -193,17 +200,17 @@
 .add-equipment-form {
     display: flex;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .btn-add {
-    background-color: #ffffff;
-    color: #000;
+    background-color: var(--text-primary);
+    color: var(--bg-panel);
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    padding: 0 15px;
+    padding: 0 20px;
     transition: opacity 0.2s ease;
 }
 
