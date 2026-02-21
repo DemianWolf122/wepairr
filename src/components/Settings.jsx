@@ -16,8 +16,8 @@ const PremiumGate = ({ children, isPremium }) => {
     );
 };
 
-// --- MEGA PALETA DE COLORES (Fondos/Acentos) ---
-const COLOR_PRESETS = [
+// --- PALETA DE COLORES DE ACENTO (Para Botones/Iconos) ---
+const ACCENT_COLORS = [
     { name: 'Azul Wepairr', hex: '#2563eb' }, { name: 'Esmeralda Tech', hex: '#10b981' },
     { name: 'Púrpura Pro', hex: '#8b5cf6' }, { name: 'Rojo Carmesí', hex: '#e11d48' },
     { name: 'Naranja Volt', hex: '#f97316' }, { name: 'Carbón Mate', hex: '#334155' },
@@ -32,10 +32,10 @@ const TEXT_COLORS = [
     { name: 'Gris Pizarra', hex: '#334155' }, { name: 'Azul Marino', hex: '#1e3a8a' },
     { name: 'Rojo Vino', hex: '#450a0a' }, { name: 'Blanco Puro', hex: '#ffffff' },
     { name: 'Gris Nube', hex: '#f8fafc' }, { name: 'Plata', hex: '#cbd5e1' },
-    { name: 'Azul Hielo', hex: '#e0f2fe' }, { name: 'Ámbar Claro', hex: '#fef3c7' }
+    { name: 'Azul Hielo', hex: '#e0f2fe' }, { name: 'Ámbar Claro', hex: '#fef3c7' },
+    { name: 'Crema Suave', hex: '#fffbeb' }, { name: 'Gris Medio', hex: '#64748b' }
 ];
 
-// --- TIPOGRAFÍAS DE MARKETING CORPORATIVO ---
 const FONTS = [
     { label: 'Inter (Corporativa Limpia)', value: '"Inter", system-ui, -apple-system, sans-serif' },
     { label: 'Helvetica Neue (Premium)', value: '"Helvetica Neue", Helvetica, Arial, sans-serif' },
@@ -71,7 +71,7 @@ function Settings({ config, onUpdate }) {
     const [currentPlan, setCurrentPlan] = useState(config.plan || 'standard');
     const isPremium = currentPlan === 'premium';
 
-    // Estados para animación de estudio (Soft Transitions)
+    // Estados para animación de estudio (GPU Accelerated)
     const [previewMode, setPreviewMode] = useState('mobile');
     const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
     const [seccionAbierta, setSeccionAbierta] = useState('identidad');
@@ -85,28 +85,43 @@ function Settings({ config, onUpdate }) {
         setSeccionAbierta(prev => prev === seccion ? null : seccion);
     };
 
-    // ANIMACIÓN SUAVE: Usamos Blur y Opacidad en lugar de Traslación diagonal
+    // ANIMACIÓN GPU-ACCELERATED: Sin afectar el layout, solo opacidad y escala
     const handlePreviewChange = (mode) => {
         if (mode === previewMode || isAnimatingPreview) return;
         setIsAnimatingPreview(true);
+        // Tiempo de espera para que la animación de salida CSS termine
         setTimeout(() => {
             setPreviewMode(mode);
+            // Pequeño delay para iniciar la animación de entrada
             setTimeout(() => setIsAnimatingPreview(false), 50);
-        }, 300); // Rápido pero sedoso
+        }, 350);
     };
 
     const currentBgColor = config.shopDarkMode ? '#0f172a' : '#ffffff';
+    const currentAccentColor = config.colorTema || '#2563eb';
 
-    // EFECTO DE SEGURIDAD: Resetea colores de texto si el usuario cambia el modo oscuro y el contraste falla
+    // --- FUNCIÓN DE VERIFICACIÓN DE CONTRASTE MULTIDIMENSIONAL ---
+    // Verifica un color de texto contra el fondo Y contra el color de acento
+    const checkColorSafety = (textColor) => {
+        const ratioBg = getContrastRatio(textColor, currentBgColor);
+        const ratioAccent = getContrastRatio(textColor, currentAccentColor);
+        // Un color es seguro solo si tiene buen contraste con el fondo (para leerlo)
+        // Y si tiene buen contraste con el acento (para iconos/botones donde se superpone)
+        // Usamos 4.5 como estándar estricto (AA) para textos normales.
+        return ratioBg >= 4.5 && ratioAccent >= 3.0; // Un poco más permisivo con el acento
+    };
+
+    // EFECTO DE SEGURIDAD: Resetea colores si el contexto cambia y se vuelven inseguros
     useEffect(() => {
         let updates = {};
-        if (config.colorTitulo && getContrastRatio(config.colorTitulo, currentBgColor) < 3.5) updates.colorTitulo = null;
-        if (config.colorSubtitulo && getContrastRatio(config.colorSubtitulo, currentBgColor) < 3.5) updates.colorSubtitulo = null;
+        // Si el color actual ya no es seguro, lo reseteamos a null para que el sistema use el default
+        if (config.colorTitulo && !checkColorSafety(config.colorTitulo)) updates.colorTitulo = null;
+        if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo)) updates.colorSubtitulo = null;
 
         if (Object.keys(updates).length > 0) {
             onUpdate({ ...config, ...updates });
         }
-    }, [config.shopDarkMode, currentBgColor]);
+    }, [config.shopDarkMode, currentAccentColor]);
 
 
     const shopStyles = useMemo(() => {
@@ -124,13 +139,17 @@ function Settings({ config, onUpdate }) {
             return (usePound ? "#" : "") + (g | (b << 8) | (r << 16)).toString(16);
         };
 
+        // Usamos los colores seguros calculados por useEffect, o defaults si son null
+        const safeTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
+        const safeSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
+
         return {
             '--shop-accent': accent,
             '--shop-accent-hover': adjustColor(accent, isDarkMode ? 20 : -20),
             '--shop-bg': isDarkMode ? '#0f172a' : '#ffffff',
             '--shop-bg-secondary': isDarkMode ? '#1e293b' : '#f8fafc',
-            '--shop-text': config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a'),
-            '--shop-text-secondary': config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b'),
+            '--shop-text': safeTitleColor,
+            '--shop-text-secondary': safeSubtitleColor,
             '--shop-border': isDarkMode ? '#334155' : '#e2e8f0',
             '--shop-font': config.fontFamily || '"Inter", system-ui, -apple-system, sans-serif',
             '--shop-radius': config.borderRadius || '16px',
@@ -145,14 +164,14 @@ function Settings({ config, onUpdate }) {
     };
 
     return (
-        <div className={`settings-layout ${previewMode === 'desktop' ? 'layout-desktop' : ''}`}>
+        <div className="settings-editor-layout">
 
-            {/* --- COLUMNA IZQUIERDA: CONTROLES --- */}
-            <div className="settings-controls glass-effect">
+            {/* --- COLUMNA IZQUIERDA: PANEL DE CONTROLES --- */}
+            <div className="settings-controls-panel glass-effect">
                 <div className="settings-header-row">
                     <div>
                         <h2 className="settings-main-title">Editor Visual</h2>
-                        <p className="settings-subtitle">Diseña tu experiencia premium.</p>
+                        <p className="settings-subtitle">Diseña tu vidriera digital.</p>
                     </div>
                     <div className="plan-selector-wrapper">
                         <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select glass-input-effect">
@@ -164,10 +183,10 @@ function Settings({ config, onUpdate }) {
 
                 <div className="accordions-container">
 
-                    {/* ACORDEÓN 1: IDENTIDAD */}
+                    {/* ACORDEÓN 1: IDENTIDAD & CONTACTO (Redes ahora aquí) */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
-                            <span>🏢 Textos e Identidad</span>
+                            <span>🏢 Identidad y Contacto</span>
                             <span className="accordion-chevron">{seccionAbierta === 'identidad' ? '▲' : '▼'}</span>
                         </div>
                         {seccionAbierta === 'identidad' && (
@@ -182,6 +201,16 @@ function Settings({ config, onUpdate }) {
                                     <label className="settings-label">Descripción Corta:
                                         <textarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" placeholder="Especialistas en..." />
                                     </label>
+
+                                    <hr className="settings-divider-soft" />
+
+                                    {/* REDES SOCIALES AHORA EN PLAN STANDARD */}
+                                    <label className="settings-label">WhatsApp (Sin +549):
+                                        <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 1123456789" />
+                                    </label>
+                                    <label className="settings-label">Instagram (Usuario):
+                                        <input type="text" name="instagram" value={config.instagram || ''} onChange={handleChange} className="settings-input" placeholder="Ej. @mitaller" />
+                                    </label>
                                 </div>
                             </div>
                         )}
@@ -190,7 +219,7 @@ function Settings({ config, onUpdate }) {
                     {/* ACORDEÓN 2: APARIENCIA GLOBAL */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
-                            <span>🎨 Apariencia y Colores</span>
+                            <span>🎨 Colores y Estilo</span>
                             <span className="accordion-chevron">{seccionAbierta === 'apariencia' ? '▲' : '▼'}</span>
                         </div>
                         {seccionAbierta === 'apariencia' && (
@@ -207,40 +236,51 @@ function Settings({ config, onUpdate }) {
                                     </label>
                                 </div>
 
-                                <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Acento (Botones):</label>
-                                <div className="color-presets-grid" style={{ marginBottom: '25px' }}>
-                                    {COLOR_PRESETS.map(preset => (
-                                        <button key={preset.hex} type="button" className={`color-preset-btn ${config.colorTema === preset.hex ? 'active' : ''}`} style={{ backgroundColor: preset.hex }} onClick={() => onUpdate({ ...config, colorTema: preset.hex })} title={preset.name} />
-                                    ))}
+                                <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Acento (Botones/Iconos):</label>
+                                <div className="color-presets-grid accent-grid" style={{ marginBottom: '25px' }}>
+                                    {ACCENT_COLORS.map(preset => {
+                                        // El acento siempre debe contrastar con el fondo, sino se bloquea
+                                        const isSafe = getContrastRatio(preset.hex, currentBgColor) >= 3.0;
+                                        return (
+                                            <button key={preset.hex} type="button"
+                                                className={`color-preset-btn accent-btn ${config.colorTema === preset.hex ? 'active' : ''} ${!isSafe ? 'disabled-contrast' : ''}`}
+                                                style={{ backgroundColor: preset.hex }}
+                                                onClick={() => isSafe && onUpdate({ ...config, colorTema: preset.hex })}
+                                                title={isSafe ? preset.name : 'Bajo Contraste con Fondo'}
+                                            />
+                                        );
+                                    })}
                                 </div>
 
-                                {/* MOTOR DE RESTRICCIÓN DE CONTRASTE */}
+                                {/* MOTOR DE RESTRICCIÓN MULTIDIMENSIONAL (Premium) */}
                                 <PremiumGate isPremium={isPremium}>
                                     <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Títulos Principales:</label>
-                                    <div className="color-presets-grid" style={{ marginBottom: '20px' }}>
+                                    <div className="color-presets-grid text-grid" style={{ marginBottom: '20px' }}>
                                         {TEXT_COLORS.map(preset => {
-                                            const hasGoodContrast = getContrastRatio(preset.hex, currentBgColor) >= 4.0;
+                                            // Verifica contra el fondo Y el acento
+                                            const isSafe = checkColorSafety(preset.hex);
                                             return (
                                                 <button key={'tit-' + preset.hex} type="button"
-                                                    className={`color-preset-btn text-color-btn ${config.colorTitulo === preset.hex ? 'active' : ''} ${!hasGoodContrast ? 'disabled-contrast' : ''}`}
+                                                    className={`color-preset-btn text-color-btn ${config.colorTitulo === preset.hex ? 'active' : ''} ${!isSafe ? 'disabled-contrast' : ''}`}
                                                     style={{ backgroundColor: preset.hex }}
-                                                    onClick={() => hasGoodContrast && onUpdate({ ...config, colorTitulo: preset.hex })}
-                                                    title={hasGoodContrast ? preset.name : 'Bloqueado: Bajo Contraste'}
+                                                    onClick={() => isSafe && onUpdate({ ...config, colorTitulo: preset.hex })}
+                                                    title={isSafe ? preset.name : 'Bloqueado: Contraste Insuficiente'}
                                                 />
                                             );
                                         })}
                                     </div>
 
-                                    <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Subtítulos y Descripciones:</label>
-                                    <div className="color-presets-grid" style={{ marginBottom: '25px' }}>
+                                    <label className="settings-label" style={{ marginBottom: '10px' }}>Color de Subtítulos y Textos Secundarios:</label>
+                                    <div className="color-presets-grid text-grid" style={{ marginBottom: '25px' }}>
                                         {TEXT_COLORS.map(preset => {
-                                            const hasGoodContrast = getContrastRatio(preset.hex, currentBgColor) >= 3.5;
+                                            // Verifica contra el fondo Y el acento
+                                            const isSafe = checkColorSafety(preset.hex);
                                             return (
                                                 <button key={'sub-' + preset.hex} type="button"
-                                                    className={`color-preset-btn text-color-btn ${config.colorSubtitulo === preset.hex ? 'active' : ''} ${!hasGoodContrast ? 'disabled-contrast' : ''}`}
+                                                    className={`color-preset-btn text-color-btn ${config.colorSubtitulo === preset.hex ? 'active' : ''} ${!isSafe ? 'disabled-contrast' : ''}`}
                                                     style={{ backgroundColor: preset.hex }}
-                                                    onClick={() => hasGoodContrast && onUpdate({ ...config, colorSubtitulo: preset.hex })}
-                                                    title={hasGoodContrast ? preset.name : 'Bloqueado: Bajo Contraste'}
+                                                    onClick={() => isSafe && onUpdate({ ...config, colorSubtitulo: preset.hex })}
+                                                    title={isSafe ? preset.name : 'Bloqueado: Contraste Insuficiente'}
                                                 />
                                             );
                                         })}
@@ -263,10 +303,10 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* ACORDEÓN 3: MULTIMEDIA */}
+                    {/* ACORDEÓN 3: MULTIMEDIA (Premium) */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
-                            <span>🖼️ Multimedia & Redes (Pro)</span>
+                            <span>🖼️ Multimedia (Pro)</span>
                             <span className="accordion-chevron">{seccionAbierta === 'multimedia' ? '▲' : '▼'}</span>
                         </div>
                         {seccionAbierta === 'multimedia' && (
@@ -279,13 +319,6 @@ function Settings({ config, onUpdate }) {
                                         <label className="settings-label">Video Promocional (YouTube):
                                             <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://www.youtube.com/watch?v=..." />
                                         </label>
-                                        <hr style={{ borderColor: 'var(--border-glass)', opacity: 0.5, margin: '10px 0' }} />
-                                        <label className="settings-label">WhatsApp (Número):
-                                            <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 549112345678" />
-                                        </label>
-                                        <label className="settings-label">Instagram (Usuario):
-                                            <input type="text" name="instagram" value={config.instagram || ''} onChange={handleChange} className="settings-input" placeholder="Ej. @mitaller" />
-                                        </label>
                                     </div>
                                 </PremiumGate>
                             </div>
@@ -295,86 +328,90 @@ function Settings({ config, onUpdate }) {
             </div>
 
 
-            {/* --- COLUMNA DERECHA: VISTA PREVIA FLUIDA (TAMAÑOS MAXIMIZADOS) --- */}
-            <div className={`settings-preview-container ${isAnimatingPreview ? 'preview-animating' : ''}`}>
+            {/* --- COLUMNA DERECHA: LIENZO DE VISTA PREVIA CENTRADO --- */}
+            <div className="settings-preview-canvas">
 
-                <div className="device-toggles glass-effect">
+                <div className="device-toggles-floating glass-effect">
                     <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}>📱 Celular</button>
                     <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => handlePreviewChange('desktop')}>💻 Monitor</button>
                 </div>
 
-                {/* MOCKUPS GIGANTES */}
-                <div className={previewMode === 'mobile' ? 'phone-mockup' : 'desktop-mockup'}>
+                {/* CONTENEDOR ANIMADO: Aplica la transición GPU */}
+                <div className={`preview-stage ${isAnimatingPreview ? 'animating-stage' : ''}`}>
 
-                    {previewMode === 'mobile' ? (
-                        <div className="phone-header-bar">
-                            <div className="phone-notch"></div>
-                            <div className="phone-status-bar"><span>9:41</span><span>📶 🔋</span></div>
-                        </div>
-                    ) : (
-                        <div className="desktop-header-bar">
-                            <div className="mac-dot mac-red"></div>
-                            <div className="mac-dot mac-yellow"></div>
-                            <div className="mac-dot mac-green"></div>
-                            <div className="desktop-url-bar">www.wepairr.com/taller/tu-negocio</div>
-                        </div>
-                    )}
+                    {/* MOCKUPS CON NUEVOS TAMAÑOS Y CENTRADO */}
+                    <div className={previewMode === 'mobile' ? 'phone-mockup-final' : 'desktop-mockup-final'}>
 
-                    <div className="shop-screen" style={shopStyles}>
-
-                        <div className="shop-nav">
-                            <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
-                            <div className="shop-nav-links">
-                                <span>Inicio</span> <span>Servicios</span>
+                        {previewMode === 'mobile' ? (
+                            <div className="phone-header-bar">
+                                <div className="phone-notch"></div>
+                                <div className="phone-status-bar"><span>9:41</span><span>📶</span></div>
                             </div>
-                            <div className="shop-menu-icon">☰</div>
-                        </div>
-
-                        <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
-                            <div className="shop-hero-overlay"></div>
-                            <div className="shop-hero-content animate-pop-in">
-                                <div className="shop-avatar-placeholder">Logo</div>
-                                <h1 className="shop-title">{config.titulo || 'Tu Título Principal'}</h1>
-                                <p className="shop-desc">{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
-                                <button className="shop-cta-btn">Solicitar Reparación</button>
-                            </div>
-                        </div>
-
-                        {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
-                            <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
-                                <h2 className="shop-section-title">Sobre Nosotros</h2>
-                                <div className="shop-video-wrapper">
-                                    <iframe src={getEmbedUrl(config.videoUrl)} title="Video promocional" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="shop-iframe"></iframe>
-                                </div>
+                        ) : (
+                            <div className="desktop-header-bar">
+                                <div className="mac-dot mac-red"></div>
+                                <div className="mac-dot mac-yellow"></div>
+                                <div className="mac-dot mac-green"></div>
+                                <div className="desktop-url-bar">wepairr.com/{config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-negocio'}</div>
                             </div>
                         )}
 
-                        {config.mostrarPresupuestador !== false && (
-                            <div className="shop-section">
-                                <h2 className="shop-section-title">Nuestros Servicios</h2>
-                                <div className="shop-services-grid">
-                                    <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>📱</span><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span><strong style={{ color: 'var(--shop-text)' }}>Consultar</strong></div>
-                                    <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>🔋</span><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span><strong style={{ color: 'var(--shop-text)' }}>Consultar</strong></div>
+                        <div className="shop-screen" style={shopStyles}>
+
+                            <div className="shop-nav">
+                                <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
+                                <div className="shop-nav-links">
+                                    <span>Inicio</span> <span>Servicios</span>
+                                </div>
+                                <div className="shop-menu-icon">☰</div>
+                            </div>
+
+                            <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
+                                <div className="shop-hero-overlay"></div>
+                                <div className="shop-hero-content animate-pop-in">
+                                    <div className="shop-avatar-placeholder">Logo</div>
+                                    <h1 className="shop-title">{config.titulo || 'Tu Título Principal'}</h1>
+                                    <p className="shop-desc">{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
+                                    <button className="shop-cta-btn">Solicitar Reparación</button>
                                 </div>
                             </div>
-                        )}
 
-                        <div className="shop-footer">
-                            {isPremium && (config.whatsapp || config.instagram) && (
-                                <div className="shop-social-links">
-                                    {config.whatsapp && <span className="social-badge">WhatsApp</span>}
-                                    {config.instagram && <span className="social-badge">Insta</span>}
+                            {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
+                                <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
+                                    <h2 className="shop-section-title">Sobre Nosotros</h2>
+                                    <div className="shop-video-wrapper">
+                                        <iframe src={getEmbedUrl(config.videoUrl)} title="Video promocional" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="shop-iframe"></iframe>
+                                    </div>
                                 </div>
                             )}
-                            <p>© 2024 {config.nombreNegocio}.</p>
+
+                            {config.mostrarPresupuestador !== false && (
+                                <div className="shop-section">
+                                    <h2 className="shop-section-title">Nuestros Servicios</h2>
+                                    <div className="shop-services-grid">
+                                        <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>📱</span><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span><strong style={{ color: 'var(--shop-text)' }}>Consultar</strong></div>
+                                        <div className="shop-service-card"><span className="service-icon" style={{ color: 'var(--shop-accent)' }}>🔋</span><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span><strong style={{ color: 'var(--shop-text)' }}>Consultar</strong></div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="shop-footer">
+                                {(config.whatsapp || config.instagram) && (
+                                    <div className="shop-social-links">
+                                        {config.whatsapp && <span className="social-badge">WhatsApp</span>}
+                                        {config.instagram && <span className="social-badge">Insta</span>}
+                                    </div>
+                                )}
+                                <p>© 2024 {config.nombreNegocio}.</p>
+                            </div>
+
+                            {config.whatsapp && (
+                                <div className="floating-wa-btn">💬</div>
+                            )}
+
                         </div>
-
-                        {isPremium && config.whatsapp && (
-                            <div className="floating-wa-btn">💬</div>
-                        )}
-
+                        {previewMode === 'mobile' && <div className="phone-home-bar"></div>}
                     </div>
-                    {previewMode === 'mobile' && <div className="phone-home-bar"></div>}
                 </div>
             </div>
         </div>
