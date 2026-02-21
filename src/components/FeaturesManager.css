@@ -1,0 +1,88 @@
+.features-manager-wrapper {
+    display: flex;
+    gap: 30px;
+    height: calc(100vh - 140px);
+    /* Ajuste para que quepa en el dashboard */
+}
+
+.features-sidebar-nav {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-right: 1px solid var(--border-glass);
+    padding-right: 30px;
+}
+
+.features-sidebar-nav h3 {
+    margin: 0 0 5px 0;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.features-nav-subtitle {
+    margin: 0 0 25px 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.feature-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 15px 20px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.2s var(--ease-premium);
+    text-align: left;
+}
+
+.feature-nav-btn:hover {
+    background: var(--bg-hover-glass);
+    color: var(--text-primary);
+}
+
+.feature-nav-btn.active {
+    background: var(--bg-input-glass);
+    color: var(--accent-color);
+    border-color: var(--border-glass);
+    box-shadow: var(--shadow-glass);
+}
+
+.feature-nav-btn svg {
+    flex-shrink: 0;
+}
+
+.feature-content-area {
+    flex: 1;
+    padding: 40px;
+    border-radius: 20px;
+    overflow-y: auto;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glass);
+}
+
+.module-placeholder h2 {
+    margin-top: 0;
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 900;
+}
+
+.module-placeholder p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s var(--ease-premium);
+}

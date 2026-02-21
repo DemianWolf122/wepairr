@@ -72,7 +72,7 @@
     transform: scale(0.96);
 }
 
-/* --- MOCKUPS FÍSICOS ARREGLADOS PARA MODO CLARO Y OSCURO --- */
+/* --- MOCKUPS FÍSICOS --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -87,7 +87,6 @@
     margin: auto;
 }
 
-/* ARREGLO SMARTPHONE MODO CLARO (Bisel Plateado y Sombras Suaves) */
 .app-root.light .phone-mockup-final {
     border-color: #cbd5e1;
     background: #f1f5f9;
@@ -121,22 +120,8 @@
     z-index: 11;
 }
 
-/* El notch en modo claro siempre es negro porque aloja las cámaras reales */
 .app-root.light .phone-notch {
     background: #0f172a;
-}
-
-.phone-home-bar {
-    height: 5px;
-    width: 120px;
-    background: var(--shop-text);
-    opacity: 0.3;
-    border-radius: 10px;
-    margin: 15px auto;
-    position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
 .desktop-mockup-final {
@@ -270,6 +255,7 @@
     letter-spacing: -0.5px;
 }
 
+/* ARREGLO RESPONSIVE NAV: Oculto por defecto (móvil) */
 .shop-nav-links {
     display: none;
     font-weight: 700;
@@ -289,14 +275,15 @@
     background-color: var(--shop-bg-secondary);
 }
 
+/* El overlay ahora se controla inline desde el JSX */
 .shop-hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), var(--shop-bg));
     z-index: 1;
+    transition: all 0.3s ease;
 }
 
 .shop-hero-content {
@@ -320,11 +307,13 @@
 .shop-title {
     font-weight: 900;
     line-height: 1.1;
+    transition: color 0.3s ease;
 }
 
 .shop-desc {
     color: var(--shop-text-secondary);
     line-height: 1.6;
+    transition: color 0.3s ease;
 }
 
 .shop-hero-actions {
@@ -362,23 +351,8 @@
     transition: all 0.2s var(--ease-premium);
 }
 
-.shop-tracking-widget {
-    margin: -40px auto 30px auto;
-    position: relative;
-    z-index: 10;
-    max-width: 90%;
-}
-
-.tracking-inner {
-    padding: 30px;
-    border-radius: 20px;
-    border: 1px solid var(--shop-border);
-    background: var(--shop-bg-secondary);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    text-align: left;
-}
-
-.shop-trust-badge {
+/* ARREGLO GARANTÍA: Ahora dentro del hero, con margen positivo */
+.shop-trust-badge-hero {
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.3);
     color: #10b981;
@@ -388,16 +362,33 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-    margin: 20px auto 0 auto;
+    margin: 25px auto 0 auto;
     max-width: max-content;
     border-radius: 99px;
-    position: relative;
-    z-index: 10;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(5px);
 }
 
 .shop-section {
     border-top: 1px solid var(--shop-border);
+}
+
+.shop-section-tracking {
+    padding-top: 0 !important;
+    border-top: none !important;
+    margin-top: -30px;
+    position: relative;
+    z-index: 10;
+}
+
+.tracking-inner {
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid var(--shop-border);
+    background: var(--shop-bg-secondary);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    max-width: 90%;
+    margin: 0 auto;
 }
 
 .shop-section-title {
@@ -444,11 +435,13 @@
     border: 1px solid var(--shop-border);
 }
 
+/* ARREGLO DESBORDAMIENTO ICONO SERVICIO */
 .service-icon {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 5px;
+    flex-shrink: 0;
 }
 
 .ig-feed-grid {
@@ -485,12 +478,6 @@
     z-index: 100;
     cursor: pointer;
 }
-
-
-/* =========================================================
-   ARTIFICIAL RESPONSIVE: MAGIA DE TAMAÑOS
-   Aquí dictamos cómo crecen los elementos según el dispositivo
-========================================================= */
 
 /* --- MOBILE SIZING --- */
 .phone-mockup-final .shop-nav {
@@ -532,7 +519,7 @@
     font-size: 0.95rem;
 }
 
-.phone-mockup-final .shop-trust-badge {
+.phone-mockup-final .shop-trust-badge-hero {
     padding: 10px 18px;
     font-size: 0.85rem;
 }
@@ -547,7 +534,7 @@
 }
 
 .phone-mockup-final .shop-services-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 15px;
     max-width: 900px;
 }
@@ -584,12 +571,18 @@
     padding: 20px 50px;
 }
 
+/* ARREGLO RESPONSIVE NAV: Visible solo en desktop */
 .desktop-mockup-final .shop-nav-links {
     display: flex;
     gap: 35px;
     font-size: 1.1rem;
 }
 
+.desktop-mockup-final .shop-menu-icon {
+    display: none;
+}
+
+/* Oculta hamburguesa en desktop */
 .desktop-mockup-final .shop-logo {
     font-size: 1.8rem;
 }
@@ -626,7 +619,7 @@
     font-size: 1.1rem;
 }
 
-.desktop-mockup-final .shop-trust-badge {
+.desktop-mockup-final .shop-trust-badge-hero {
     padding: 15px 30px;
     font-size: 1.1rem;
     margin-top: 30px;
@@ -675,7 +668,6 @@
     font-size: 2rem;
 }
 
-/* Animación pop-in */
 .animate-pop-in {
     animation: popIn 0.5s var(--ease-bounce);
 }
@@ -692,8 +684,7 @@
     }
 }
 
-
-/* --- ESTILOS DE LOS CONTROLES (SIDEBAR ARREGLADO LUZ/SOMBRA) --- */
+/* --- ESTILOS DEL SIDEBAR (BORDES MODO CLARO ARREGLADOS) --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -741,12 +732,12 @@
     transition: all 0.3s var(--ease-premium);
 }
 
-/* ARREGLO BORDES ACORDEÓN MODO CLARO */
 .app-root.light .accordion-item {
     background: rgba(255, 255, 255, 0.6);
-    border-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.15);
 }
 
+/* Borde más oscuro en light mode */
 .accordion-item.active {
     background: transparent;
     border-color: var(--accent-color);
@@ -846,6 +837,11 @@
     -webkit-user-select: auto;
 }
 
+.app-root.light .settings-input {
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Borde input más oscuro en light mode */
 .settings-input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
@@ -915,7 +911,6 @@
     grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
 }
 
-/* ARREGLO SOMBRAS MODO CLARO EN PALETAS */
 .color-preset-btn {
     width: 100%;
     aspect-ratio: 1/1;
@@ -927,7 +922,7 @@
 }
 
 .app-root.light .color-preset-btn {
-    border-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
@@ -955,6 +950,11 @@
     justify-content: space-between;
 }
 
+.app-root.light .toggle-box {
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Borde toggle más oscuro en light mode */
 .toggle-title {
     display: block;
     margin-bottom: 4px;
@@ -991,6 +991,10 @@
     background-color: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
     transition: 0.3s;
+}
+
+.app-root.light .slider {
+    border-color: rgba(0, 0, 0, 0.15);
 }
 
 .slider:before {
