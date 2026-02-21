@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ClientReception from './pages/ClientReception';
+import Home from './pages/Home'; // <-- 1. Importamos la Home
 import { TicketProvider } from './context/TicketContext';
 
 function Login() {
@@ -14,12 +15,9 @@ function Login() {
 }
 
 function App() {
-
   const [config, setConfig] = useState(() => {
     const configGuardada = localStorage.getItem('wepairr_config');
-    if (configGuardada) {
-      return JSON.parse(configGuardada);
-    }
+    if (configGuardada) return JSON.parse(configGuardada);
     return {
       nombreNegocio: 'Wepairr Tech',
       titulo: 'Reparaciones Profesionales',
@@ -27,17 +25,14 @@ function App() {
       colorTema: '#ffffff',
       redes: { instagram: '', whatsapp: '5491122334455' },
       modoAvanzado: false,
-      mostrarPresupuestador: true, // <-- NUEVA VARIABLE AÑADIDA
+      mostrarPresupuestador: true,
       tablaPrecios: {
         'iPhone 11': { 'Pantalla': 120000, 'Batería': 45000, 'Pin de Carga': 30000 },
-        'Samsung S23': { 'Pantalla': 250000, 'Batería': 60000, 'Pin de Carga': 40000 },
-        'Motorola G20': { 'Pantalla': 55000, 'Batería': 25000, 'Pin de Carga': 15000 }
+        'Samsung S23': { 'Pantalla': 250000, 'Batería': 60000, 'Pin de Carga': 40000 }
       }
     };
   });
 
-
-  // Guardado automático al modificar cualquier ajuste
   useEffect(() => {
     localStorage.setItem('wepairr_config', JSON.stringify(config));
   }, [config]);
@@ -46,7 +41,8 @@ function App() {
     <TicketProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          {/* 2. Actualizamos las rutas */}
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard config={config} setConfig={setConfig} />} />
           <Route path="/taller/:techId" element={<ClientReception config={config} />} />

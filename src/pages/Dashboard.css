@@ -1,30 +1,97 @@
-.dashboard-main {
-    display: flex;
-    flex-wrap: wrap;
+.dashboard-wrapper {
     min-height: 100vh;
     background-color: #000000;
     color: #ffffff;
     font-family: system-ui, -apple-system, sans-serif;
-}
-
-.dashboard-col-left {
-    flex: 1 1 500px;
-    padding: 30px;
-    min-width: 320px;
     display: flex;
     flex-direction: column;
 }
 
-.dashboard-col-right {
-    flex: 1 1 400px;
-    padding: 30px;
-    background-color: #050505;
+/* Nuevo Navbar del Técnico */
+.tech-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0a0a0a;
+    border-bottom: 1px solid #222;
+    padding: 0 30px;
+    height: 70px;
 }
 
-@media (min-width: 801px) {
-    .dashboard-col-right {
-        border-left: 1px solid #222;
-    }
+.tech-brand {
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tech-brand span {
+    font-weight: normal;
+    color: #666;
+    font-size: 1rem;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 10px;
+    height: 100%;
+}
+
+.nav-link-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0 20px;
+    height: 100%;
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-link-btn:hover {
+    color: #fff;
+}
+
+.nav-link-active {
+    color: #fff;
+    border-bottom: 2px solid #66bb6a;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-view-site {
+    color: #66bb6a;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: 1px solid #224022;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background-color: #0a1a0a;
+    transition: background 0.2s;
+}
+
+.btn-view-site:hover {
+    background-color: #112a11;
+}
+
+/* Contenido Principal */
+.dashboard-content {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dashboard-tabs {
@@ -65,17 +132,21 @@
     flex: 1;
     overflow-y: auto;
     margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+    align-content: start;
 }
 
 .ticket-list-empty {
     color: #666;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 40px;
+    grid-column: 1 / -1;
 }
 
 .ticket-item-wrapper {
     position: relative;
-    margin-bottom: 15px;
 }
 
 .ticket-actions-absolute {
@@ -127,6 +198,7 @@
     padding: 20px;
     text-align: center;
     transition: all 0.2s;
+    margin-top: auto;
 }
 
 .dropzone-idle {
@@ -147,13 +219,21 @@
     margin-bottom: 5px;
 }
 
-.chatbox-container {
-    margin-top: 30px;
-    height: 450px;
+.settings-full-container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    animation: fadeIn 0.3s ease;
 }
 
-.chatbox-title {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    color: #aaa;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
