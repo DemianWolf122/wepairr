@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
 
-function TicketCard({ ticket, onStatusChange }) {
+function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
     const [isDragging, setIsDragging] = useState(false);
+
+    // Estados para manejar la edición del presupuesto
+    const [editandoPrecio, setEditandoPrecio] = useState(false);
+    const [montoLocal, setMontoLocal] = useState(ticket.presupuesto || 0);
 
     const getStatusColor = (estado) => {
         switch (estado) {
-            case 'Ingresado': return '#ff4d4d';
-            case 'En Proceso': return '#ffca28';
-            case 'Finalizado': return '#66bb6a';
-            case 'Entregado': return '#42a5f5';
+            case 'Ingresado': return '#ff4d4d'; // Rojo
+            case 'En Proceso': return '#ffca28'; // Amarillo
+            case 'Finalizado': return '#66bb6a'; // Verde
+            case 'Entregado': return '#42a5f5'; // Azul
             default: return '#ccc';
         }
     };
 
-    // Cuando empieza el arrastre, guardamos el ID del ticket en la memoria del navegador
     const handleDragStart = (e) => {
         setIsDragging(true);
         e.dataTransfer.setData('ticketId', ticket.id);
         e.dataTransfer.effectAllowed = 'move';
     };
 
-    const handleDragEnd = () => {
-        setIsDragging(false);
+    const handleDragEnd = () => setIsDragging(false);
+
+    const guardarPrecio = () => {
+        onBudgetChange(ticket.id, Number(montoLocal));
+        setEditandoPrecio(false);
     };
 
     return (
@@ -39,17 +45,51 @@ function TicketCard({ ticket, onStatusChange }) {
                 color: 'white',
                 cursor: 'grab',
                 transition: 'all 0.2s ease',
-                position: 'relative'
+                position: 'relative',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.3)'
             }}
         >
-            <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem' }}>{ticket.equipo}</h3>
-            <p style={{ margin: '0 0 15px 0', color: '#aaa', fontSize: '0.9rem' }}>{ticket.falla}</p>
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '1.2rem', paddingRight: '120px' }}>{ticket.equipo}</h3>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>${ticket.presupuesto}</span>
+            {/* Mostrar detalles adicionales si es una consulta con teléfono */}
+            <p style={{ margin: '0 0 15px 0', color: '#aaa', fontSize: '0.9rem', lineHeight: '1.4' }}>
+                {ticket.falla}
+            </p>
 
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #333', paddingTop: '15px' }}>
+
+                {/* ZONA DE PRESUPUESTO */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {editandoPrecio ? (
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                            <span style={{ fontSize: '1.1rem', alignSelf: 'center' }}>$</span>
+                            <input
+                                type="number"
+                                value={montoLocal}
+                                onChange={(e) => setMontoLocal(e.target.value)}
+                                style={{ width: '80px', padding: '5px', borderRadius: '4px', border: '1px solid #66bb6a', backgroundColor: '#000', color: '#fff', outline: 'none' }}
+                                autoFocus
+                            />
+                            <button onClick={guardarPrecio} style={{ backgroundColor: '#66bb6a', border: 'none', borderRadius: '4px', cursor: 'pointer', padding: '0 10px', fontWeight: 'bold' }}>✓</button>
+                        </div>
+                    ) : (
+                        <div
+                            // Solo permitimos editar si estamos en la vista de taller activos
+                            onClick={() => vista === 'activos' && setEditandoPrecio(true)}
+                            style={{ cursor: vista === 'activos' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '8px' }}
+                            title={vista === 'activos' ? "Haz clic para editar precio" : ""}
+                        >
+                            <span style={{ fontWeight: 'bold', fontSize: '1.2rem', color: ticket.presupuesto > 0 ? '#fff' : '#888' }}>
+                                ${ticket.presupuesto.toLocaleString('es-AR')}
+                            </span>
+                            {vista === 'activos' && <span style={{ fontSize: '0.8rem', color: '#666' }}>✏️</span>}
+                        </div>
+                    )}
+                </div>
+
+                {/* BOTÓN DE ESTADO (Solo interactivo en vista de taller) */}
                 <button
-                    onClick={() => onStatusChange(ticket.id)}
+                    onClick={() => vista === 'activos' && onStatusChange(ticket.id)}
                     style={{
                         backgroundColor: getStatusColor(ticket.estado),
                         border: 'none',
@@ -57,7 +97,8 @@ function TicketCard({ ticket, onStatusChange }) {
                         padding: '8px 16px',
                         color: 'black',
                         fontWeight: 'bold',
-                        cursor: 'pointer'
+                        cursor: vista === 'activos' ? 'pointer' : 'default',
+                        opacity: vista === 'activos' ? 1 : 0.7
                     }}
                 >
                     {ticket.estado}

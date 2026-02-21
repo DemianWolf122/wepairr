@@ -4,7 +4,6 @@ import { TicketContext } from '../context/TicketContext';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
 import PriceEstimator from '../components/PriceEstimator';
 
-// Base de datos simulada para la marca blanca
 const TECNICOS_DB = {
     'electro-fix': {
         nombre: 'Electro Fix',
@@ -15,7 +14,6 @@ const TECNICOS_DB = {
     }
 };
 
-// Recibimos 'config' por props desde App.jsx para alimentar el presupuestador
 function ClientReception({ config }) {
     const { techId } = useParams();
     const { agregarTicket } = useContext(TicketContext);
@@ -34,12 +32,16 @@ function ClientReception({ config }) {
     const [mensaje, setMensaje] = useState('');
     const [historial, setHistorial] = useState([]);
 
+    // NUEVO: Control del flujo interno del chat
+    const [pasoChat, setPasoChat] = useState(1);
+    const [detalleFalla, setDetalleFalla] = useState('');
+
     const iniciarConsulta = (e) => {
         e.preventDefault();
         if (!datosDispositivo.modelo.trim() || !datosDispositivo.falla.trim()) return;
 
         setHistorial([
-            { actor: 'ia', texto: `Hola. Soy el asistente de ${datosTecnico.nombre}. Veo que tienes un problema con tu ${datosDispositivo.modelo} (${datosDispositivo.falla}). ¿Podrías brindarme más detalles para que el técnico pueda revisarlo?` }
+            { actor: 'ia', texto: `Hola. Soy el asistente de ${datosTecnico.nombre}. Veo que tienes un problema con tu ${datosDispositivo.modelo} (${datosDispositivo.falla}). ¿Podrías brindarme más detalles de cómo ocurrió para que el técnico lo evalúe?` }
         ]);
 
         setFaseActiva(2);
@@ -49,28 +51,50 @@ function ClientReception({ config }) {
         e.preventDefault();
         if (!mensaje.trim()) return;
 
-        setHistorial(prev => [...prev, { actor: 'cliente', texto: mensaje }]);
+        const textoCliente = mensaje;
+        setHistorial(prev => [...prev, { actor: 'cliente', texto: textoCliente }]);
+        setMensaje('');
 
         setTimeout(() => {
-            setHistorial(prev => [...prev, {
-                actor: 'ia',
-                texto: 'He registrado la información exitosamente. El caso ha sido derivado al laboratorio.'
-            }]);
+            if (pasoChat === 1) {
+                // El cliente acaba de dar los detalles. Le pedimos contacto.
+                setDetalleFalla(textoCliente); // Guardamos este detalle para el ticket final
+                setHistorial(prev => [...prev, {
+                    actor: 'ia',
+                    texto: 'Comprendo la situación. Para generar la orden oficial y que el laboratorio pueda contactarte con el presupuesto exacto, ¿me podrías indicar un número de teléfono o WhatsApp?'
+                }]);
+                setPasoChat(2);
 
-            const nuevoTicket = {
-                id: Date.now(),
-                equipo: datosDispositivo.modelo,
-                falla: `${datosDispositivo.falla} - Detalle: ${mensaje}`,
-                presupuesto: 0,
-                estado: 'Ingresado',
-                tecnicoId: techId,
-                borrado: false
-            };
+            } else if (pasoChat === 2) {
+                // El cliente (supuestamente) nos dio el teléfono. CERRAR VENTA.
+                setHistorial(prev => [...prev, {
+                    actor: 'ia',
+                    texto: '¡Excelente! He registrado tu número y el caso ha sido enviado a la bandeja de entrada del taller. El técnico revisará los detalles y se pondrá en contacto a la brevedad.'
+                }]);
 
-            agregarTicket(nuevoTicket);
+                // RECIÉN AHORA generamos el ticket en la base de datos global
+                const nuevoTicket = {
+                    id: Date.now(),
+                    equipo: datosDispositivo.modelo,
+                    falla: `${datosDispositivo.falla} - Detalle: ${detalleFalla} - Teléfono: ${textoCliente}`,
+                    presupuesto: 0,
+                    estado: 'Ingresado',
+                    tecnicoId: techId,
+                    tipo: 'consulta', // Ingresa al Inbox, no al Taller activo
+                    borrado: false
+                };
+
+                agregarTicket(nuevoTicket);
+                setPasoChat(3); // Chat finalizado
+
+            } else {
+                // Si el cliente sigue escribiendo después de cerrar la orden
+                setHistorial(prev => [...prev, {
+                    actor: 'ia',
+                    texto: 'Tu consulta ya se encuentra en revisión. Te contactaremos pronto al número indicado para continuar.'
+                }]);
+            }
         }, 1200);
-
-        setMensaje('');
     };
 
     return (
@@ -104,7 +128,6 @@ function ClientReception({ config }) {
                 </p>
             </header>
 
-            {/* FASE 1: VIDRIERA Y FORMULARIO */}
             {faseActiva === 1 && (
                 <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '60px', animation: 'fadeIn 0.5s ease' }}>
 
@@ -116,14 +139,11 @@ function ClientReception({ config }) {
                         />
                     </section>
 
-                    {/* EVALUAMOS SI EL TÉCNICO DECIDIÓ MOSTRAR ESTE MÓDULO */}
-                    {config.mostrarPresupuestador !== false && (
+                    {config?.mostrarPresupuestador !== false && (
                         <section>
                             <PriceEstimator config={config} />
                         </section>
                     )}
-
-                    <section style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}></section>
 
                     <section style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
                         <h2 style={sectionTitleStyle}>Inicia tu Consulta</h2>
@@ -153,11 +173,9 @@ function ClientReception({ config }) {
                             </button>
                         </form>
                     </section>
-
                 </div>
             )}
 
-            {/* FASE 2: CHATBOX */}
             {faseActiva === 2 && (
                 <main style={{ width: '100%', maxWidth: '500px', animation: 'fadeIn 0.5s ease' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', height: '550px' }}>
@@ -186,8 +204,9 @@ function ClientReception({ config }) {
                                 onChange={(e) => setMensaje(e.target.value)}
                                 placeholder="Escribe los detalles aquí..."
                                 style={minimalistInputStyle}
+                                disabled={pasoChat === 3} // Deshabilitamos si ya terminó
                             />
-                            <button type="submit" style={{ ...minimalistButtonStyle, padding: '0 30px', width: 'auto', marginTop: 0 }}>
+                            <button type="submit" style={{ ...minimalistButtonStyle, padding: '0 30px', width: 'auto', marginTop: 0 }} disabled={pasoChat === 3}>
                                 Enviar
                             </button>
                         </form>
@@ -198,42 +217,8 @@ function ClientReception({ config }) {
     );
 }
 
-// Estilos extraídos
-const sectionTitleStyle = {
-    fontSize: '1.1rem',
-    color: '#888',
-    textTransform: 'uppercase',
-    letterSpacing: '2px',
-    textAlign: 'center',
-    marginBottom: '30px',
-    fontWeight: '500'
-};
-
-const minimalistInputStyle = {
-    width: '100%',
-    padding: '16px 0',
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderBottom: '1px solid #333333',
-    color: '#ffffff',
-    fontSize: '1.1rem',
-    outline: 'none',
-    transition: 'border-color 0.3s ease',
-    boxSizing: 'border-box'
-};
-
-const minimalistButtonStyle = {
-    width: '100%',
-    padding: '18px',
-    backgroundColor: '#ffffff',
-    color: '#000000',
-    fontWeight: '600',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontSize: '1.05rem',
-    marginTop: '10px',
-    transition: 'opacity 0.2s ease'
-};
+const sectionTitleStyle = { fontSize: '1.1rem', color: '#888', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center', marginBottom: '30px', fontWeight: '500' };
+const minimalistInputStyle = { width: '100%', padding: '16px 0', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #333333', color: '#ffffff', fontSize: '1.1rem', outline: 'none', transition: 'border-color 0.3s ease', boxSizing: 'border-box' };
+const minimalistButtonStyle = { width: '100%', padding: '18px', backgroundColor: '#ffffff', color: '#000000', fontWeight: '600', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1.05rem', marginTop: '10px', transition: 'opacity 0.2s ease' };
 
 export default ClientReception;

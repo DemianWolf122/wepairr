@@ -1,33 +1,68 @@
-// ... (mismo inicio)
+import React, { createContext, useState, useEffect } from 'react';
+
+export const TicketContext = createContext();
+
 export function TicketProvider({ children }) {
     const [tickets, setTickets] = useState(() => {
         const guardados = localStorage.getItem('wepairr_tickets');
         return guardados ? JSON.parse(guardados) : [
-            { id: 1, equipo: 'Ejemplo', falla: 'Prueba', tipo: 'ticket', estado: 'Ingresado', borrado: false }
+            { id: 1, equipo: 'Ejemplo Web', falla: 'Pantalla Rota', presupuesto: 0, estado: 'Ingresado', tipo: 'consulta', borrado: false }
         ];
     });
 
-    // ... (efecto de guardado igual)
+    useEffect(() => {
+        localStorage.setItem('wepairr_tickets', JSON.stringify(tickets));
+    }, [tickets]);
 
     const agregarTicket = (nuevoTicket) => {
-        // Por defecto, todo lo que entra por la web es una 'consulta'
-        setTickets(prev => [...prev, { ...nuevoTicket, tipo: 'consulta', borrado: false }]);
+        setTickets(prev => [...prev, { ...nuevoTicket, borrado: false }]);
     };
 
-    // Función nueva para "Promover" una consulta a Reparación Real
     const convertirATicket = (id) => {
         setTickets(prev => prev.map(t =>
             t.id === id ? { ...t, tipo: 'ticket' } : t
         ));
     };
 
-    // ... (resto de funciones igual)
+    const actualizarEstadoTicket = (id, nuevoEstado) => {
+        setTickets(prev => prev.map(ticket =>
+            ticket.id === id ? { ...ticket, estado: nuevoEstado } : ticket
+        ));
+    };
+
+    // NUEVO: Función para actualizar el valor monetario
+    const actualizarPresupuesto = (id, nuevoMonto) => {
+        setTickets(prev => prev.map(ticket =>
+            ticket.id === id ? { ...ticket, presupuesto: nuevoMonto } : ticket
+        ));
+    };
+
+    const moverAPapelera = (id) => {
+        setTickets(prev => prev.map(ticket =>
+            ticket.id === id ? { ...ticket, borrado: true } : ticket
+        ));
+    };
+
+    const restaurarTicket = (id) => {
+        setTickets(prev => prev.map(ticket =>
+            ticket.id === id ? { ...ticket, borrado: false } : ticket
+        ));
+    };
+
+    const eliminarDefinitivamente = (id) => {
+        setTickets(prev => prev.filter(ticket => ticket.id !== id));
+    };
 
     return (
         <TicketContext.Provider value={{
-            tickets, agregarTicket, actualizarEstadoTicket,
-            moverAPapelera, restaurarTicket, eliminarDefinitivamente,
-            convertirATicket // <-- Exportamos la nueva función
+            tickets,
+            agregarTicket,
+            convertirATicket,
+            actualizarEstadoTicket,
+            actualizarPresupuesto, // Exportamos la nueva función
+            moverAPapelera,
+            restaurarTicket,
+            eliminarDefinitivamente
         }}>
             {children}
         </TicketContext.Provider>

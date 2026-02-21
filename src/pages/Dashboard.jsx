@@ -8,6 +8,7 @@ function Dashboard({ config, setConfig }) {
     const {
         tickets,
         actualizarEstadoTicket,
+        actualizarPresupuesto,
         moverAPapelera,
         restaurarTicket,
         eliminarDefinitivamente,
@@ -84,10 +85,10 @@ function Dashboard({ config, setConfig }) {
                         <div key={ticket.id} style={{ position: 'relative', marginBottom: '15px' }}>
                             <TicketCard
                                 ticket={ticket}
-                                // Solo permitimos ciclar estado si es un ticket real de taller
+                                vista={vistaActual}
                                 onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null}
+                                onBudgetChange={actualizarPresupuesto} // <-- Pasamos la función
                             />
-
                             {/* Acciones especiales para el INBOX */}
                             {vistaActual === 'inbox' && (
                                 <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '8px' }}>
