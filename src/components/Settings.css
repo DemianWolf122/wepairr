@@ -5,6 +5,10 @@
     width: 100%;
     overflow: hidden;
     background: var(--bg-main);
+
+    /* 🚀 LA MAGIA NATIVA: Evita el sombreado azul al hacer clics rápidos */
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 /* PANEL IZQUIERDO: CONTROLES ANCLADOS */
@@ -56,7 +60,6 @@
 .preview-stage.animating-stage {
     opacity: 0;
     transform: scale(0.96);
-    /* Escala sutil en vez de rotación o desenfoque */
 }
 
 
@@ -263,6 +266,10 @@
     display: none;
 }
 
+.shop-menu-icon {
+    font-size: 1.4rem;
+}
+
 .shop-hero {
     padding: 60px 30px;
     text-align: center;
@@ -443,6 +450,24 @@
     border-top: 1px solid var(--shop-border);
 }
 
+.shop-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.social-badge {
+    background: var(--shop-bg);
+    border: 1px solid var(--shop-border);
+    padding: 8px 18px;
+    border-radius: 99px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--shop-text);
+    cursor: pointer;
+}
+
 .floating-wa-btn {
     position: absolute;
     bottom: 30px;
@@ -478,7 +503,7 @@
 }
 
 
-/* --- ESTILOS DE LOS CONTROLES (ACORDEONES, BOTONES REDES) --- */
+/* --- ESTILOS DE LOS CONTROLES DE LA IZQUIERDA --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -500,6 +525,7 @@
     font-size: 0.95rem;
 }
 
+/* REINICIAMOS LA SELECCIÓN SÓLO EN LOS INPUTS Y SELECTS PARA QUE SE PUEDA ESCRIBIR */
 .plan-select {
     background: transparent;
     border: none;
@@ -508,6 +534,8 @@
     outline: none;
     font-size: 0.9rem;
     padding: 5px;
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
 .accordions-container {
@@ -604,6 +632,7 @@
     margin-bottom: 8px;
 }
 
+/* REINICIAMOS LA SELECCIÓN EN LOS CAMPOS DE TEXTO */
 .settings-input {
     width: 100%;
     padding: 14px;
@@ -617,6 +646,8 @@
     backdrop-filter: blur(10px);
     box-sizing: border-box;
     font-family: inherit;
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
 .settings-input:focus {
@@ -628,9 +659,11 @@
     min-height: 90px;
     resize: vertical;
     line-height: 1.5;
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
-/* Botones de Instagram Autenticación (Estilo Real) */
+/* Botones de Instagram Autenticación */
 .btn-connect-ig {
     width: 100%;
     padding: 14px;

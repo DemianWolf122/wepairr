@@ -5,6 +5,7 @@
     overflow: hidden;
 }
 
+/* NAVEGACIÓN SUPERIOR ANTI-SELECCIÓN */
 .tech-navbar {
     background: var(--bg-panel-glass);
     backdrop-filter: blur(16px);
@@ -17,6 +18,9 @@
     padding: 0 30px;
     height: 70px;
     z-index: 10;
+
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .tech-brand {
@@ -127,23 +131,24 @@
     transition: all var(--speed-normal) var(--ease-premium);
 }
 
-/* LA SOLUCIÓN PURA: Al activar ajustes, borramos paddings y márgenes, y ocupamos el 100% */
 .dashboard-content.modo-editor-activo {
     max-width: 100%;
     padding: 0;
     margin: 0;
     height: calc(100vh - 70px);
     overflow: hidden;
-    /* El editor tiene su propio scroll interno */
 }
 
 
+/* PESTAÑAS ANTI-SELECCIÓN */
 .dashboard-tabs {
     display: flex;
     gap: 15px;
     border-bottom: 1px solid var(--border-glass);
     padding-bottom: 15px;
     margin-bottom: 25px;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .tab-btn {
@@ -173,6 +178,7 @@
     color: var(--text-primary);
 }
 
+/* LOS TICKETS SÍ DEBEN SER SELECCIONABLES (Para copiar números y datos) */
 .ticket-list {
     flex: 1;
     overflow-y: auto;
@@ -182,6 +188,8 @@
     gap: 25px;
     align-content: start;
     padding-bottom: 20px;
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
 .ticket-list-empty {
@@ -202,6 +210,7 @@
     display: flex;
     gap: 8px;
     z-index: 2;
+    user-select: none;
 }
 
 .ticket-actions-inbox {
@@ -252,6 +261,7 @@
     transition: all 0.3s;
     margin-top: auto;
     backdrop-filter: blur(10px);
+    user-select: none;
 }
 
 .dropzone-idle {
