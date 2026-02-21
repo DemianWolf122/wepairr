@@ -19,23 +19,20 @@ function Login() {
 }
 
 function App() {
-  // LECTURA DIRECTA DEL TEMA
+  // MOTOR DE TEMAS BLINDADO
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('wepairr_theme') || 'dark';
   });
 
-  // APLICACIÓN INMEDIATA AL DOM
   useEffect(() => {
+    // Aplicamos DOBLE inyección: Atributo HTML y Clase en el Body
     document.documentElement.setAttribute('data-theme', theme);
+    document.body.className = theme;
+    localStorage.setItem('wepairr_theme', theme);
   }, [theme]);
 
-  // FUNCIÓN DE CAMBIO BLINDADA
   const toggleTheme = () => {
-    setTheme(prev => {
-      const nextTheme = prev === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('wepairr_theme', nextTheme);
-      return nextTheme;
-    });
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
   const [config, setConfig] = useState(() => {

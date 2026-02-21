@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
-// ICONO CORPORATIVO MINIMALISTA (Círculo de Contraste)
 const ContrastIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
@@ -16,7 +15,13 @@ function Home({ theme, toggleTheme }) {
             <nav className="home-nav">
                 <div className="home-logo">Wepairr<span>.</span></div>
                 <div className="home-links">
-                    <button type="button" onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema" style={{ marginRight: '15px' }}>
+                    <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); toggleTheme(); }}
+                        className="theme-toggle-btn"
+                        title="Cambiar Tema"
+                        style={{ marginRight: '15px' }}
+                    >
                         <ContrastIcon />
                     </button>
                     <Link to="/login" className="btn-login-nav">Iniciar Sesión</Link>

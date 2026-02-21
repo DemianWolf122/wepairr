@@ -62,7 +62,12 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <button type="button" className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('configuracion')}>Ajustes</button>
                 </div>
                 <div className="nav-actions">
-                    <button type="button" onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
+                    <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); toggleTheme(); }}
+                        className="theme-toggle-btn"
+                        title="Cambiar Tema"
+                    >
                         <ContrastIcon />
                     </button>
                     <Link to="/taller/tu-local" target="_blank" className="btn-view-site">Mi Vidriera ↗</Link>
