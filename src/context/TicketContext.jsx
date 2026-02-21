@@ -1,58 +1,33 @@
-import React, { createContext, useState, useEffect } from 'react';
-
-export const TicketContext = createContext();
-
+// ... (mismo inicio)
 export function TicketProvider({ children }) {
-    // Inicialización: Lee del localStorage o carga el ticket por defecto
     const [tickets, setTickets] = useState(() => {
-        const ticketsGuardados = localStorage.getItem('wepairr_tickets');
-        if (ticketsGuardados) {
-            return JSON.parse(ticketsGuardados);
-        }
-        return [
-            { id: 1, equipo: 'Samsung S23 Ultra', falla: 'No carga', presupuesto: 45000, estado: 'Ingresado', tecnicoId: 'electro-fix', borrado: false }
+        const guardados = localStorage.getItem('wepairr_tickets');
+        return guardados ? JSON.parse(guardados) : [
+            { id: 1, equipo: 'Ejemplo', falla: 'Prueba', tipo: 'ticket', estado: 'Ingresado', borrado: false }
         ];
     });
 
-    // Sincronización: Guarda en localStorage cada vez que el array de tickets se modifica
-    useEffect(() => {
-        localStorage.setItem('wepairr_tickets', JSON.stringify(tickets));
-    }, [tickets]);
+    // ... (efecto de guardado igual)
 
     const agregarTicket = (nuevoTicket) => {
-        setTickets(prev => [...prev, { ...nuevoTicket, borrado: false }]);
+        // Por defecto, todo lo que entra por la web es una 'consulta'
+        setTickets(prev => [...prev, { ...nuevoTicket, tipo: 'consulta', borrado: false }]);
     };
 
-    const actualizarEstadoTicket = (id, nuevoEstado) => {
-        setTickets(prev => prev.map(ticket =>
-            ticket.id === id ? { ...ticket, estado: nuevoEstado } : ticket
+    // Función nueva para "Promover" una consulta a Reparación Real
+    const convertirATicket = (id) => {
+        setTickets(prev => prev.map(t =>
+            t.id === id ? { ...t, tipo: 'ticket' } : t
         ));
     };
 
-    const moverAPapelera = (id) => {
-        setTickets(prev => prev.map(ticket =>
-            ticket.id === id ? { ...ticket, borrado: true } : ticket
-        ));
-    };
-
-    const restaurarTicket = (id) => {
-        setTickets(prev => prev.map(ticket =>
-            ticket.id === id ? { ...ticket, borrado: false } : ticket
-        ));
-    };
-
-    const eliminarDefinitivamente = (id) => {
-        setTickets(prev => prev.filter(ticket => ticket.id !== id));
-    };
+    // ... (resto de funciones igual)
 
     return (
         <TicketContext.Provider value={{
-            tickets,
-            agregarTicket,
-            actualizarEstadoTicket,
-            moverAPapelera,
-            restaurarTicket,
-            eliminarDefinitivamente
+            tickets, agregarTicket, actualizarEstadoTicket,
+            moverAPapelera, restaurarTicket, eliminarDefinitivamente,
+            convertirATicket // <-- Exportamos la nueva función
         }}>
             {children}
         </TicketContext.Provider>

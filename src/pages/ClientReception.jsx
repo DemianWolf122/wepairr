@@ -116,10 +116,14 @@ function ClientReception({ config }) {
                         />
                     </section>
 
-                    <section>
-                        {/* Pasamos la configuración al presupuestador para que lea los precios dinámicos */}
-                        <PriceEstimator config={config} />
-                    </section>
+                    {/* EVALUAMOS SI EL TÉCNICO DECIDIÓ MOSTRAR ESTE MÓDULO */}
+                    {config.mostrarPresupuestador !== false && (
+                        <section>
+                            <PriceEstimator config={config} />
+                        </section>
+                    )}
+
+                    <section style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}></section>
 
                     <section style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
                         <h2 style={sectionTitleStyle}>Inicia tu Consulta</h2>

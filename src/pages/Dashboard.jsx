@@ -10,13 +10,27 @@ function Dashboard({ config, setConfig }) {
         actualizarEstadoTicket,
         moverAPapelera,
         restaurarTicket,
-        eliminarDefinitivamente
+        eliminarDefinitivamente,
+        convertirATicket // Esta es la función nueva que agregamos al contexto
     } = useContext(TicketContext);
 
-    const [vistaActual, setVistaActual] = useState('activos');
+    // Ahora tenemos 3 vistas: 'inbox', 'activos' y 'papelera'
+    const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
-    const ticketsMostrados = tickets.filter(t => vistaActual === 'activos' ? !t.borrado : t.borrado);
+    // FILTRADO INTELIGENTE DE DATOS
+    const consultasNuevas = tickets.filter(t => t.tipo === 'consulta' && !t.borrado);
+    const reparacionesActivas = tickets.filter(t => t.tipo === 'ticket' && !t.borrado);
+    const ticketsPapelera = tickets.filter(t => t.borrado);
+
+    // Definimos qué lista mostrar según la pestaña
+    const obtenerTicketsAMostrar = () => {
+        if (vistaActual === 'inbox') return consultasNuevas;
+        if (vistaActual === 'activos') return reparacionesActivas;
+        return ticketsPapelera;
+    };
+
+    const ticketsMostrados = obtenerTicketsAMostrar();
 
     const ciclarEstado = (id, estadoActual) => {
         const SECUENCIA_ESTADOS = ['Ingresado', 'En Proceso', 'Finalizado', 'Entregado'];
@@ -42,28 +56,47 @@ function Dashboard({ config, setConfig }) {
     return (
         <main style={{ display: 'flex', flexWrap: 'wrap', minHeight: '100vh', backgroundColor: '#000000', color: '#ffffff', fontFamily: 'system-ui' }}>
 
-            {/* COLUMNA IZQUIERDA: Gestión de Tickets y Papelera (60%) */}
+            {/* COLUMNA IZQUIERDA: Gestión (60%) */}
             <section style={{ flex: '1 1 500px', padding: '30px', minWidth: '320px', display: 'flex', flexDirection: 'column' }}>
 
-                {/* Navegación de Pestañas */}
+                {/* Navegación de Pestañas con contadores */}
                 <header style={{ display: 'flex', gap: '15px', borderBottom: '1px solid #333', paddingBottom: '15px', marginBottom: '25px' }}>
+                    <button onClick={() => setVistaActual('inbox')} style={vistaActual === 'inbox' ? tabActiva : tabInactiva}>
+                        📥 Inbox ({consultasNuevas.length})
+                    </button>
                     <button onClick={() => setVistaActual('activos')} style={vistaActual === 'activos' ? tabActiva : tabInactiva}>
-                        Tickets Activos
+                        🔧 Taller ({reparacionesActivas.length})
                     </button>
                     <button onClick={() => setVistaActual('papelera')} style={vistaActual === 'papelera' ? tabActiva : tabInactiva}>
-                        Papelera ({tickets.filter(t => t.borrado).length})
+                        Papelera ({ticketsPapelera.length})
                     </button>
                 </header>
 
-                {/* Lista de Tickets */}
+                {/* Lista Dinámica de Tickets/Consultas */}
                 <div style={{ flex: 1, overflowY: 'auto', marginBottom: '20px' }}>
-                    {ticketsMostrados.length === 0 && <p style={{ color: '#666' }}>No hay elementos aquí.</p>}
+                    {ticketsMostrados.length === 0 && (
+                        <p style={{ color: '#666', textAlign: 'center', marginTop: '20px' }}>
+                            {vistaActual === 'inbox' ? 'No hay consultas nuevas.' : 'No hay trabajos en curso.'}
+                        </p>
+                    )}
+
                     {ticketsMostrados.map(ticket => (
-                        <div key={ticket.id} style={{ position: 'relative' }}>
+                        <div key={ticket.id} style={{ position: 'relative', marginBottom: '15px' }}>
                             <TicketCard
                                 ticket={ticket}
+                                // Solo permitimos ciclar estado si es un ticket real de taller
                                 onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null}
                             />
+
+                            {/* Acciones especiales para el INBOX */}
+                            {vistaActual === 'inbox' && (
+                                <div style={{ position: 'absolute', top: '15px', right: '15px', display: 'flex', gap: '8px' }}>
+                                    <button onClick={() => convertirATicket(ticket.id)} style={btnStyle('#66bb6a', '#000')}>Aceptar</button>
+                                    <button onClick={() => moverAPapelera(ticket.id)} style={btnStyle('#333', '#fff')}>Ignorar</button>
+                                </div>
+                            )}
+
+                            {/* Acciones especiales para la PAPELERA */}
                             {vistaActual === 'papelera' && (
                                 <div style={{ position: 'absolute', top: '25px', right: '15px', display: 'flex', gap: '10px' }}>
                                     <button onClick={() => restaurarTicket(ticket.id)} style={btnStyle('#66bb6a', '#000')}>Restaurar</button>
@@ -74,8 +107,8 @@ function Dashboard({ config, setConfig }) {
                     ))}
                 </div>
 
-                {/* Zona de Papelera (Dropzone) - Solo en Activos */}
-                {vistaActual === 'activos' && (
+                {/* Zona de Papelera (Dropzone) */}
+                {vistaActual !== 'papelera' && (
                     <div
                         onDrop={handleDropTrash}
                         onDragOver={handleDragOverTrash}
@@ -86,13 +119,12 @@ function Dashboard({ config, setConfig }) {
                             borderRadius: '12px', padding: '20px', textAlign: 'center', transition: 'all 0.2s', color: isDragOverTrash ? '#ff4d4d' : '#666'
                         }}
                     >
-                        <span style={{ fontSize: '2rem', display: 'block', marginBottom: '5px' }}>🗑️</span>
-                        Arrastrá un ticket aquí para enviarlo a la papelera
+                        <span style={{ fontSize: '1.5rem', display: 'block' }}>🗑️ Arrastrá acá para descartar</span>
                     </div>
                 )}
             </section>
 
-            {/* COLUMNA DERECHA: Configuración y Chat (40%) */}
+            {/* COLUMNA DERECHA: Configuración (40%) */}
             <section style={{ flex: '1 1 400px', padding: '30px', borderLeft: window.innerWidth > 800 ? '1px solid #222' : 'none', backgroundColor: '#050505' }}>
                 <Settings config={config} onUpdate={setConfig} />
                 <div style={{ marginTop: '30px', height: '450px' }}>
@@ -105,7 +137,7 @@ function Dashboard({ config, setConfig }) {
     );
 }
 
-// Estilos extraídos
+// Estilos extraídos (Mantenemos tu estética minimalista)
 const tabActiva = { backgroundColor: '#fff', color: '#000', padding: '10px 20px', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' };
 const tabInactiva = { backgroundColor: 'transparent', color: '#888', padding: '10px 20px', border: '1px solid #333', borderRadius: '6px', cursor: 'pointer' };
 const btnStyle = (bg, color) => ({ backgroundColor: bg, color: color, border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.8rem' });

@@ -14,7 +14,6 @@ function Login() {
 }
 
 function App() {
-  // Dentro de App.jsx, modifica la inicialización del useState de config:
 
   const [config, setConfig] = useState(() => {
     const configGuardada = localStorage.getItem('wepairr_config');
@@ -28,7 +27,7 @@ function App() {
       colorTema: '#ffffff',
       redes: { instagram: '', whatsapp: '5491122334455' },
       modoAvanzado: false,
-      // NUEVO: Agregamos la tabla de precios al cerebro de la app
+      mostrarPresupuestador: true, // <-- NUEVA VARIABLE AÑADIDA
       tablaPrecios: {
         'iPhone 11': { 'Pantalla': 120000, 'Batería': 45000, 'Pin de Carga': 30000 },
         'Samsung S23': { 'Pantalla': 250000, 'Batería': 60000, 'Pin de Carga': 40000 },
