@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './CommunityWiki.css';
 
+// SVGs
+const SvgPlus = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+const SvgArrow = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
+const SvgLike = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>;
+const SvgX = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
+
 const POSTS_INICIALES = [
-    { id: 1, titulo: "Falla de carga iPhone 12 Pro", autor: "TecnoMar", contenido: "Si el equipo consume 0.01A, revisen el IC de carga U2 antes de abrir la placa. El cliente reportó que dejó de cargar tras usar un cargador de auto genérico. Reemplazando el IC se solucionó el problema.", imagen: "https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?q=80&w=600", likes: 24, categoria: "Microelectrónica", likedByMe: false },
-    { id: 2, titulo: "Cómo despegar tapas de Samsung S23", autor: "ElectroFix", contenido: "Usar plancha a 80 grados por 5 minutos exactos para no dañar el flex de antena. Es vital usar alcohol isopropílico en los bordes con una espátula de plástico muy fina.", imagen: "", likes: 15, categoria: "Hardware", likedByMe: false }
+    { id: 1, titulo: "Falla de carga iPhone 12 Pro", autor: "TecnoMar", contenido: "Si el equipo consume 0.01A, revisen el IC de carga...", imagen: "", likes: 24, categoria: "Microelectrónica", likedByMe: false }
 ];
 
 function CommunityWiki() {
@@ -26,15 +31,6 @@ function CommunityWiki() {
         }));
     };
 
-    const manejarCrearPost = (e) => {
-        e.preventDefault();
-        if (!nuevoPost.titulo.trim() || !nuevoPost.contenido.trim()) return;
-        const post = { id: Date.now(), titulo: nuevoPost.titulo, autor: "Mi Taller", contenido: nuevoPost.contenido, imagen: nuevoPost.imagen, likes: 0, categoria: nuevoPost.categoria || 'General', likedByMe: false };
-        setPosts(prev => [post, ...prev]);
-        setNuevoPost({ titulo: '', categoria: '', contenido: '', imagen: '' });
-        setMostrandoFormulario(false);
-    };
-
     return (
         <div className="wiki-wrapper">
             <header className="wiki-header">
@@ -42,7 +38,9 @@ function CommunityWiki() {
                     <h2>Comunidad Wepairr</h2>
                     <p style={{ color: 'var(--text-secondary)' }}>Encontrá soluciones y compartí conocimiento con otros técnicos.</p>
                 </div>
-                <button className="btn-new-post" onClick={() => setMostrandoFormulario(true)}>+ Compartir Solución</button>
+                <button className="btn-new-post" onClick={() => setMostrandoFormulario(true)}>
+                    <SvgPlus /> Compartir Solución
+                </button>
             </header>
 
             <div className="wiki-grid">
@@ -54,47 +52,28 @@ function CommunityWiki() {
                         <div className="wiki-footer">
                             <span>Por: {post.autor}</span>
                             <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                                <span className="read-more">Ver más →</span>
-                                <button className={`btn-like ${post.likedByMe ? 'liked' : ''}`} onClick={(e) => manejarLike(e, post.id)}>👍 {post.likes}</button>
+                                <span className="read-more">Ver más <SvgArrow /></span>
+                                <button className={`btn-like ${post.likedByMe ? 'liked' : ''}`} onClick={(e) => manejarLike(e, post.id)}>
+                                    <SvgLike /> {post.likes}
+                                </button>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* MODAL ARREGLADO: Separación de cabecera y cuerpo scrollable */}
             {postSeleccionado && (
                 <div className="wiki-modal-overlay" onClick={() => setPostSeleccionado(null)}>
                     <div className="wiki-modal-container" onClick={e => e.stopPropagation()}>
-
-                        {/* Cabecera pegajosa */}
                         <div className="wiki-modal-header-fixed">
                             <span className="wiki-tag">{postSeleccionado.categoria}</span>
-                            <button className="btn-close-modal" onClick={() => setPostSeleccionado(null)}>×</button>
+                            <button className="btn-close-modal" onClick={() => setPostSeleccionado(null)}><SvgX /></button>
                         </div>
-
-                        {/* Contenido scrolleable libre */}
                         <div className="wiki-modal-body-scroll">
                             <h2 className="modal-title">{postSeleccionado.titulo}</h2>
                             <span className="modal-author">Aportado por: {postSeleccionado.autor}</span>
-
-                            {postSeleccionado.imagen && (
-                                <div className="wiki-modal-image">
-                                    <img src={postSeleccionado.imagen} alt="Reparación" />
-                                </div>
-                            )}
-
                             <div className="wiki-modal-text">
                                 {postSeleccionado.contenido.split('\n').map((parrafo, i) => <p key={i}>{parrafo}</p>)}
-                            </div>
-
-                            <div className="wiki-modal-actions">
-                                <button className={`btn-like-large ${postSeleccionado.likedByMe ? 'liked' : ''}`} onClick={(e) => {
-                                    manejarLike(e, postSeleccionado.id);
-                                    setPostSeleccionado(prev => ({ ...prev, likes: prev.likedByMe ? prev.likes - 1 : prev.likes + 1, likedByMe: !prev.likedByMe }));
-                                }}>
-                                    👍 {postSeleccionado.likes} Me sirvió
-                                </button>
                             </div>
                         </div>
                     </div>

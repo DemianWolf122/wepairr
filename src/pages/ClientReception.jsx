@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import './ClientReception.css';
 
 // SVG Icons
@@ -32,7 +32,7 @@ function ClientReception({ config }) {
         const autoBtnText = accentLuminance > 0.179 ? '#000000' : '#ffffff';
 
         let safeIconColor = accent;
-        const bgLuminance = getLuminance(isDarkMode ? '#0f172a' : '#ffffff');
+        const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
         const ratio = (Math.max(accentLuminance, bgLuminance) + 0.05) / (Math.min(accentLuminance, bgLuminance) + 0.05);
         if (ratio < 3.0) {
             let amt = isDarkMode ? 60 : -60;
@@ -54,11 +54,11 @@ function ClientReception({ config }) {
             '--shop-accent': accent,
             '--shop-accent-icon': safeIconColor,
             '--shop-btn-text': autoBtnText,
-            '--shop-bg': isDarkMode ? '#0f172a' : '#ffffff',
-            '--shop-bg-secondary': isDarkMode ? '#1e293b' : '#f8fafc',
+            '--shop-bg': isDarkMode ? '#090e17' : '#ffffff',
+            '--shop-bg-secondary': isDarkMode ? '#141c2f' : '#f8fafc',
             '--shop-text': safeTitleColor,
             '--shop-text-secondary': safeSubtitleColor,
-            '--shop-border': isDarkMode ? '#334155' : '#e2e8f0',
+            '--shop-border': isDarkMode ? '#1e293b' : '#e2e8f0',
             '--shop-font': config.fontFamily || '"Inter", system-ui, sans-serif',
             '--shop-radius': config.borderRadius || '16px',
         };
@@ -79,7 +79,7 @@ function ClientReception({ config }) {
                     <p className="shop-desc">{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
 
                     <div className="shop-hero-actions">
-                        <button className="shop-cta-btn" onClick={() => alert('Abriendo formulario de ingreso...')}>Solicitar Reparación</button>
+                        <button className="shop-cta-btn" onClick={() => alert('Abriendo formulario...')}>Solicitar Reparación</button>
                         {config.mostrarTurnos && isPremium && (
                             <button className="shop-secondary-btn"><SvgCalendar /> Agendar Turno</button>
                         )}
@@ -124,12 +124,6 @@ function ClientReception({ config }) {
             )}
 
             <div className="shop-footer">
-                {(config.whatsapp || config.instagram) && (
-                    <div className="shop-social-links">
-                        {config.whatsapp && <span className="social-badge">WhatsApp</span>}
-                        {config.instagram && <span className="social-badge">Insta</span>}
-                    </div>
-                )}
                 <p>© 2024 {config.nombreNegocio}.</p>
             </div>
 

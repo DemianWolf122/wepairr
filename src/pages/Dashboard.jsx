@@ -8,17 +8,17 @@ import InventoryView from './InventoryView';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
-const MoonIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-);
-const SunIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-);
+// LIBRERÍA DE ICONOS SVG
+const MoonIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
+const SunIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
+const SvgInbox = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>;
+const SvgWrench = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>;
+const SvgTrash = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
+const SvgExternal = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>;
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
-    const [seccionPrincipal, setSeccionPrincipal] = useState('configuracion'); // Inicia en ajustes para que lo pruebes directo
+    const [seccionPrincipal, setSeccionPrincipal] = useState('configuracion');
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket } = useContext(TicketContext);
-
     const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
@@ -65,23 +65,23 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </button>
-                    <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="btn-view-site">Mi Vidriera ↗</Link>
+                    <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="btn-view-site">
+                        Mi Vidriera <SvgExternal />
+                    </Link>
                 </div>
             </nav>
 
-            {/* LA MAGIA SUCEDE AQUÍ: Inyectamos una clase si estamos en Ajustes */}
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
                 {seccionPrincipal === 'gestion' && (
                     <>
                         <header className="dashboard-tabs">
-                            <button onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}>📥 Inbox ({consultasNuevas.length})</button>
-                            <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}>🔧 Taller Activo ({reparacionesActivas.length})</button>
-                            <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}>🗑️ Papelera ({ticketsPapelera.length})</button>
+                            <button onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}><SvgInbox /> Inbox ({consultasNuevas.length})</button>
+                            <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}><SvgWrench /> Taller Activo ({reparacionesActivas.length})</button>
+                            <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}><SvgTrash /> Papelera ({ticketsPapelera.length})</button>
                         </header>
 
                         <div className="ticket-list">
                             {ticketsMostrados.length === 0 && <p className="ticket-list-empty">{vistaActual === 'inbox' ? 'No hay consultas nuevas.' : 'No hay equipos en reparación.'}</p>}
-
                             {ticketsMostrados.map(ticket => (
                                 <div key={ticket.id} className="ticket-item-wrapper">
                                     <TicketCard ticket={ticket} vista={vistaActual} onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null} onBudgetChange={actualizarPresupuesto} />
@@ -91,19 +91,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                             <button onClick={() => moverAPapelera(ticket.id)} className="action-btn btn-dark">Ignorar</button>
                                         </div>
                                     )}
-                                    {vistaActual === 'papelera' && (
-                                        <div className="ticket-actions-absolute ticket-actions-trash">
-                                            <button onClick={() => restaurarTicket(ticket.id)} className="action-btn btn-green">Restaurar</button>
-                                            <button onClick={() => eliminarDefinitivamente(ticket.id)} className="action-btn btn-red">Eliminar</button>
-                                        </div>
-                                    )}
                                 </div>
                             ))}
                         </div>
 
                         {vistaActual !== 'papelera' && (
                             <div onDrop={handleDropTrash} onDragOver={(e) => { e.preventDefault(); setIsDragOverTrash(true); }} onDragLeave={() => setIsDragOverTrash(false)} className={`dropzone ${isDragOverTrash ? 'dropzone-active' : 'dropzone-idle'}`}>
-                                <span className="dropzone-icon">🗑️</span>
+                                <SvgTrash />
                                 <span>Arrastrá un ticket acá para descartarlo</span>
                             </div>
                         )}
@@ -113,14 +107,9 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 {seccionPrincipal === 'metricas' && <MetricsView tickets={tickets} />}
                 {seccionPrincipal === 'inventario' && <InventoryView />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
-
-                {/* Renderizamos Settings directamente, sin contenedores trampa */}
-                {seccionPrincipal === 'configuracion' && (
-                    <Settings config={config} onUpdate={setConfig} />
-                )}
+                {seccionPrincipal === 'configuracion' && <Settings config={config} onUpdate={setConfig} />}
             </main>
         </div>
     );
 }
-
 export default Dashboard;

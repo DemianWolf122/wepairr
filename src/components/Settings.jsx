@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import './Settings.css';
 
-// --- LIBRERÍA DE ICONOS SVG ---
+// --- LIBRERÍA DE ICONOS SVG MINIMALISTAS ---
 const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>;
 const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
@@ -14,6 +14,8 @@ const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="c
 const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>;
 const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
 const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
+const SvgMobileDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
+const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -23,7 +25,6 @@ const PremiumGate = ({ children, isPremium }) => {
             <div className="premium-lock-overlay">
                 <SvgLock />
                 <span className="premium-label">Función Pro</span>
-                <button className="btn-upgrade-tiny">Actualizar</button>
             </div>
         </div>
     );
@@ -43,7 +44,8 @@ const TEXT_COLORS = [
     { name: 'Gris Pizarra', hex: '#334155' }, { name: 'Azul Marino', hex: '#1e3a8a' },
     { name: 'Rojo Vino', hex: '#450a0a' }, { name: 'Blanco Puro', hex: '#ffffff' },
     { name: 'Gris Nube', hex: '#f8fafc' }, { name: 'Plata', hex: '#cbd5e1' },
-    { name: 'Azul Hielo', hex: '#e0f2fe' }, { name: 'Ámbar Claro', hex: '#fef3c7' }
+    { name: 'Azul Hielo', hex: '#e0f2fe' }, { name: 'Ámbar Claro', hex: '#fef3c7' },
+    { name: 'Crema Suave', hex: '#fffbeb' }, { name: 'Gris Medio', hex: '#64748b' }
 ];
 
 const FONTS = [
@@ -59,7 +61,7 @@ const BORDER_STYLES = [
     { label: 'Profesional (Cuadrados)', value: '4px' }
 ];
 
-// MATEMÁTICA DE CONTRASTE BLINDADA (Cero Crashes)
+// MATEMÁTICA DE CONTRASTE BLINDADA
 const getLuminance = (hex) => {
     if (!hex || typeof hex !== 'string') return 0;
     let cleanHex = hex.replace('#', '');
@@ -69,6 +71,12 @@ const getLuminance = (hex) => {
     let r = (rgb >> 16) & 0xff; let g = (rgb >> 8) & 0xff; let b = (rgb >> 0) & 0xff;
     let a = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+};
+
+const getContrastRatio = (hex1, hex2) => {
+    const l1 = getLuminance(hex1);
+    const l2 = getLuminance(hex2);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
 
 function Settings({ config, onUpdate }) {
@@ -100,8 +108,34 @@ function Settings({ config, onUpdate }) {
         }, 350);
     };
 
-    const currentBgColor = config.shopDarkMode ? '#0f172a' : '#ffffff';
+    // EL NUEVO CEREBRO DE AUTO-CORRECCIÓN DE CONTRASTE
+    const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
     const currentAccentColor = config.colorTema || '#2563eb';
+
+    const checkColorSafety = (textColor, bgColor = currentBgColor) => {
+        return getContrastRatio(textColor, bgColor) >= 4.5;
+    };
+
+    useEffect(() => {
+        let updates = {};
+        const isDark = config.shopDarkMode;
+        // Colores estándar corporativos de seguridad absolutos
+        const defaultText = isDark ? '#ffffff' : '#0f172a';
+        const defaultSub = isDark ? '#f8fafc' : '#334155';
+
+        // Si el color actual es inválido o se vuelve inválido, forzamos el mejor fallback
+        if (config.colorTitulo && !checkColorSafety(config.colorTitulo, currentBgColor)) {
+            updates.colorTitulo = defaultText;
+        }
+        if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo, currentBgColor)) {
+            updates.colorSubtitulo = defaultSub;
+        }
+
+        if (Object.keys(updates).length > 0) {
+            onUpdate({ ...config, ...updates });
+        }
+    }, [config.shopDarkMode, config.colorTema]); // Evalúa cada vez que cambia el modo o el acento
+
 
     const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
@@ -111,7 +145,7 @@ function Settings({ config, onUpdate }) {
         const autoBtnText = accentLuminance > 0.179 ? '#000000' : '#ffffff';
 
         let safeIconColor = accent;
-        const bgLuminance = getLuminance(isDarkMode ? '#0f172a' : '#ffffff');
+        const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
         const ratio = (Math.max(accentLuminance, bgLuminance) + 0.05) / (Math.min(accentLuminance, bgLuminance) + 0.05);
         if (ratio < 3.0) {
             let amt = isDarkMode ? 60 : -60;
@@ -133,11 +167,11 @@ function Settings({ config, onUpdate }) {
             '--shop-accent': accent,
             '--shop-accent-icon': safeIconColor,
             '--shop-btn-text': autoBtnText,
-            '--shop-bg': isDarkMode ? '#0f172a' : '#ffffff',
-            '--shop-bg-secondary': isDarkMode ? '#1e293b' : '#f8fafc',
+            '--shop-bg': isDarkMode ? '#090e17' : '#ffffff', // Más premium oscuro
+            '--shop-bg-secondary': isDarkMode ? '#141c2f' : '#f8fafc',
             '--shop-text': safeTitleColor,
             '--shop-text-secondary': safeSubtitleColor,
-            '--shop-border': isDarkMode ? '#334155' : '#e2e8f0',
+            '--shop-border': isDarkMode ? '#1e293b' : '#e2e8f0',
             '--shop-font': config.fontFamily || '"Inter", system-ui, sans-serif',
             '--shop-radius': config.borderRadius || '16px',
         };
@@ -145,16 +179,22 @@ function Settings({ config, onUpdate }) {
 
     return (
         <div className="settings-editor-layout">
+
+            {/* SELECTOR DE PLAN FLOTANTE (Fuera del Sidebar para no dañar el diseño) */}
+            <div className="dev-plan-selector glass-effect">
+                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>DEV: PLAN</span>
+                <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select">
+                    <option value="standard">Gratis</option>
+                    <option value="premium">PRO</option>
+                </select>
+            </div>
+
             <div className="settings-controls-panel glass-effect">
                 <div className="settings-header-row">
                     <div>
                         <h2 className="settings-main-title">Editor Visual</h2>
                         <p className="settings-subtitle">Configura tu vidriera paso a paso.</p>
                     </div>
-                    <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select glass-input-effect">
-                        <option value="standard">PLAN GRATIS</option>
-                        <option value="premium">PLAN PRO</option>
-                    </select>
                 </div>
 
                 <div className="accordions-container">
@@ -214,6 +254,35 @@ function Settings({ config, onUpdate }) {
                                 </div>
 
                                 <PremiumGate isPremium={isPremium}>
+                                    <label className="settings-label">Color de Títulos Principales:</label>
+                                    <div className="color-presets-grid text-grid" style={{ marginBottom: '15px' }}>
+                                        {TEXT_COLORS.map(preset => {
+                                            const isSafe = checkColorSafety(preset.hex, currentBgColor);
+                                            return (
+                                                <button key={'tit-' + preset.hex} type="button"
+                                                    className={`color-preset-btn text-color-btn ${config.colorTitulo === preset.hex ? 'active' : ''} ${!isSafe ? 'disabled-contrast' : ''}`}
+                                                    style={{ backgroundColor: preset.hex }}
+                                                    onClick={() => isSafe && onUpdate({ ...config, colorTitulo: preset.hex })}
+                                                    title={isSafe ? preset.name : 'Bloqueado por Contraste'}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+
+                                    <label className="settings-label">Color de Textos Secundarios:</label>
+                                    <div className="color-presets-grid text-grid" style={{ marginBottom: '25px' }}>
+                                        {TEXT_COLORS.map(preset => {
+                                            const isSafe = checkColorSafety(preset.hex, currentBgColor);
+                                            return (
+                                                <button key={'sub-' + preset.hex} type="button"
+                                                    className={`color-preset-btn text-color-btn ${config.colorSubtitulo === preset.hex ? 'active' : ''} ${!isSafe ? 'disabled-contrast' : ''}`}
+                                                    style={{ backgroundColor: preset.hex }}
+                                                    onClick={() => isSafe && onUpdate({ ...config, colorSubtitulo: preset.hex })}
+                                                    title={isSafe ? preset.name : 'Bloqueado por Contraste'}
+                                                />
+                                            );
+                                        })}
+                                    </div>
                                     <div className="settings-form-group">
                                         <label className="settings-label">Tipografía Corporativa:
                                             <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input">
@@ -313,8 +382,8 @@ function Settings({ config, onUpdate }) {
             <div className="settings-preview-canvas">
                 <div className="canvas-header">
                     <div className="device-toggles glass-effect">
-                        <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}>📱 Celular</button>
-                        <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => handlePreviewChange('desktop')}>💻 Monitor</button>
+                        <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}><SvgMobileDevice /> Celular</button>
+                        <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => handlePreviewChange('desktop')}><SvgMonitorDevice /> Monitor</button>
                     </div>
                 </div>
 
@@ -330,7 +399,7 @@ function Settings({ config, onUpdate }) {
                                 <div className="mac-dot mac-red"></div>
                                 <div className="mac-dot mac-yellow"></div>
                                 <div className="mac-dot mac-green"></div>
-                                <div className="desktop-url-bar">wepairr.com/{config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-negocio'}</div>
+                                <div className="desktop-url-bar">wepairr.com/talleres/{config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-negocio'}</div>
                             </div>
                         )}
 
@@ -338,7 +407,7 @@ function Settings({ config, onUpdate }) {
                             <div className="shop-nav">
                                 <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
                                 <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
-                                <div className="shop-menu-icon">☰</div>
+                                <div className="shop-menu-icon"><SvgBuilding /></div>
                             </div>
 
                             <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
@@ -386,9 +455,9 @@ function Settings({ config, onUpdate }) {
                                 <div className="shop-section">
                                     <h2 className="shop-section-title"><SvgInstagram /> Nuestro Trabajo</h2>
                                     <div className="ig-feed-grid">
-                                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=300&q=80)' }}></div>
-                                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=300&q=80)' }}></div>
-                                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1629131726692-1accd0c53ce0?w=300&q=80)' }}></div>
+                                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=500&q=80)' }}></div>
+                                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500&q=80)' }}></div>
+                                        <div className="ig-post" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1629131726692-1accd0c53ce0?w=500&q=80)' }}></div>
                                     </div>
                                 </div>
                             )}
