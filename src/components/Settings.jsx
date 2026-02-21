@@ -1,155 +1,84 @@
-import React, { useState, useRef } from 'react';
-import { QRCodeCanvas } from 'qrcode.react'; // IMPORTAMOS LA LIBRERÍA
+import React, { useState } from 'react';
 import './Settings.css';
 
 function Settings({ config, onUpdate }) {
-    const [nuevoEquipo, setNuevoEquipo] = useState('');
-    const [nuevaFalla, setNuevaFalla] = useState({ equipo: '', nombre: '', precio: '' });
-
-    // Referencia para capturar el QR y descargarlo
-    const qrRef = useRef(null);
-
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         onUpdate({ ...config, [name]: type === 'checkbox' ? checked : value });
     };
 
-    const tablaPrecios = config.tablaPrecios || {};
-
-    const handleAgregarEquipo = () => {
-        if (!nuevoEquipo.trim() || tablaPrecios[nuevoEquipo]) return;
-        onUpdate({ ...config, tablaPrecios: { ...tablaPrecios, [nuevoEquipo]: {} } });
-        setNuevoEquipo('');
-    };
-
-    const handleEliminarEquipo = (equipo) => {
-        if (!window.confirm(`¿Seguro que querés eliminar "${equipo}"?`)) return;
-        const nuevaTabla = { ...tablaPrecios };
-        delete nuevaTabla[equipo];
-        onUpdate({ ...config, tablaPrecios: nuevaTabla });
-    };
-
-    const handleAgregarFalla = (equipo) => {
-        if (!nuevaFalla.nombre.trim() || !nuevaFalla.precio || nuevaFalla.equipo !== equipo) return;
-        onUpdate({
-            ...config, tablaPrecios: { ...tablaPrecios, [equipo]: { ...tablaPrecios[equipo], [nuevaFalla.nombre]: Number(nuevaFalla.precio) } }
-        });
-        setNuevaFalla({ equipo: '', nombre: '', precio: '' });
-    };
-
-    const handleEliminarFalla = (equipo, falla) => {
-        const nuevaTabla = { ...tablaPrecios };
-        delete nuevaTabla[equipo][falla];
-        onUpdate({ ...config, tablaPrecios: nuevaTabla });
-    };
-
-    // FUNCIÓN PARA DESCARGAR EL QR
-    const descargarQR = () => {
-        const canvas = qrRef.current.querySelector('canvas');
-        if (canvas) {
-            const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-            const downloadLink = document.createElement("a");
-            downloadLink.href = pngUrl;
-            downloadLink.download = "Wepairr_QR_Local.png";
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }
-    };
-
-    // URL dinámica de la vidriera del técnico (usamos electro-fix temporalmente para la demo)
-    const urlVidriera = `${window.location.origin}/taller/electro-fix`;
-
     return (
-        <div className="settings-wrapper">
-            <h3 className="settings-section-title">Configuración de tu Vidriera</h3>
+        <div className="settings-layout">
 
-            <div className="settings-form-group">
-                <label className="settings-label">Título de la Web:
-                    <input type="text" name="titulo" value={config.titulo || ''} onChange={handleChange} className="settings-input" />
-                </label>
-                <label className="settings-label">Descripción corta:
-                    <textarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" />
-                </label>
-                <label className="settings-label">URL Imagen "Antes" (Equipo Roto):
-                    <input type="text" name="imagenAntes" value={config.imagenAntes || ''} onChange={handleChange} placeholder="https://ejemplo.com/roto.jpg" className="settings-input" />
-                </label>
-                <label className="settings-label">URL Imagen "Después" (Equipo Reparado):
-                    <input type="text" name="imagenDespues" value={config.imagenDespues || ''} onChange={handleChange} placeholder="https://ejemplo.com/reparado.jpg" className="settings-input" />
-                </label>
+            {/* COLUMNA IZQUIERDA: CONTROLES */}
+            <div className="settings-controls glass-effect">
+                <h2 className="settings-main-title">Personalizar Vidriera</h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Los cambios se guardan automáticamente.</p>
 
-                <div className="color-picker-wrapper">
-                    <label className="settings-label" style={{ margin: 0 }}>Color de Marca (Hex):</label>
-                    <input type="color" name="colorTema" value={config.colorTema || '#ffffff'} onChange={handleChange} className="color-picker" />
-                </div>
+                <div className="settings-form-group">
+                    <label className="settings-label">Nombre del Negocio:
+                        <input type="text" name="nombreNegocio" value={config.nombreNegocio || ''} onChange={handleChange} className="settings-input" />
+                    </label>
 
-                <div className="toggle-box">
-                    <div>
-                        <strong className="toggle-title">Presupuestador Automático</strong>
-                        <span className="toggle-desc">Muestra los precios al cliente antes del chat.</span>
-                    </div>
-                    <label><input type="checkbox" name="mostrarPresupuestador" checked={config.mostrarPresupuestador !== false} onChange={handleChange} className="toggle-checkbox" /></label>
-                </div>
-            </div>
+                    <label className="settings-label">Título Principal (Hero):
+                        <input type="text" name="titulo" value={config.titulo || ''} onChange={handleChange} className="settings-input" />
+                    </label>
 
-            {/* NUEVA SECCIÓN: CÓDIGO QR */}
-            <h3 className="settings-section-title" style={{ marginTop: '30px' }}>Tu Código QR</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#0a0a0a', padding: '20px', borderRadius: '8px', border: '1px solid #333', marginBottom: '40px' }}>
-                <p style={{ color: '#888', fontSize: '0.9rem', textAlign: 'center', marginBottom: '15px' }}>
-                    Imprimí este código y pegalo en tu local. Los clientes podrán auto-ingresar sus equipos sin hacer fila.
-                </p>
+                    <label className="settings-label">Descripción corta:
+                        <textarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" />
+                    </label>
 
-                <div ref={qrRef} style={{ padding: '15px', backgroundColor: '#fff', borderRadius: '8px', marginBottom: '15px' }}>
-                    <QRCodeCanvas
-                        value={urlVidriera}
-                        size={180}
-                        bgColor={"#ffffff"}
-                        fgColor={"#000000"}
-                        level={"H"} // Alta corrección de errores para lectura rápida
-                    />
-                </div>
-
-                <button onClick={descargarQR} className="btn-add" style={{ padding: '12px 24px', width: '100%' }}>
-                    Descargar QR para Imprimir
-                </button>
-            </div>
-
-            {config.mostrarPresupuestador !== false && (
-                <>
-                    <h3 className="settings-section-title">Gestión de Lista de Precios</h3>
-                    <div className="price-list-container">
-                        {Object.keys(tablaPrecios).map(equipo => (
-                            <div key={equipo} className="equipment-card">
-                                <div className="equipment-header">
-                                    <h4 className="equipment-title">{equipo}</h4>
-                                    <button onClick={() => handleEliminarEquipo(equipo)} className="btn-delete-equipment">🗑️ Borrar Equipo</button>
-                                </div>
-                                <div className="fault-list">
-                                    {Object.entries(tablaPrecios[equipo]).map(([falla, precio]) => (
-                                        <div key={falla} className="fault-item">
-                                            <span className="fault-name">{falla}</span>
-                                            <div className="fault-price-wrapper">
-                                                <span className="fault-price">${precio.toLocaleString('es-AR')}</span>
-                                                <button onClick={() => handleEliminarFalla(equipo, falla)} className="btn-delete-fault">×</button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {Object.keys(tablaPrecios[equipo]).length === 0 && <span className="empty-faults">No hay fallas cargadas.</span>}
-                                </div>
-                                <div className="add-fault-form">
-                                    <input type="text" placeholder="Nueva falla..." value={nuevaFalla.equipo === equipo ? nuevaFalla.nombre : ''} onChange={(e) => setNuevaFalla({ equipo, nombre: e.target.value, precio: nuevaFalla.precio })} className="settings-input" style={{ marginTop: 0, flex: 2, padding: '10px' }} />
-                                    <input type="number" placeholder="Precio $" value={nuevaFalla.equipo === equipo ? nuevaFalla.precio : ''} onChange={(e) => setNuevaFalla({ ...nuevaFalla, equipo, precio: e.target.value })} className="settings-input" style={{ marginTop: 0, flex: 1, padding: '10px' }} />
-                                    <button onClick={() => handleAgregarFalla(equipo)} className="btn-add btn-add-fault">+</button>
-                                </div>
-                            </div>
-                        ))}
-                        <div className="add-equipment-form">
-                            <input type="text" placeholder="Nombre del nuevo equipo (Ej. iPhone 15)" value={nuevoEquipo} onChange={(e) => setNuevoEquipo(e.target.value)} className="settings-input" style={{ marginTop: 0, flex: 1 }} />
-                            <button onClick={handleAgregarEquipo} className="btn-add btn-add-equipment">Agregar Equipo</button>
+                    <div style={{ display: 'flex', gap: '15px' }}>
+                        <div className="color-picker-wrapper" style={{ flex: 1 }}>
+                            <label className="settings-label" style={{ margin: 0 }}>Color de Marca:</label>
+                            <input type="color" name="colorTema" value={config.colorTema || '#ffffff'} onChange={handleChange} className="color-picker" />
                         </div>
                     </div>
-                </>
-            )}
+
+                    <div className="toggle-box">
+                        <div>
+                            <strong className="toggle-title">Presupuestador IA</strong>
+                            <span className="toggle-desc">Mostrar lista de precios al cliente.</span>
+                        </div>
+                        <label><input type="checkbox" name="mostrarPresupuestador" checked={config.mostrarPresupuestador !== false} onChange={handleChange} className="toggle-checkbox" /></label>
+                    </div>
+                </div>
+            </div>
+
+            {/* COLUMNA DERECHA: VISTA PREVIA (CELULAR) */}
+            <div className="settings-preview-container">
+                <div className="phone-mockup glass-effect">
+
+                    {/* Header del Mockup */}
+                    <div className="phone-header">
+                        <div className="phone-notch"></div>
+                    </div>
+
+                    {/* Contenido Visual en Tiempo Real */}
+                    <div className="phone-screen" style={{ '--dynamic-color': config.colorTema }}>
+                        <div className="preview-nav">
+                            <span style={{ fontWeight: 'bold' }}>{config.nombreNegocio || 'Mi Negocio'}</span>
+                            <span>=</span>
+                        </div>
+
+                        <div className="preview-hero">
+                            <div className="preview-avatar">🔧</div>
+                            <h3 className="preview-title">{config.titulo || 'Título aquí'}</h3>
+                            <p className="preview-desc">{config.descripcion || 'Descripción corta...'}</p>
+                            <button className="preview-btn" style={{ backgroundColor: config.colorTema, color: '#fff' }}>Iniciar Consulta</button>
+                        </div>
+
+                        {config.mostrarPresupuestador && (
+                            <div className="preview-prices glass-input-effect">
+                                <h4 style={{ margin: '0 0 10px 0', fontSize: '0.9rem' }}>Nuestros Precios</h4>
+                                <div className="preview-price-item"><span>Cambio Pantalla</span> <strong>$---</strong></div>
+                                <div className="preview-price-item"><span>Pin de Carga</span> <strong>$---</strong></div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '20px', fontSize: '0.9rem' }}>Vista Previa en Dispositivo Móvil</p>
+            </div>
         </div>
     );
 }

@@ -29,10 +29,10 @@ function Home({ theme, toggleTheme }) {
             <nav className="home-nav">
                 <div className="home-logo">Wepairr<span>.</span></div>
                 <div className="home-links">
-                    <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema" style={{ marginRight: '15px' }}>
+                    <button type="button" onClick={(e) => { e.preventDefault(); toggleTheme(); }} className="theme-toggle-btn" title="Cambiar Tema" style={{ marginRight: '15px' }}>
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </button>
-                    <Link to="/login" className="btn-login-nav">Iniciar Sesión</Link>
+                    <Link to="/login" className="btn-login-nav">Soy Técnico</Link>
                 </div>
             </nav>
 
@@ -43,8 +43,9 @@ function Home({ theme, toggleTheme }) {
                         Gestioná tus reparaciones, automatizá presupuestos con IA y dale a tus clientes una experiencia premium de marca blanca.
                     </p>
                     <div className="hero-actions">
-                        <Link to="/dashboard" className="btn-primary-hero">Crear mi Taller Gratis</Link>
-                        <Link to="/taller/electro-fix" className="btn-secondary-hero">Ver Demo de Vidriera</Link>
+                        {/* BOTONES ACTUALIZADOS PARA EL MARKETPLACE */}
+                        <Link to="/directorio" className="btn-primary-hero">Buscar un Técnico</Link>
+                        <Link to="/dashboard" className="btn-secondary-hero">Crear mi Taller Gratis</Link>
                     </div>
                 </div>
             </main>

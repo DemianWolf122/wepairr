@@ -5,6 +5,7 @@ import ClientReception from './pages/ClientReception';
 import Home from './pages/Home';
 import StatusTracking from './pages/StatusTracking';
 import { TicketProvider } from './context/TicketContext';
+import Directory from './pages/Directory';
 
 // IMPORTACIÓN FORZADA: Esto asegura que el motor de temas se cargue sí o sí.
 import './index.css';
@@ -66,6 +67,8 @@ function App() {
             <Route path="/dashboard" element={<Dashboard config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />} />
             <Route path="/taller/:techId" element={<ClientReception config={config} />} />
             <Route path="/tracking" element={<StatusTracking />} />
+            <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
+            <Route path="/directorio" element={<Directory theme={theme} toggleTheme={toggleTheme} />} /> {/* <-- Añadir */}
           </Routes>
         </BrowserRouter>
       </div>
