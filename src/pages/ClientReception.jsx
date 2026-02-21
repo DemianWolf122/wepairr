@@ -4,27 +4,19 @@ import { TicketContext } from '../context/TicketContext';
 import BeforeAfterSlider from '../components/BeforeAfterSlider';
 import PriceEstimator from '../components/PriceEstimator';
 
-const TECNICOS_DB = {
-    'electro-fix': {
-        nombre: 'Electro Fix',
-        titulo: 'Revivimos tus equipos.',
-        descripcion: 'Ingresa los datos de tu dispositivo para recibir asistencia inmediata.',
-        colorTema: '#ffffff',
-        avatar: '⚡'
-    }
-};
-
 function ClientReception({ config }) {
     const { techId } = useParams();
     const { agregarTicket } = useContext(TicketContext);
 
-    const datosTecnico = TECNICOS_DB[techId] || {
-        nombre: 'Taller Wepairr',
-        titulo: 'Asistencia Técnica',
-        descripcion: 'Completa los datos para iniciar tu consulta.',
-        colorTema: '#ffffff',
-        avatar: '🔧'
-    };
+    // --- LECTURA DINÁMICA DE LA CONFIGURACIÓN ---
+    const tituloSaaS = config?.titulo || 'Asistencia Técnica';
+    const descripcionSaaS = config?.descripcion || 'Completa los datos para iniciar tu consulta.';
+    const colorPrimario = config?.colorTema || '#ffffff';
+    const nombreTaller = config?.nombreNegocio || 'Taller Wepairr';
+
+    // Imágenes dinámicas (con fallback a las de prueba si el técnico no pone nada)
+    const imgAntes = config?.imagenAntes || "https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?q=80&w=600&auto=format&fit=crop";
+    const imgDespues = config?.imagenDespues || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop";
 
     const [faseActiva, setFaseActiva] = useState(1);
     const [datosDispositivo, setDatosDispositivo] = useState({ modelo: '', falla: '' });
@@ -32,7 +24,6 @@ function ClientReception({ config }) {
     const [mensaje, setMensaje] = useState('');
     const [historial, setHistorial] = useState([]);
 
-    // NUEVO: Control del flujo interno del chat
     const [pasoChat, setPasoChat] = useState(1);
     const [detalleFalla, setDetalleFalla] = useState('');
 
@@ -41,7 +32,7 @@ function ClientReception({ config }) {
         if (!datosDispositivo.modelo.trim() || !datosDispositivo.falla.trim()) return;
 
         setHistorial([
-            { actor: 'ia', texto: `Hola. Soy el asistente de ${datosTecnico.nombre}. Veo que tienes un problema con tu ${datosDispositivo.modelo} (${datosDispositivo.falla}). ¿Podrías brindarme más detalles de cómo ocurrió para que el técnico lo evalúe?` }
+            { actor: 'ia', texto: `Hola. Soy el asistente de ${nombreTaller}. Veo que tienes un problema con tu ${datosDispositivo.modelo} (${datosDispositivo.falla}). ¿Podrías brindarme más detalles de cómo ocurrió para que el técnico lo evalúe?` }
         ]);
 
         setFaseActiva(2);
@@ -57,8 +48,7 @@ function ClientReception({ config }) {
 
         setTimeout(() => {
             if (pasoChat === 1) {
-                // El cliente acaba de dar los detalles. Le pedimos contacto.
-                setDetalleFalla(textoCliente); // Guardamos este detalle para el ticket final
+                setDetalleFalla(textoCliente);
                 setHistorial(prev => [...prev, {
                     actor: 'ia',
                     texto: 'Comprendo la situación. Para generar la orden oficial y que el laboratorio pueda contactarte con el presupuesto exacto, ¿me podrías indicar un número de teléfono o WhatsApp?'
@@ -66,13 +56,11 @@ function ClientReception({ config }) {
                 setPasoChat(2);
 
             } else if (pasoChat === 2) {
-                // El cliente (supuestamente) nos dio el teléfono. CERRAR VENTA.
                 setHistorial(prev => [...prev, {
                     actor: 'ia',
                     texto: '¡Excelente! He registrado tu número y el caso ha sido enviado a la bandeja de entrada del taller. El técnico revisará los detalles y se pondrá en contacto a la brevedad.'
                 }]);
 
-                // RECIÉN AHORA generamos el ticket en la base de datos global
                 const nuevoTicket = {
                     id: Date.now(),
                     equipo: datosDispositivo.modelo,
@@ -80,15 +68,14 @@ function ClientReception({ config }) {
                     presupuesto: 0,
                     estado: 'Ingresado',
                     tecnicoId: techId,
-                    tipo: 'consulta', // Ingresa al Inbox, no al Taller activo
+                    tipo: 'consulta',
                     borrado: false
                 };
 
                 agregarTicket(nuevoTicket);
-                setPasoChat(3); // Chat finalizado
+                setPasoChat(3);
 
             } else {
-                // Si el cliente sigue escribiendo después de cerrar la orden
                 setHistorial(prev => [...prev, {
                     actor: 'ia',
                     texto: 'Tu consulta ya se encuentra en revisión. Te contactaremos pronto al número indicado para continuar.'
@@ -118,13 +105,13 @@ function ClientReception({ config }) {
 
             <header style={{ textAlign: 'center', maxWidth: '600px', marginBottom: '50px', marginTop: '40px' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '15px', opacity: 0.9 }}>
-                    {datosTecnico.avatar}
+                    🔧
                 </div>
                 <h1 style={{ fontSize: '2.8rem', fontWeight: '700', margin: '0 0 10px 0', letterSpacing: '-0.5px' }}>
-                    {datosTecnico.titulo}
+                    {tituloSaaS}
                 </h1>
                 <p style={{ fontSize: '1.1rem', color: '#888888', lineHeight: '1.5', margin: 0 }}>
-                    {datosTecnico.descripcion}
+                    {descripcionSaaS}
                 </p>
             </header>
 
@@ -134,8 +121,8 @@ function ClientReception({ config }) {
                     <section>
                         <h2 style={sectionTitleStyle}>Nuestra Calidad</h2>
                         <BeforeAfterSlider
-                            imageBefore="https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?q=80&w=600&auto=format&fit=crop"
-                            imageAfter="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop"
+                            imageBefore={imgAntes}
+                            imageAfter={imgDespues}
                         />
                     </section>
 
@@ -168,7 +155,7 @@ function ClientReception({ config }) {
                                     style={minimalistInputStyle}
                                 />
                             </div>
-                            <button type="submit" style={minimalistButtonStyle}>
+                            <button type="submit" style={{ ...minimalistButtonStyle, backgroundColor: colorPrimario, color: colorPrimario === '#ffffff' ? '#000' : '#fff' }}>
                                 Iniciar Chat de Recepción
                             </button>
                         </form>
@@ -184,7 +171,7 @@ function ClientReception({ config }) {
                                 <div key={index} style={{
                                     alignSelf: msg.actor === 'cliente' ? 'flex-end' : 'flex-start',
                                     color: msg.actor === 'cliente' ? '#ffffff' : '#cccccc',
-                                    backgroundColor: msg.actor === 'cliente' ? '#222222' : 'transparent',
+                                    backgroundColor: msg.actor === 'cliente' ? (colorPrimario !== '#ffffff' ? colorPrimario : '#222222') : 'transparent',
                                     padding: msg.actor === 'cliente' ? '16px 24px' : '0 10px',
                                     borderRadius: '12px',
                                     maxWidth: '85%',
@@ -204,9 +191,9 @@ function ClientReception({ config }) {
                                 onChange={(e) => setMensaje(e.target.value)}
                                 placeholder="Escribe los detalles aquí..."
                                 style={minimalistInputStyle}
-                                disabled={pasoChat === 3} // Deshabilitamos si ya terminó
+                                disabled={pasoChat === 3}
                             />
-                            <button type="submit" style={{ ...minimalistButtonStyle, padding: '0 30px', width: 'auto', marginTop: 0 }} disabled={pasoChat === 3}>
+                            <button type="submit" style={{ ...minimalistButtonStyle, backgroundColor: colorPrimario, color: colorPrimario === '#ffffff' ? '#000' : '#fff', padding: '0 30px', width: 'auto', marginTop: 0 }} disabled={pasoChat === 3}>
                                 Enviar
                             </button>
                         </form>
@@ -219,6 +206,6 @@ function ClientReception({ config }) {
 
 const sectionTitleStyle = { fontSize: '1.1rem', color: '#888', textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center', marginBottom: '30px', fontWeight: '500' };
 const minimalistInputStyle = { width: '100%', padding: '16px 0', backgroundColor: 'transparent', border: 'none', borderBottom: '1px solid #333333', color: '#ffffff', fontSize: '1.1rem', outline: 'none', transition: 'border-color 0.3s ease', boxSizing: 'border-box' };
-const minimalistButtonStyle = { width: '100%', padding: '18px', backgroundColor: '#ffffff', color: '#000000', fontWeight: '600', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1.05rem', marginTop: '10px', transition: 'opacity 0.2s ease' };
+const minimalistButtonStyle = { width: '100%', padding: '18px', fontWeight: '600', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1.05rem', marginTop: '10px', transition: 'opacity 0.2s ease' };
 
 export default ClientReception;

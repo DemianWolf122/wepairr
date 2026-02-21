@@ -71,6 +71,15 @@ function Settings({ config, onUpdate }) {
                     Descripción corta:
                     <textarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }} />
                 </label>
+                <label style={labelStyle}>
+                    URL Imagen "Antes" (Equipo Roto):
+                    <input type="text" name="imagenAntes" value={config.imagenAntes || ''} onChange={handleChange} placeholder="https://ejemplo.com/roto.jpg" style={inputStyle} />
+                </label>
+
+                <label style={labelStyle}>
+                    URL Imagen "Después" (Equipo Reparado):
+                    <input type="text" name="imagenDespues" value={config.imagenDespues || ''} onChange={handleChange} placeholder="https://ejemplo.com/reparado.jpg" style={inputStyle} />
+                </label>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                     <label style={{ ...labelStyle, margin: 0 }}>Color de Marca (Hex):</label>
