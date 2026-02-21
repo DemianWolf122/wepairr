@@ -4,6 +4,7 @@ import TicketCard from '../components/TicketCard';
 import Settings from '../components/Settings';
 import CommunityWiki from './CommunityWiki';
 import MetricsView from './MetricsView';
+import InventoryView from './InventoryView';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
@@ -49,6 +50,7 @@ function Dashboard({ config, setConfig }) {
                 <div className="nav-menu">
                     <button className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('gestion')}>Gestión</button>
                     <button className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('metricas')}>Métricas</button>
+                    <button className={`nav-link-btn ${seccionPrincipal === 'inventario' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('inventario')}>Inventario</button>
                     <button className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('comunidad')}>Comunidad</button>
                     <button className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('configuracion')}>Ajustes</button>
                 </div>
@@ -100,6 +102,7 @@ function Dashboard({ config, setConfig }) {
                 )}
 
                 {seccionPrincipal === 'metricas' && <MetricsView tickets={tickets} />}
+                {seccionPrincipal === 'inventario' && <InventoryView />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
                 {seccionPrincipal === 'configuracion' && (
                     <div className="settings-full-container">
