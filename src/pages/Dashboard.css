@@ -1,0 +1,159 @@
+.dashboard-main {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.dashboard-col-left {
+    flex: 1 1 500px;
+    padding: 30px;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-col-right {
+    flex: 1 1 400px;
+    padding: 30px;
+    background-color: #050505;
+}
+
+@media (min-width: 801px) {
+    .dashboard-col-right {
+        border-left: 1px solid #222;
+    }
+}
+
+.dashboard-tabs {
+    display: flex;
+    gap: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.tab-active {
+    background-color: #fff;
+    color: #000;
+    border: none;
+    font-weight: bold;
+}
+
+.tab-inactive {
+    background-color: transparent;
+    color: #888;
+    border: 1px solid #333;
+}
+
+.tab-inactive:hover {
+    color: #fff;
+    border-color: #555;
+}
+
+.ticket-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.ticket-list-empty {
+    color: #666;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.ticket-item-wrapper {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.ticket-actions-absolute {
+    position: absolute;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+.ticket-actions-inbox {
+    top: 15px;
+}
+
+.ticket-actions-trash {
+    top: 25px;
+}
+
+.action-btn {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem;
+    transition: opacity 0.2s ease;
+}
+
+.action-btn:hover {
+    opacity: 0.8;
+}
+
+.btn-green {
+    background-color: #66bb6a;
+    color: #000;
+}
+
+.btn-dark {
+    background-color: #333;
+    color: #fff;
+}
+
+.btn-red {
+    background-color: #ff4d4d;
+    color: #fff;
+}
+
+.dropzone {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.dropzone-idle {
+    border: 2px dashed #333;
+    background-color: #0a0a0a;
+    color: #666;
+}
+
+.dropzone-active {
+    border: 2px dashed #ff4d4d;
+    background-color: #1a0505;
+    color: #ff4d4d;
+}
+
+.dropzone-icon {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.chatbox-container {
+    margin-top: 30px;
+    height: 450px;
+}
+
+.chatbox-title {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #aaa;
+}

@@ -1,0 +1,202 @@
+/* src/pages/ClientReception.css */
+.client-reception-wrapper {
+    min-height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5vh 20px;
+    box-sizing: border-box;
+}
+
+.back-nav {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+.back-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #ffffff;
+}
+
+.reception-header {
+    text-align: center;
+    max-width: 600px;
+    margin-bottom: 50px;
+    margin-top: 40px;
+}
+
+.header-avatar {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.header-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
+}
+
+.header-desc {
+    font-size: 1.1rem;
+    color: #888888;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.phase-container {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    animation: fadeIn 0.5s ease;
+}
+
+.section-title {
+    font-size: 1.1rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.form-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.minimalist-input {
+    width: 100%;
+    padding: 16px 0;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #333333;
+    color: #ffffff;
+    font-size: 1.1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.minimalist-input:focus {
+    border-bottom-color: #66bb6a;
+}
+
+.minimalist-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.minimalist-button {
+    width: 100%;
+    padding: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.05rem;
+    margin-top: 10px;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.minimalist-button:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.minimalist-button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.minimalist-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* --- CHAT STYLES --- */
+.chat-main {
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 0.5s ease;
+}
+
+.chat-layout {
+    display: flex;
+    flex-direction: column;
+    height: 550px;
+}
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 20px;
+}
+
+.chat-message {
+    padding: 16px 24px;
+    border-radius: 12px;
+    max-width: 85%;
+    font-size: 1.05rem;
+    line-height: 1.6;
+}
+
+.msg-cliente {
+    align-self: flex-end;
+    color: #ffffff;
+}
+
+.msg-ia {
+    align-self: flex-start;
+    color: #cccccc;
+    background-color: transparent;
+    padding: 0 10px;
+    border-left: 2px solid #333;
+}
+
+.chat-form {
+    border-top: 1px solid #222222;
+    padding-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.chat-form .minimalist-button {
+    padding: 0 30px;
+    width: auto;
+    margin-top: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
