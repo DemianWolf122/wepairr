@@ -28,6 +28,19 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
         setEditandoPrecio(false);
     };
 
+    const enviarWhatsApp = () => {
+        const telefono = ticket.falla.split('Teléfono: ')[1]?.trim() || "";
+        const configGuardada = JSON.parse(localStorage.getItem('wepairr_config')) || {};
+        const nombreLocal = configGuardada.nombreNegocio || 'el taller';
+        const mensaje = `Hola! Soy de ${nombreLocal}. Te aviso que tu ${ticket.equipo} ya está en estado: ${ticket.estado}. Presupuesto total: $${ticket.presupuesto}.`;
+
+        if (telefono) {
+            window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+        } else {
+            alert("Este ticket no tiene un número de contacto registrado.");
+        }
+    };
+
     return (
         <div draggable onDragStart={handleDragStart} onDragEnd={() => setIsDragging(false)} className={`ticket-card ${isDragging ? 'ticket-dragging' : ''}`}>
             <h3 className="ticket-title">{ticket.equipo}</h3>
@@ -42,7 +55,7 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
                             <button onClick={guardarPrecio} className="btn-save-budget">✓</button>
                         </div>
                     ) : (
-                        <div onClick={() => vista === 'activos' && setEditandoPrecio(true)} className="budget-display" style={{ cursor: vista === 'activos' ? 'pointer' : 'default' }} title={vista === 'activos' ? "Haz clic para editar precio" : ""}>
+                        <div onClick={() => vista === 'activos' && setEditandoPrecio(true)} className="budget-display" style={{ cursor: vista === 'activos' ? 'pointer' : 'default' }}>
                             <span className={`budget-value ${ticket.presupuesto > 0 ? 'budget-value-filled' : 'budget-value-empty'}`}>
                                 ${ticket.presupuesto.toLocaleString('es-AR')}
                             </span>
@@ -53,7 +66,10 @@ function TicketCard({ ticket, onStatusChange, onBudgetChange, vista }) {
 
                 <div className="footer-actions">
                     {vista === 'activos' && (
-                        <button onClick={() => generarReciboPDF(ticket)} className="btn-pdf" title="Descargar Comprobante PDF">📄 PDF</button>
+                        <>
+                            <button onClick={enviarWhatsApp} className="btn-whatsapp" title="Avisar por WhatsApp">🟢 WA</button>
+                            <button onClick={() => generarReciboPDF(ticket)} className="btn-pdf" title="Descargar Comprobante PDF">📄 PDF</button>
+                        </>
                     )}
                     <button onClick={() => vista === 'activos' && onStatusChange(ticket.id)} className="btn-status" style={{ backgroundColor: getStatusColor(ticket.estado), cursor: vista === 'activos' ? 'pointer' : 'default', opacity: vista === 'activos' ? 1 : 0.7 }}>
                         {ticket.estado}

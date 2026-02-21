@@ -137,3 +137,22 @@
 .btn-status:hover {
     opacity: 0.8;
 }
+
+.btn-whatsapp {
+    background-color: #128C7E;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    transition: opacity 0.2s;
+}
+
+.btn-whatsapp:hover {
+    opacity: 0.8;
+}

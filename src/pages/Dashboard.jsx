@@ -2,16 +2,15 @@ import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import TicketCard from '../components/TicketCard';
 import Settings from '../components/Settings';
+import CommunityWiki from './CommunityWiki';
+import MetricsView from './MetricsView';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
 function Dashboard({ config, setConfig }) {
-    // ESTADO PARA NAVEGACIÓN SUPERIOR (Gestión vs Configuración)
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
-
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket } = useContext(TicketContext);
 
-    // ESTADO PARA PESTAÑAS INTERNAS DE GESTIÓN
     const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
@@ -43,39 +42,22 @@ function Dashboard({ config, setConfig }) {
 
     return (
         <div className="dashboard-wrapper">
-            {/* --- NAVBAR DEL TÉCNICO --- */}
             <nav className="tech-navbar">
                 <div className="tech-brand">
-                    {/* Convertimos el logo en un Link que lleva a Home */}
-                    <Link to="/" style={{ color: 'white', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        Wepairr <span style={{ color: '#666', fontWeight: 'normal' }}>Workspace</span>
-                    </Link>
+                    <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Wepairr <span style={{ color: '#666', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
                 <div className="nav-menu">
-                    <button
-                        className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}
-                        onClick={() => setSeccionPrincipal('gestion')}
-                    >
-                        Tablero de Gestión
-                    </button>
-                    <button
-                        className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`}
-                        onClick={() => setSeccionPrincipal('configuracion')}
-                    >
-                        Configurar Vidriera
-                    </button>
+                    <button className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('gestion')}>Gestión</button>
+                    <button className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('metricas')}>Métricas</button>
+                    <button className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('comunidad')}>Comunidad</button>
+                    <button className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`} onClick={() => setSeccionPrincipal('configuracion')}>Ajustes</button>
                 </div>
                 <div className="nav-actions">
-                    <Link to="/taller/electro-fix" target="_blank" className="btn-view-site">
-                        Ver mi Web ↗
-                    </Link>
+                    <Link to="/taller/tu-local" target="_blank" className="btn-view-site">Mi Vidriera ↗</Link>
                 </div>
             </nav>
 
-            {/* --- ÁREA DE TRABAJO --- */}
             <main className="dashboard-content">
-
-                {/* VISTA 1: GESTIÓN DE TICKETS */}
                 {seccionPrincipal === 'gestion' && (
                     <>
                         <header className="dashboard-tabs">
@@ -85,7 +67,7 @@ function Dashboard({ config, setConfig }) {
                         </header>
 
                         <div className="ticket-list">
-                            {ticketsMostrados.length === 0 && <p className="ticket-list-empty">{vistaActual === 'inbox' ? 'No hay consultas nuevas en el buzón.' : 'No hay equipos en reparación actualmente.'}</p>}
+                            {ticketsMostrados.length === 0 && <p className="ticket-list-empty">{vistaActual === 'inbox' ? 'No hay consultas nuevas.' : 'No hay equipos en reparación.'}</p>}
 
                             {ticketsMostrados.map(ticket => (
                                 <div key={ticket.id} className="ticket-item-wrapper">
@@ -101,14 +83,13 @@ function Dashboard({ config, setConfig }) {
                                     {vistaActual === 'papelera' && (
                                         <div className="ticket-actions-absolute ticket-actions-trash">
                                             <button onClick={() => restaurarTicket(ticket.id)} className="action-btn btn-green">Restaurar</button>
-                                            <button onClick={() => eliminarDefinitivamente(ticket.id)} className="action-btn btn-red">Eliminar Permanente</button>
+                                            <button onClick={() => eliminarDefinitivamente(ticket.id)} className="action-btn btn-red">Eliminar</button>
                                         </div>
                                     )}
                                 </div>
                             ))}
                         </div>
 
-                        {/* Dropzone siempre visible al fondo de la pantalla de gestión */}
                         {vistaActual !== 'papelera' && (
                             <div onDrop={handleDropTrash} onDragOver={(e) => { e.preventDefault(); setIsDragOverTrash(true); }} onDragLeave={() => setIsDragOverTrash(false)} className={`dropzone ${isDragOverTrash ? 'dropzone-active' : 'dropzone-idle'}`}>
                                 <span className="dropzone-icon">🗑️</span>
@@ -118,13 +99,13 @@ function Dashboard({ config, setConfig }) {
                     </>
                 )}
 
-                {/* VISTA 2: CONFIGURACIÓN DE LA VIDRIERA */}
+                {seccionPrincipal === 'metricas' && <MetricsView tickets={tickets} />}
+                {seccionPrincipal === 'comunidad' && <CommunityWiki />}
                 {seccionPrincipal === 'configuracion' && (
                     <div className="settings-full-container">
                         <Settings config={config} onUpdate={setConfig} />
                     </div>
                 )}
-
             </main>
         </div>
     );

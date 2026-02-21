@@ -1,24 +1,39 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Home from './pages/Home';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ClientReception from './pages/ClientReception';
-import StatusTracking from './pages/StatusTracking'; // <-- Nuevo
+import Home from './pages/Home';
+import StatusTracking from './pages/StatusTracking';
 import { TicketProvider } from './context/TicketContext';
 
-function Login() { /* ... tu componente login actual ... */ }
+function Login() {
+  return (
+    <div style={{ padding: '50px', backgroundColor: '#0f0f0f', height: '100vh', color: 'white', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Acceso Técnicos</h1>
+      <p style={{ color: '#888', marginBottom: '30px' }}>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
+      <Link to="/dashboard" style={{ display: 'inline-block', padding: '15px 30px', backgroundColor: '#66bb6a', color: '#000', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
+        Entrar a mi Cuenta
+      </Link>
+    </div>
+  );
+}
 
 function App() {
   const [config, setConfig] = useState(() => {
-    const saved = localStorage.getItem('wepairr_config');
-    return saved ? JSON.parse(saved) : {
+    const configGuardada = localStorage.getItem('wepairr_config');
+    if (configGuardada) return JSON.parse(configGuardada);
+    return {
       nombreNegocio: 'Wepairr Tech',
       titulo: 'Reparaciones Profesionales',
-      descripcion: 'Especialistas en microelectrónica.',
+      descripcion: 'Especialistas en microelectrónica. Tu equipo en las mejores manos.',
       colorTema: '#ffffff',
-      whatsapp: '5491122334455',
+      redes: { instagram: '', whatsapp: '5491122334455' },
       mostrarPresupuestador: true,
-      tablaPrecios: {} // Se llena con la lista que te di antes
+      tablaPrecios: {
+        'iPhone 13 Pro': { 'Cambio de Pantalla': 250000, 'Cambio de Batería': 85000, 'Pin de Carga': 45000 },
+        'Samsung Galaxy S23 Ultra': { 'Módulo Original': 350000, 'Cambio de Batería': 90000, 'Pin de Carga': 50000 },
+        'Motorola Moto G52': { 'Cambio de Pantalla': 85000, 'Cambio de Batería': 35000 }
+      }
     };
   });
 
@@ -34,7 +49,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard config={config} setConfig={setConfig} />} />
           <Route path="/taller/:techId" element={<ClientReception config={config} />} />
-          <Route path="/tracking" element={<StatusTracking />} /> {/* <-- Nueva Ruta Pública */}
+          <Route path="/tracking" element={<StatusTracking />} />
         </Routes>
       </BrowserRouter>
     </TicketProvider>
