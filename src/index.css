@@ -1,13 +1,5 @@
-/* 1. VARIABLES GLOBALES POR DEFECTO (TEMA CLARO) */
+/* 1. VARIABLES CONSTANTES (No cambian con el tema) */
 :root {
-    --bg-main: #f8fafc;
-    --bg-panel: #ffffff;
-    --bg-input: #f1f5f9;
-    --bg-hover: #e2e8f0;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --border-color: #e2e8f0;
-
     --accent-color: #2563eb;
     --accent-hover: #1d4ed8;
     --success: #10b981;
@@ -15,8 +7,19 @@
     --warning: #f59e0b;
 }
 
-/* 2. SOBRESCRITURA DIRECTA (TEMA OSCURO) */
-[data-theme="dark"] {
+/* 2. TEMA CLARO: Inyectado por React */
+.theme-light {
+    --bg-main: #f8fafc;
+    --bg-panel: #ffffff;
+    --bg-input: #f1f5f9;
+    --bg-hover: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --border-color: #cbd5e1;
+}
+
+/* 3. TEMA OSCURO: Inyectado por React */
+.theme-dark {
     --bg-main: #0B0F19;
     --bg-panel: #131B2F;
     --bg-input: #1C2640;
@@ -24,21 +27,15 @@
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --border-color: #27344D;
-
-    --accent-color: #3b82f6;
-    --accent-hover: #60a5fa;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #fbbf24;
 }
 
-/* 3. APLICACIÓN AL CUERPO DE LA PÁGINA */
+/* Base de seguridad */
 body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
     margin: 0;
+    padding: 0;
     font-family: system-ui, -apple-system, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    background-color: #0B0F19;
+    /* Evita destellos al recargar */
 }
 
 @keyframes fadeIn {

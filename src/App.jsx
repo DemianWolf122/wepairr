@@ -19,27 +19,14 @@ function Login() {
 }
 
 function App() {
-  // 1. LEER TEMA GUARDADO
+  // ESTADO DEL TEMA 100% EN REACT
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('wepairr_theme') || 'dark';
   });
 
-  // 2. APLICAR AL CARGAR LA PÁGINA
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, []); // Solo se ejecuta una vez al iniciar
-
-  // 3. FUNCIÓN DE CAMBIO INSTANTÁNEO
   const toggleTheme = () => {
     const nuevoTema = theme === 'dark' ? 'light' : 'dark';
-
-    // Cambiamos el estado de React
     setTheme(nuevoTema);
-
-    // Forzamos el cambio en el HTML en el mismo milisegundo
-    document.documentElement.setAttribute('data-theme', nuevoTema);
-
-    // Lo guardamos en memoria
     localStorage.setItem('wepairr_theme', nuevoTema);
   };
 
@@ -66,15 +53,26 @@ function App() {
 
   return (
     <TicketProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />} />
-          <Route path="/taller/:techId" element={<ClientReception config={config} />} />
-          <Route path="/tracking" element={<StatusTracking />} />
-        </Routes>
-      </BrowserRouter>
+      {/* EL ENVOLTORIO MAESTRO: Controla e inyecta las variables CSS al instante */}
+      <div
+        className={`theme-${theme}`}
+        style={{
+          minHeight: '100vh',
+          backgroundColor: 'var(--bg-main)',
+          color: 'var(--text-primary)',
+          transition: 'background-color 0.3s ease, color 0.3s ease'
+        }}
+      >
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />} />
+            <Route path="/taller/:techId" element={<ClientReception config={config} />} />
+            <Route path="/tracking" element={<StatusTracking />} />
+          </Routes>
+        </BrowserRouter>
+      </div>
     </TicketProvider>
   );
 }
