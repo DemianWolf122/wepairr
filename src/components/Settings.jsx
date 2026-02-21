@@ -16,30 +16,49 @@ const PremiumGate = ({ children, isPremium }) => {
     );
 };
 
-// --- PALETAS PREDEFINIDAS PREMIUM ---
+// --- MEGA PALETA DE COLORES (Alta Conversión) ---
 const COLOR_PRESETS = [
-    { name: 'Azul Wepairr', hex: '#2563eb' },
-    { name: 'Esmeralda Tech', hex: '#10b981' },
-    { name: 'Púrpura Pro', hex: '#8b5cf6' },
-    { name: 'Rojo Carmesí', hex: '#e11d48' },
-    { name: 'Naranja Volt', hex: '#f97316' },
-    { name: 'Carbón Mate', hex: '#334155' },
+    { name: 'Azul Wepairr', hex: '#2563eb' }, { name: 'Esmeralda Tech', hex: '#10b981' },
+    { name: 'Púrpura Pro', hex: '#8b5cf6' }, { name: 'Rojo Carmesí', hex: '#e11d48' },
+    { name: 'Naranja Volt', hex: '#f97316' }, { name: 'Carbón Mate', hex: '#334155' },
+    { name: 'Rosa Neón', hex: '#ec4899' }, { name: 'Cian Cibernético', hex: '#06b6d4' },
+    { name: 'Amarillo Solar', hex: '#eab308' }, { name: 'Índigo Profundo', hex: '#4f46e5' },
+    { name: 'Verde Lima', hex: '#84cc16' }, { name: 'Rojo Ladrillo', hex: '#b91c1c' },
+];
+
+const FONTS = [
+    { label: 'Moderna (Por defecto)', value: 'system-ui, -apple-system, sans-serif' },
+    { label: 'Elegante (Serif)', value: 'Georgia, "Times New Roman", serif' },
+    { label: 'Tech (Monospace)', value: '"Fira Code", "Courier New", monospace' },
+    { label: 'Geométrica', value: '"Trebuchet MS", "Lucida Grande", sans-serif' }
+];
+
+const BORDER_STYLES = [
+    { label: 'Suaves (Redondeados)', value: '16px' },
+    { label: 'Píldora (Ultra Redondos)', value: '30px' },
+    { label: 'Profesional (Cuadrados)', value: '4px' }
 ];
 
 function Settings({ config, onUpdate }) {
     const [currentPlan, setCurrentPlan] = useState(config.plan || 'standard');
     const isPremium = currentPlan === 'premium';
 
-    // Estado para controlar la vista previa (Móvil vs Escritorio)
     const [previewMode, setPreviewMode] = useState('mobile');
+
+    // ESTADO PARA LOS ACORDEONES (Qué sección está abierta)
+    const [seccionAbierta, setSeccionAbierta] = useState('identidad');
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         onUpdate({ ...config, [name]: type === 'checkbox' ? checked : value });
     };
 
-    // --- LÓGICA DE COLOR INTELIGENTE ---
-    const shopColors = useMemo(() => {
+    const toggleSeccion = (seccion) => {
+        setSeccionAbierta(prev => prev === seccion ? null : seccion);
+    };
+
+    // --- LÓGICA DE VARIABLES CSS INTELIGENTES ---
+    const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
         const isDarkMode = config.shopDarkMode;
 
@@ -64,18 +83,15 @@ function Settings({ config, onUpdate }) {
             '--shop-text': isDarkMode ? '#f8fafc' : '#0f172a',
             '--shop-text-secondary': isDarkMode ? '#94a3b8' : '#64748b',
             '--shop-border': isDarkMode ? '#334155' : '#e2e8f0',
+            '--shop-font': config.fontFamily || 'system-ui, -apple-system, sans-serif',
+            '--shop-radius': config.borderRadius || '16px',
         };
-    }, [config.colorTema, config.shopDarkMode]);
+    }, [config.colorTema, config.shopDarkMode, config.fontFamily, config.borderRadius]);
 
-    // Función para convertir links de YouTube a formato Embed
     const getEmbedUrl = (url) => {
         if (!url) return null;
-        if (url.includes('youtube.com/watch?v=')) {
-            return url.replace('watch?v=', 'embed/');
-        }
-        if (url.includes('youtu.be/')) {
-            return url.replace('youtu.be/', 'youtube.com/embed/');
-        }
+        if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
+        if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
         return url;
     };
 
@@ -98,76 +114,132 @@ function Settings({ config, onUpdate }) {
                     </div>
                 </div>
 
-                <hr className="settings-divider" />
+                <div className="accordions-container">
 
-                {/* IDENTIDAD */}
-                <div className="settings-section">
-                    <h3 className="settings-section-title">🏢 Identidad del Negocio</h3>
-                    <div className="settings-form-group">
-                        <label className="settings-label">Nombre Visible:
-                            <input type="text" name="nombreNegocio" value={config.nombreNegocio || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Wepairr Tech" />
-                        </label>
-                        <label className="settings-label">Título Principal:
-                            <input type="text" name="titulo" value={config.titulo || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Reparamos tu mundo." />
-                        </label>
-                        <label className="settings-label">Descripción Corta:
-                            <textarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" placeholder="Especialistas en..." />
-                        </label>
-                    </div>
-                </div>
-
-                <hr className="settings-divider" />
-
-                {/* APARIENCIA (PALETA CUIDADA Y MODO OSCURO EN PLAN BÁSICO) */}
-                <div className="settings-section">
-                    <h3 className="settings-section-title">🎨 Apariencia</h3>
-
-                    <label className="settings-label" style={{ marginBottom: '15px' }}>Color de Marca:</label>
-                    <div className="color-presets-grid">
-                        {COLOR_PRESETS.map(preset => (
-                            <button
-                                key={preset.hex}
-                                type="button"
-                                className={`color-preset-btn ${config.colorTema === preset.hex ? 'active' : ''}`}
-                                style={{ backgroundColor: preset.hex }}
-                                onClick={() => onUpdate({ ...config, colorTema: preset.hex })}
-                                title={preset.name}
-                            />
-                        ))}
-                    </div>
-
-                    <div style={{ marginTop: '25px' }}></div>
-
-                    {/* MODO OSCURO AHORA ESTÁ EN EL PLAN BÁSICO */}
-                    <div className="toggle-box glass-input-effect">
-                        <div>
-                            <strong className="toggle-title">Modo Oscuro en Vidriera</strong>
-                            <span className="toggle-desc">Activa un tema oscuro elegante.</span>
+                    {/* ACORDEÓN 1: IDENTIDAD */}
+                    <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
+                            <span>🏢 Identidad del Negocio</span>
+                            <span className="accordion-chevron">{seccionAbierta === 'identidad' ? '▲' : '▼'}</span>
                         </div>
-                        <label className="switch">
-                            <input type="checkbox" name="shopDarkMode" checked={config.shopDarkMode || false} onChange={handleChange} />
-                            <span className="slider round"></span>
-                        </label>
+                        {seccionAbierta === 'identidad' && (
+                            <div className="accordion-content">
+                                <div className="settings-form-group">
+                                    <label className="settings-label">Nombre Visible:
+                                        <input type="text" name="nombreNegocio" value={config.nombreNegocio || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Wepairr Tech" />
+                                    </label>
+                                    <label className="settings-label">Título Principal:
+                                        <input type="text" name="titulo" value={config.titulo || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Reparamos tu mundo." />
+                                    </label>
+                                    <label className="settings-label">Descripción Corta:
+                                        <textarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" placeholder="Especialistas en..." />
+                                    </label>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                </div>
 
-                <hr className="settings-divider" />
-
-                {/* MULTIMEDIA (PREMIUM) */}
-                <div className="settings-section">
-                    <h3 className="settings-section-title">🖼️ Multimedia (Pro)</h3>
-                    <PremiumGate isPremium={isPremium}>
-                        <div className="settings-form-group">
-                            <label className="settings-label">URL Imagen de Portada:
-                                <input type="text" name="bannerUrl" value={config.bannerUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://ejemplo.com/imagen.jpg" />
-                            </label>
-
-                            <label className="settings-label">Video Promocional (YouTube):
-                                <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://www.youtube.com/watch?v=..." />
-                                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Se mostrará en la sección "Sobre Nosotros".</span>
-                            </label>
+                    {/* ACORDEÓN 2: APARIENCIA */}
+                    <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
+                            <span>🎨 Apariencia Global</span>
+                            <span className="accordion-chevron">{seccionAbierta === 'apariencia' ? '▲' : '▼'}</span>
                         </div>
-                    </PremiumGate>
+                        {seccionAbierta === 'apariencia' && (
+                            <div className="accordion-content">
+                                <label className="settings-label" style={{ marginBottom: '15px' }}>Color de Marca (Alta Conversión):</label>
+                                <div className="color-presets-grid">
+                                    {COLOR_PRESETS.map(preset => (
+                                        <button
+                                            key={preset.hex} type="button"
+                                            className={`color-preset-btn ${config.colorTema === preset.hex ? 'active' : ''}`}
+                                            style={{ backgroundColor: preset.hex }}
+                                            onClick={() => onUpdate({ ...config, colorTema: preset.hex })}
+                                            title={preset.name}
+                                        />
+                                    ))}
+                                </div>
+
+                                <div className="toggle-box glass-input-effect" style={{ marginTop: '25px', marginBottom: '25px' }}>
+                                    <div>
+                                        <strong className="toggle-title">Modo Oscuro en Vidriera</strong>
+                                        <span className="toggle-desc">Fondo oscuro elegante.</span>
+                                    </div>
+                                    <label className="switch">
+                                        <input type="checkbox" name="shopDarkMode" checked={config.shopDarkMode || false} onChange={handleChange} />
+                                        <span className="slider round"></span>
+                                    </label>
+                                </div>
+
+                                <PremiumGate isPremium={isPremium}>
+                                    <div className="settings-form-group">
+                                        <label className="settings-label">Estilo de Tipografía:
+                                            <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input">
+                                                {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
+                                            </select>
+                                        </label>
+                                        <label className="settings-label">Estilo de Botones y Tarjetas:
+                                            <select name="borderRadius" value={config.borderRadius || '16px'} onChange={handleChange} className="settings-input">
+                                                {BORDER_STYLES.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
+                                            </select>
+                                        </label>
+                                    </div>
+                                </PremiumGate>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ACORDEÓN 3: MULTIMEDIA & REDES */}
+                    <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
+                            <span>🖼️ Multimedia & Redes (Pro)</span>
+                            <span className="accordion-chevron">{seccionAbierta === 'multimedia' ? '▲' : '▼'}</span>
+                        </div>
+                        {seccionAbierta === 'multimedia' && (
+                            <div className="accordion-content">
+                                <PremiumGate isPremium={isPremium}>
+                                    <div className="settings-form-group">
+                                        <label className="settings-label">URL Imagen de Portada (Banner):
+                                            <input type="text" name="bannerUrl" value={config.bannerUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://ejemplo.com/imagen.jpg" />
+                                        </label>
+                                        <label className="settings-label">Video Promocional (YouTube):
+                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://www.youtube.com/watch?v=..." />
+                                        </label>
+                                        <hr style={{ borderColor: 'var(--border-glass)', opacity: 0.5, margin: '10px 0' }} />
+                                        <label className="settings-label">WhatsApp (Número):
+                                            <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 549112345678" />
+                                        </label>
+                                        <label className="settings-label">Instagram (Usuario):
+                                            <input type="text" name="instagram" value={config.instagram || ''} onChange={handleChange} className="settings-input" placeholder="Ej. @mitaller" />
+                                        </label>
+                                    </div>
+                                </PremiumGate>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ACORDEÓN 4: FUNCIONALIDADES */}
+                    <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
+                            <span>⚡ Funcionalidades</span>
+                            <span className="accordion-chevron">{seccionAbierta === 'funcionalidades' ? '▲' : '▼'}</span>
+                        </div>
+                        {seccionAbierta === 'funcionalidades' && (
+                            <div className="accordion-content">
+                                <div className="toggle-box glass-input-effect">
+                                    <div>
+                                        <strong className="toggle-title">Presupuestador Online</strong>
+                                        <span className="toggle-desc">Muestra tu lista de precios.</span>
+                                    </div>
+                                    <label className="switch">
+                                        <input type="checkbox" name="mostrarPresupuestador" checked={config.mostrarPresupuestador !== false} onChange={handleChange} />
+                                        <span className="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                 </div>
             </div>
 
@@ -175,16 +247,13 @@ function Settings({ config, onUpdate }) {
             {/* --- COLUMNA DERECHA: VISTA PREVIA --- */}
             <div className="settings-preview-container animate-fade-in">
 
-                {/* Controles de Dispositivo */}
                 <div className="device-toggles glass-effect">
                     <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => setPreviewMode('mobile')}>📱 Celular</button>
                     <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => setPreviewMode('desktop')}>💻 Monitor</button>
                 </div>
 
-                {/* EL MOCKUP DINÁMICO */}
                 <div className={previewMode === 'mobile' ? 'phone-mockup' : 'desktop-mockup'}>
 
-                    {/* Header condicional según dispositivo */}
                     {previewMode === 'mobile' ? (
                         <div className="phone-header-bar">
                             <div className="phone-notch"></div>
@@ -200,12 +269,12 @@ function Settings({ config, onUpdate }) {
                     )}
 
                     {/* LA PANTALLA RENDERIZADA */}
-                    <div className="shop-screen" style={shopColors}>
+                    <div className="shop-screen" style={shopStyles}>
 
                         <div className="shop-nav">
                             <span className="shop-logo">{config.nombreNegocio || 'Tu Negocio'}</span>
                             <div className="shop-nav-links">
-                                <span>Inicio</span> <span>Servicios</span> <span>Contacto</span>
+                                <span>Inicio</span> <span>Servicios</span>
                             </div>
                             <div className="shop-menu-icon">☰</div>
                         </div>
@@ -220,19 +289,11 @@ function Settings({ config, onUpdate }) {
                             </div>
                         </div>
 
-                        {/* SECCIÓN VIDEO PREMIUM */}
                         {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
                             <div className="shop-section animate-slide-up-delayed" style={{ background: 'var(--shop-bg-secondary)' }}>
                                 <h2 className="shop-section-title">Sobre Nosotros</h2>
                                 <div className="shop-video-wrapper">
-                                    <iframe
-                                        src={getEmbedUrl(config.videoUrl)}
-                                        title="YouTube video player"
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                        className="shop-iframe"
-                                    ></iframe>
+                                    <iframe src={getEmbedUrl(config.videoUrl)} title="Video promocional" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="shop-iframe"></iframe>
                                 </div>
                             </div>
                         )}
@@ -248,8 +309,20 @@ function Settings({ config, onUpdate }) {
                         )}
 
                         <div className="shop-footer">
+                            {/* Inyección de Redes Sociales (Premium) */}
+                            {isPremium && (config.whatsapp || config.instagram) && (
+                                <div className="shop-social-links">
+                                    {config.whatsapp && <span className="social-badge">WhatsApp</span>}
+                                    {config.instagram && <span className="social-badge">Insta</span>}
+                                </div>
+                            )}
                             <p>© 2024 {config.nombreNegocio}.</p>
                         </div>
+
+                        {/* Botón flotante de WhatsApp (Premium) */}
+                        {isPremium && config.whatsapp && (
+                            <div className="floating-wa-btn">💬</div>
+                        )}
 
                     </div>
                     {previewMode === 'mobile' && <div className="phone-home-bar"></div>}

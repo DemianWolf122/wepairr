@@ -1,24 +1,20 @@
-/* --- LAYOUT Y ANIMACIONES --- */
+/* --- LAYOUT Y ANIMACIONES RESPONSIVAS --- */
 .settings-layout {
     display: flex;
-    gap: 30px;
+    flex-wrap: nowrap;
+    /* Evita que se rompa en pantallas anchas */
+    gap: 40px;
     height: calc(100vh - 100px);
     align-items: flex-start;
-    overflow: hidden;
     transition: all 0.4s ease;
 }
 
-/* Si está en desktop, le damos más espacio a la vista previa */
-.settings-layout.layout-desktop .settings-preview-container {
-    width: 65%;
-}
-
-.settings-layout.layout-desktop .settings-controls {
-    width: 35%;
-}
-
+/* Evitamos que la columna izquierda se aplaste asegurando anchos mínimos y máximos */
 .settings-controls {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 400px;
+    /* LA CLAVE DEL ARREGLO RESPONSIVE */
+    max-width: 700px;
     padding: 30px;
     border-radius: 24px;
     height: 100%;
@@ -26,14 +22,99 @@
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-color: var(--border-glass) transparent;
-    transition: width 0.4s ease;
 }
 
+/* La vista previa mantiene su tamaño rígido y no se deja aplastar */
+.settings-preview-container {
+    flex: 0 0 380px;
+    /* Tamaño rígido para modo móvil */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.4s ease;
+}
+
+/* Al poner Monitor, la vista previa crece pero la izquierda no se aplasta de más */
+.settings-layout.layout-desktop .settings-preview-container {
+    flex: 1 1 600px;
+    max-width: 1000px;
+}
+
+.settings-layout.layout-desktop .settings-controls {
+    flex: 0 0 380px;
+}
+
+
+/* --- SISTEMA DE ACORDEONES --- */
+.accordions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.accordion-item {
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.app-root.light .accordion-item {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.accordion-item.active {
+    background: transparent;
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    transition: background 0.2s;
+}
+
+.accordion-header:hover {
+    background: var(--bg-hover-glass);
+}
+
+.accordion-chevron {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: transform 0.3s;
+}
+
+.accordion-content {
+    padding: 0 20px 25px 20px;
+    animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cabecera general */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .settings-main-title {
@@ -48,22 +129,6 @@
     margin: 0;
     color: var(--text-secondary);
     font-size: 0.95rem;
-}
-
-.settings-divider {
-    border: none;
-    border-top: 1px solid var(--border-glass);
-    margin: 25px 0;
-}
-
-.settings-section-title {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    color: var(--text-primary);
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 /* Formularios */
@@ -99,7 +164,6 @@
 .settings-input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-    background: var(--bg-hover-glass);
 }
 
 .settings-textarea {
@@ -108,16 +172,16 @@
     line-height: 1.5;
 }
 
-/* --- PALETA DE COLORES PREDEFINIDA --- */
+/* Paleta de Colores Predefinida */
 .color-presets-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
     gap: 15px;
-    flex-wrap: wrap;
 }
 
 .color-preset-btn {
-    width: 45px;
-    height: 45px;
+    width: 100%;
+    aspect-ratio: 1/1;
     border-radius: 50%;
     border: 3px solid transparent;
     cursor: pointer;
@@ -157,7 +221,6 @@
 .toggle-desc {
     font-size: 0.8rem;
     color: var(--text-secondary);
-    line-height: 1.3;
 }
 
 .switch {
@@ -219,14 +282,15 @@ input:checked+.slider:before {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
+    margin-top: 10px;
 }
 
 .premium-content-blurred {
-    filter: blur(5px);
-    opacity: 0.5;
+    filter: blur(4px);
+    opacity: 0.6;
     pointer-events: none;
     user-select: none;
-    transition: all 0.3s;
+    padding-bottom: 10px;
 }
 
 .premium-lock-overlay {
@@ -239,19 +303,18 @@ input:checked+.slider:before {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.2);
     z-index: 2;
     gap: 8px;
     backdrop-filter: blur(2px);
 }
 
-.app-root.dark .premium-lock-overlay {
-    background: rgba(255, 255, 255, 0.05);
+.app-root.light .premium-lock-overlay {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .lock-icon {
     font-size: 2rem;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .premium-label {
@@ -288,16 +351,7 @@ input:checked+.slider:before {
     padding: 5px;
 }
 
-/* --- CONTROLES DE VISTA PREVIA (MÓVIL/DESKTOP) --- */
-.settings-preview-container {
-    width: 400px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    transition: width 0.4s ease;
-}
-
+/* Controles de Vista Previa */
 .device-toggles {
     display: flex;
     gap: 10px;
@@ -323,8 +377,7 @@ input:checked+.slider:before {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-
-/* --- MOCKUP CELULAR --- */
+/* --- MOCKUPS FÍSICOS --- */
 .phone-mockup {
     width: 320px;
     height: 650px;
@@ -387,7 +440,6 @@ input:checked+.slider:before {
     transform: translateX(-50%);
 }
 
-/* --- MOCKUP ESCRITORIO --- */
 .desktop-mockup {
     width: 100%;
     height: 550px;
@@ -413,7 +465,6 @@ input:checked+.slider:before {
 
 .app-root.light .desktop-header-bar {
     background: rgba(255, 255, 255, 0.5);
-    border-bottom: 1px solid var(--border-glass);
 }
 
 .mac-dot {
@@ -447,8 +498,8 @@ input:checked+.slider:before {
     text-align: center;
 }
 
-
 /* --- PANTALLA RENDERIZADA (La "App" por dentro) --- */
+/* AQUÍ APLICAMOS LA TIPOGRAFÍA DINÁMICA DE LA CONFIGURACIÓN */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -458,6 +509,8 @@ input:checked+.slider:before {
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
+    font-family: var(--shop-font);
+    /* <--- INYECCIÓN DE TIPOGRAFÍA */
     transition: background-color 0.4s ease, color 0.4s ease;
 }
 
@@ -474,7 +527,6 @@ input:checked+.slider:before {
     position: sticky;
     top: 0;
     z-index: 5;
-    transition: inherit;
     border-bottom: 1px solid var(--shop-border);
 }
 
@@ -496,12 +548,9 @@ input:checked+.slider:before {
     display: flex;
 }
 
-/* Muestra links solo en PC */
 .desktop-mockup .shop-menu-icon {
     display: none;
 }
-
-/* Oculta hamburguesa en PC */
 
 .shop-hero {
     padding: 60px 20px;
@@ -523,7 +572,7 @@ input:checked+.slider:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), var(--shop-bg));
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), var(--shop-bg));
     z-index: 1;
 }
 
@@ -532,12 +581,13 @@ input:checked+.slider:before {
     z-index: 2;
 }
 
+/* BORDES DINÁMICOS */
 .shop-avatar-placeholder {
     width: 70px;
     height: 70px;
     background: var(--shop-accent);
     color: #fff;
-    border-radius: 20px;
+    border-radius: var(--shop-radius);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -545,7 +595,6 @@ input:checked+.slider:before {
     margin: 0 auto 20px auto;
     font-size: 1rem;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.4s ease;
 }
 
 .desktop-mockup .shop-avatar-placeholder {
@@ -571,7 +620,6 @@ input:checked+.slider:before {
     margin: 0 auto 30px auto;
     line-height: 1.6;
     max-width: 400px;
-    transition: color 0.4s ease;
 }
 
 .shop-cta-btn {
@@ -579,16 +627,11 @@ input:checked+.slider:before {
     color: #fff;
     border: none;
     padding: 14px 32px;
-    border-radius: 99px;
+    border-radius: var(--shop-radius);
     font-weight: bold;
     font-size: 1rem;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s;
-}
-
-.shop-cta-btn:hover {
-    transform: scale(1.05);
 }
 
 .shop-section {
@@ -607,15 +650,13 @@ input:checked+.slider:before {
     text-align: center;
 }
 
-/* Contenedor del Iframe de Video */
 .shop-video-wrapper {
     position: relative;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
     padding-bottom: 56.25%;
-    /* Ratio 16:9 */
-    border-radius: 16px;
+    border-radius: var(--shop-radius);
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     border: 1px solid var(--shop-border);
@@ -640,37 +681,63 @@ input:checked+.slider:before {
 .shop-service-card {
     background: var(--shop-bg-secondary);
     padding: 20px;
-    border-radius: 16px;
+    border-radius: var(--shop-radius);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 10px;
     border: 1px solid var(--shop-border);
-    transition: transform 0.3s;
-}
-
-.shop-service-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--shop-accent);
 }
 
 .service-icon {
     font-size: 2rem;
-    transition: color 0.4s ease;
 }
 
 .shop-footer {
-    padding: 30px;
+    padding: 30px 20px;
     text-align: center;
     color: var(--shop-text-secondary);
     font-size: 0.85rem;
     margin-top: auto;
     background: var(--shop-bg-secondary);
     border-top: 1px solid var(--shop-border);
+    position: relative;
 }
 
-/* --- ANIMACIONES --- */
+.shop-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.social-badge {
+    background: var(--shop-bg);
+    border: 1px solid var(--shop-border);
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-weight: bold;
+    font-size: 0.75rem;
+    color: var(--shop-text);
+}
+
+.floating-wa-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+    z-index: 100;
+}
+
 .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
 }
