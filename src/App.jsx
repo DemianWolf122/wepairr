@@ -6,6 +6,9 @@ import Home from './pages/Home';
 import StatusTracking from './pages/StatusTracking';
 import { TicketProvider } from './context/TicketContext';
 
+// IMPORTACIÓN FORZADA: Esto asegura que el motor de temas se cargue sí o sí.
+import './index.css';
+
 function Login() {
   return (
     <div style={{ padding: '50px', backgroundColor: 'var(--bg-main)', height: '100vh', color: 'var(--text-primary)', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
@@ -19,15 +22,16 @@ function Login() {
 }
 
 function App() {
-  // ESTADO DEL TEMA 100% EN REACT
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('wepairr_theme') || 'dark';
   });
 
   const toggleTheme = () => {
-    const nuevoTema = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nuevoTema);
-    localStorage.setItem('wepairr_theme', nuevoTema);
+    setTheme(prev => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('wepairr_theme', nextTheme);
+      return nextTheme;
+    });
   };
 
   const [config, setConfig] = useState(() => {
@@ -53,16 +57,8 @@ function App() {
 
   return (
     <TicketProvider>
-      {/* EL ENVOLTORIO MAESTRO: Controla e inyecta las variables CSS al instante */}
-      <div
-        className={`theme-${theme}`}
-        style={{
-          minHeight: '100vh',
-          backgroundColor: 'var(--bg-main)',
-          color: 'var(--text-primary)',
-          transition: 'background-color 0.3s ease, color 0.3s ease'
-        }}
-      >
+      {/* CONTENEDOR MAESTRO: Transmite las variables de color a todas las páginas */}
+      <div className={`app-root ${theme}`}>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
