@@ -9,7 +9,7 @@ import { TicketProvider } from './context/TicketContext';
 function Login() {
   return (
     <div style={{ padding: '50px', backgroundColor: 'var(--bg-main)', height: '100vh', color: 'var(--text-primary)', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Acceso Técnicos</h1>
+      <h1 style={{ fontSize: '2.5rem', margin: '0 0 10px 0' }}>Acceso Técnicos</h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
       <Link to="/dashboard" style={{ display: 'inline-block', padding: '15px 30px', backgroundColor: 'var(--accent-color)', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
         Entrar a mi Cuenta
@@ -19,11 +19,16 @@ function Login() {
 }
 
 function App() {
-  // MOTOR DE TEMAS
-  const [theme, setTheme] = useState(() => localStorage.getItem('wepairr_theme') || 'dark');
+  // MOTOR DE TEMAS: Forzamos la lectura inmediata del localStorage
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('wepairr_theme');
+    return savedTheme ? savedTheme : 'dark';
+  });
 
+  // Este efecto es el que "engancha" las variables de index.css a toda la app
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme); // Redundancia para evitar fallos de renderizado
     localStorage.setItem('wepairr_theme', theme);
   }, [theme]);
 
@@ -55,7 +60,6 @@ function App() {
     <TicketProvider>
       <BrowserRouter>
         <Routes>
-          {/* Le enviamos theme y toggleTheme al componente Home */}
           <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />} />
