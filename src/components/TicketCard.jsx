@@ -1,25 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import generarPDF from '../utils/generarPDF';
 import './TicketCard.css';
 
-// --- SVGs ---
+// --- SVGs Premium ---
 const SvgPhone = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
 const SvgUser = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 const SvgCalendar = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
-const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
-const SvgPDF = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>;
+const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
+const SvgPDF = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>;
+const SvgEdit = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>;
+const SvgSave = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>;
+const SvgX = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 
-function TicketCard({ ticket, vista, onStatusChange, onBudgetChange }) {
+function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicket }) {
     const isConsulta = ticket.tipo === 'consulta';
+    const [isEditing, setIsEditing] = useState(false);
 
-    // Asignación de colores según estado
-    const getStatusColor = (estado) => {
+    // Estado local para los inputs de edición
+    const [editData, setEditData] = useState({
+        dispositivo: ticket.dispositivo || '',
+        problema: ticket.problema || '',
+        cliente: {
+            nombre: ticket.cliente?.nombre || '',
+            telefono: ticket.cliente?.telefono || ''
+        }
+    });
+
+    const getStatusStyle = (estado) => {
         switch (estado) {
-            case 'Ingresado': return 'status-yellow';
-            case 'En Proceso': return 'status-blue';
-            case 'Finalizado': return 'status-green';
-            case 'Entregado': return 'status-gray';
-            default: return 'status-gray';
+            case 'Ingresado': return { bg: 'rgba(245, 158, 11, 0.1)', color: '#d97706', dot: '#f59e0b' };
+            case 'En Proceso': return { bg: 'rgba(59, 130, 246, 0.1)', color: '#2563eb', dot: '#3b82f6' };
+            case 'Finalizado': return { bg: 'rgba(16, 185, 129, 0.1)', color: '#059669', dot: '#10b981' };
+            case 'Entregado': return { bg: 'rgba(107, 114, 128, 0.1)', color: '#4b5563', dot: '#6b7280' };
+            default: return { bg: 'rgba(107, 114, 128, 0.1)', color: '#4b5563', dot: '#6b7280' };
         }
     };
 
@@ -29,99 +42,128 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange }) {
         return date.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     };
 
-    // FUNCIÓN DE WHATSAPP AUTOMÁTICO
     const handleWhatsApp = (e) => {
-        e.stopPropagation(); // Evita que se active el Drag&Drop al hacer click
-        if (!ticket.cliente?.telefono) {
-            alert("Este cliente no tiene un teléfono registrado.");
-            return;
-        }
-
-        // Limpiamos el número de espacios o guiones
+        e.stopPropagation();
+        if (!ticket.cliente?.telefono) { alert("Este cliente no tiene un teléfono registrado."); return; }
         const phone = ticket.cliente.telefono.replace(/[\s\-\(\)]/g, '');
-        const nombre = ticket.cliente.nombre || 'Cliente';
-        const estado = ticket.estado || 'Ingresado';
-
-        // Mensaje Premium Automático
-        const msg = `Hola ${nombre}, te contactamos del Servicio Técnico para informarte que tu equipo *${ticket.dispositivo}* actualmente se encuentra: *${estado}*.\n\nPor cualquier consulta, estamos a tu disposición.`;
-
+        const msg = `Hola ${ticket.cliente.nombre || 'Cliente'}, te contactamos para informarte que tu equipo *${ticket.dispositivo}* se encuentra: *${ticket.estado || 'Ingresado'}*.\n\nPor cualquier consulta estamos a tu disposición.`;
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
-    // FUNCIÓN PARA GENERAR PDF
     const handlePDF = (e) => {
         e.stopPropagation();
         generarPDF(ticket);
     };
 
+    const handleSaveEdit = () => {
+        onEditTicket(ticket.id, editData);
+        setIsEditing(false);
+    };
+
+    const handleCancelEdit = () => {
+        // Restaurar valores originales si cancela
+        setEditData({
+            dispositivo: ticket.dispositivo || '',
+            problema: ticket.problema || '',
+            cliente: { nombre: ticket.cliente?.nombre || '', telefono: ticket.cliente?.telefono || '' }
+        });
+        setIsEditing(false);
+    };
+
+    const statusStyle = getStatusStyle(ticket.estado);
+
     return (
         <div
-            className={`ticket-card-premium glass-effect border-${getStatusColor(ticket.estado)}`}
-            draggable={true}
+            className={`ticket-card-soft glass-effect ${isEditing ? 'is-editing' : ''}`}
+            draggable={!isEditing} // Deshabilita el arrastre al editar para no cometer errores
             onDragStart={(e) => {
-                e.dataTransfer.setData('ticketId', ticket.id);
+                if (!isEditing) e.dataTransfer.setData('ticketId', ticket.id);
             }}
         >
-            <div className="tc-header">
-                <div className="tc-id-group">
-                    <span className="tc-id">#{ticket.id}</span>
-                    {isConsulta && <span className="tc-type-badge">Consulta Web</span>}
+            {/* CABECERA */}
+            <div className="tc-header-soft">
+                <div className="tc-id-soft">#{ticket.id}</div>
+                <div className="tc-actions-top">
+                    {vista === 'activos' && !isEditing && (
+                        <button className="tc-btn-icon btn-edit-soft" onClick={() => setIsEditing(true)} title="Editar información">
+                            <SvgEdit />
+                        </button>
+                    )}
+                    {vista === 'activos' && (
+                        <span
+                            className="tc-badge-soft"
+                            style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
+                            onClick={() => onStatusChange(ticket.id)}
+                        >
+                            <span className="status-dot" style={{ backgroundColor: statusStyle.dot }}></span>
+                            {ticket.estado}
+                        </span>
+                    )}
+                    {isConsulta && <span className="tc-badge-soft badge-web">Consulta Web</span>}
                 </div>
-
-                {vista === 'activos' && (
-                    <span className={`tc-status-badge ${getStatusColor(ticket.estado)}`} onClick={() => onStatusChange(ticket.id)}>
-                        {ticket.estado}
-                    </span>
-                )}
             </div>
 
-            <div className="tc-body">
-                <h3 className="tc-device-title">
-                    <SvgPhone /> {ticket.dispositivo || 'Dispositivo N/A'}
-                </h3>
-                <div className="tc-problem-box">
-                    <p className="tc-problem">"{ticket.problema}"</p>
-                </div>
-            </div>
-
-            <div className="tc-client-section">
-                <div className="tc-client-info">
-                    <SvgUser />
-                    <div className="tc-client-details">
-                        <span className="tc-client-name">{ticket.cliente?.nombre || 'Cliente'}</span>
-                        <span className="tc-client-phone">{ticket.cliente?.telefono || 'Sin teléfono'}</span>
+            {/* CUERPO DEL TICKET (VISTA VS EDICIÓN) */}
+            {isEditing ? (
+                <div className="tc-body-edit animate-fade-in">
+                    <input
+                        type="text" className="tc-input-soft" placeholder="Dispositivo"
+                        value={editData.dispositivo} onChange={e => setEditData({ ...editData, dispositivo: e.target.value })}
+                    />
+                    <textarea
+                        className="tc-input-soft" rows="2" placeholder="Falla reportada"
+                        value={editData.problema} onChange={e => setEditData({ ...editData, problema: e.target.value })}
+                    />
+                    <div className="tc-edit-row">
+                        <input
+                            type="text" className="tc-input-soft" placeholder="Nombre"
+                            value={editData.cliente.nombre} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, nombre: e.target.value } })}
+                        />
+                        <input
+                            type="text" className="tc-input-soft" placeholder="Teléfono"
+                            value={editData.cliente.telefono} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, telefono: e.target.value } })}
+                        />
+                    </div>
+                    <div className="tc-edit-actions">
+                        <button className="tc-btn-soft btn-save" onClick={handleSaveEdit}><SvgSave /> Guardar</button>
+                        <button className="tc-btn-soft btn-cancel" onClick={handleCancelEdit}><SvgX /> Cancelar</button>
                     </div>
                 </div>
+            ) : (
+                <div className="tc-body-soft">
+                    <h3 className="tc-device-soft"><SvgPhone /> {ticket.dispositivo || 'Dispositivo N/A'}</h3>
+                    <p className="tc-problem-soft">"{ticket.problema}"</p>
 
-                {/* BOTONES DE ACCIÓN RÁPIDA (WA Y PDF) */}
-                <div className="tc-quick-actions">
-                    <button className="tc-action-btn wa-btn" onClick={handleWhatsApp} title="Enviar WhatsApp Automático">
-                        <SvgWhatsApp />
-                    </button>
-                    <button className="tc-action-btn pdf-btn" onClick={handlePDF} title="Descargar Comprobante PDF">
-                        <SvgPDF />
-                    </button>
-                </div>
-            </div>
-
-            <div className="tc-footer">
-                <div className="tc-date">
-                    <SvgCalendar /> {formatDate(ticket.fechaIngreso || ticket.fecha)}
-                </div>
-
-                {vista === 'activos' && (
-                    <div className="tc-budget-box animate-fade-in" onClick={e => e.stopPropagation()}>
-                        <span className="budget-label">Presupuesto:</span>
-                        <div className="budget-input-wrapper">
-                            <span>$</span>
-                            <input
-                                type="number"
-                                value={ticket.presupuesto || ''}
-                                onChange={(e) => onBudgetChange(ticket.id, e.target.value)}
-                                placeholder="0"
-                                className="tc-budget-input"
-                            />
+                    <div className="tc-client-row">
+                        <div className="tc-client-soft">
+                            <div className="client-avatar"><SvgUser /></div>
+                            <div className="client-data">
+                                <span className="client-name">{ticket.cliente?.nombre || 'Cliente'}</span>
+                                <span className="client-phone">{ticket.cliente?.telefono || 'Sin teléfono'}</span>
+                            </div>
                         </div>
+                        <div className="tc-comms">
+                            <button className="tc-btn-icon btn-wa" onClick={handleWhatsApp} title="WhatsApp"><SvgWhatsApp /></button>
+                            <button className="tc-btn-icon btn-pdf" onClick={handlePDF} title="PDF"><SvgPDF /></button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* PIE DE PÁGINA (FECHA Y PRESUPUESTO) */}
+            <div className="tc-footer-soft">
+                <div className="tc-date-soft"><SvgCalendar /> {formatDate(ticket.fechaIngreso || ticket.fecha)}</div>
+
+                {vista === 'activos' && !isEditing && (
+                    <div className="tc-budget-soft" onClick={e => e.stopPropagation()}>
+                        <span className="budget-currency">$</span>
+                        <input
+                            type="number"
+                            value={ticket.presupuesto || ''}
+                            onChange={(e) => onBudgetChange(ticket.id, e.target.value)}
+                            placeholder="0"
+                            className="budget-input"
+                        />
                     </div>
                 )}
             </div>

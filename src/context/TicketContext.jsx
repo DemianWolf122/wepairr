@@ -8,13 +8,12 @@ const TICKETS_INICIALES = [
 ];
 
 export const TicketProvider = ({ children }) => {
-    // SISTEMA ANTI-CRASH PARA TICKETS
     const [tickets, setTickets] = useState(() => {
         try {
             const datosGuardados = localStorage.getItem('wepairr_tickets');
             if (datosGuardados) {
                 const parsed = JSON.parse(datosGuardados);
-                if (Array.isArray(parsed)) return parsed; // Solo carga si es un array válido
+                if (Array.isArray(parsed)) return parsed;
             }
         } catch (e) {
             console.error("Error leyendo tickets, restaurando base de prueba.");
@@ -65,9 +64,15 @@ export const TicketProvider = ({ children }) => {
         setTickets(prev => [nuevoTicket, ...prev]);
     };
 
+    // NUEVA FUNCIÓN: Editar contenido del ticket
+    const editarTicket = (id, datosActualizados) => {
+        setTickets(prev => prev.map(t => t.id === id ? { ...t, ...datosActualizados } : t));
+    };
+
     return (
         <TicketContext.Provider value={{
-            tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, agregarTicketManual
+            tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera,
+            restaurarTicket, eliminarDefinitivamente, convertirATicket, agregarTicketManual, editarTicket
         }}>
             {children}
         </TicketContext.Provider>

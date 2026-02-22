@@ -26,7 +26,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
 
-    const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket } = useContext(TicketContext);
+    // Extraemos editarTicket del contexto
+    const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
     const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
@@ -115,7 +116,14 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                             {ticketsMostrados.length === 0 && <p className="ticket-list-empty">{vistaActual === 'inbox' ? 'No hay consultas nuevas.' : (vistaActual === 'activos' ? 'No hay equipos en reparación.' : 'La papelera está vacía.')}</p>}
                                             {ticketsMostrados.map(ticket => (
                                                 <div key={ticket.id} className="ticket-item-wrapper">
-                                                    <TicketCard ticket={ticket} vista={vistaActual} onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null} onBudgetChange={actualizarPresupuesto} />
+                                                    {/* PASAMOS LA FUNCIÓN ON EDIT TICKET A LA TARJETA */}
+                                                    <TicketCard
+                                                        ticket={ticket}
+                                                        vista={vistaActual}
+                                                        onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null}
+                                                        onBudgetChange={actualizarPresupuesto}
+                                                        onEditTicket={editarTicket}
+                                                    />
                                                     {vistaActual === 'inbox' && (
                                                         <div className="ticket-actions-absolute ticket-actions-inbox">
                                                             <button onClick={() => convertirATicket(ticket.id)} className="action-btn btn-green">Aceptar</button>
