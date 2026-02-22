@@ -1,83 +1,143 @@
-import { jsPDF } from 'jspdf';
+/**
+ * Utilidad nativa para generar comprobantes en PDF sin depender de librerías externas.
+ * Crea una ventana temporal de impresión con formato premium y lanza el diálogo de impresión.
+ */
 
-export const generarReciboPDF = (ticket) => {
-    // Recuperamos la configuración del taller para personalizar el PDF
-    const configLocal = JSON.parse(localStorage.getItem('wepairr_config')) || {};
-    const nombreTaller = configLocal.titulo || 'Wepairr Taller';
+const generarPDF = (ticket) => {
+    const isDarkMode = document.documentElement.classList.contains('dark');
 
-    // Inicializamos el documento en formato A4
-    const doc = new jsPDF();
+    // Obtenemos la configuración del negocio si existe
+    let config = { nombreNegocio: 'Servicio Técnico', whatsapp: '' };
+    try {
+        const savedConfig = localStorage.getItem('wepairr_config');
+        if (savedConfig) config = JSON.parse(savedConfig);
+    } catch (e) { }
 
-    // --- CABECERA ---
-    doc.setFillColor(15, 15, 15);
-    doc.rect(0, 0, 210, 40, 'F'); // Rectángulo oscuro superior
+    // Formatear Fecha
+    const fecha = ticket.fechaIngreso || ticket.fecha || new Date().toISOString();
+    const dateObj = new Date(fecha);
+    const fechaFormateada = dateObj.toLocaleDateString('es-AR') + ' ' + dateObj.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.text(nombreTaller, 15, 25);
+    // Construcción del HTML de impresión
+    const printWindow = window.open('', '', 'height=800,width=800');
 
-    // --- DATOS DEL COMPROBANTE ---
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(16);
-    doc.text('Orden de Servicio Técnico', 15, 60);
+    const htmlContent = `
+        <html>
+            <head>
+                <title>Comprobante - Orden #${ticket.id}</title>
+                <style>
+                    body { 
+                        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+                        padding: 40px; 
+                        color: #1a1a1a;
+                        background: #ffffff;
+                    }
+                    .ticket-container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        border: 2px solid #e5e7eb;
+                        border-radius: 16px;
+                        padding: 40px;
+                    }
+                    .header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        border-bottom: 2px solid #e5e7eb;
+                        padding-bottom: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .brand { font-size: 24px; font-weight: 900; color: #2563eb; margin: 0; }
+                    .order-id { font-size: 18px; color: #6b7280; font-weight: bold; }
+                    .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; margin-bottom: 5px; }
+                    .data-row { margin-bottom: 20px; }
+                    .data-text { font-size: 18px; font-weight: 700; margin: 0; }
+                    .problem-box {
+                        background: #f3f4f6;
+                        padding: 20px;
+                        border-radius: 12px;
+                        margin-top: 30px;
+                    }
+                    .problem-text { font-style: italic; color: #4b5563; line-height: 1.5; margin: 0; }
+                    .footer {
+                        margin-top: 40px;
+                        padding-top: 20px;
+                        border-top: 2px dashed #e5e7eb;
+                        text-align: center;
+                        font-size: 14px;
+                        color: #6b7280;
+                    }
+                    .status-badge {
+                        display: inline-block;
+                        padding: 8px 16px;
+                        background: #f3f4f6;
+                        border-radius: 99px;
+                        font-weight: bold;
+                        font-size: 14px;
+                        margin-top: 10px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="ticket-container">
+                    <div class="header">
+                        <h1 class="brand">${config.nombreNegocio}</h1>
+                        <span class="order-id">ORDEN DE SERVICIO #${ticket.id}</span>
+                    </div>
 
-    doc.setFontSize(11);
-    doc.setTextColor(80, 80, 80);
-    doc.text(`Nº de Ticket: #${ticket.id}`, 15, 75);
+                    <div style="display: flex; justify-content: space-between;">
+                        <div class="data-row">
+                            <div class="section-title">Datos del Cliente</div>
+                            <p class="data-text">${ticket.cliente?.nombre || 'Consumidor Final'}</p>
+                            <span style="color: #6b7280;">Tel: ${ticket.cliente?.telefono || '-'}</span>
+                        </div>
+                        <div class="data-row" style="text-align: right;">
+                            <div class="section-title">Fecha de Ingreso</div>
+                            <p class="data-text" style="font-size: 16px;">${fechaFormateada}</p>
+                        </div>
+                    </div>
 
-    // Utilizamos el ID (Date.now()) para formatear la fecha de ingreso
-    const fechaIngreso = new Date(ticket.id).toLocaleDateString('es-AR', {
-        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-    doc.text(`Fecha de ingreso: ${fechaIngreso}`, 15, 82);
+                    <div class="data-row" style="margin-top: 10px;">
+                        <div class="section-title">Equipo a reparar</div>
+                        <p class="data-text" style="font-size: 22px;">${ticket.dispositivo}</p>
+                    </div>
 
-    doc.setDrawColor(200, 200, 200);
-    doc.line(15, 90, 195, 90); // Línea divisoria
+                    <div class="problem-box">
+                        <div class="section-title">Falla Reportada / Trabajo a realizar</div>
+                        <p class="problem-text">"${ticket.problema}"</p>
+                    </div>
 
-    // --- DETALLES DEL EQUIPO ---
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(14);
-    doc.text('Detalles del Dispositivo', 15, 105);
+                    <div style="display: flex; justify-content: space-between; margin-top: 30px; align-items: center;">
+                        <div>
+                            <div class="section-title">Estado Actual</div>
+                            <div class="status-badge">${ticket.estado}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="section-title">Presupuesto Estimado</div>
+                            <p class="data-text" style="font-size: 24px; color: #059669;">
+                                ${ticket.presupuesto ? `$${ticket.presupuesto}` : 'A Confirmar'}
+                            </p>
+                        </div>
+                    </div>
 
-    doc.setFontSize(12);
-    doc.text(`Equipo:`, 15, 115);
-    doc.setFont('helvetica', 'bold');
-    doc.text(ticket.equipo, 35, 115);
+                    <div class="footer">
+                        <p>Conserve este comprobante para retirar su equipo.</p>
+                        ${config.whatsapp ? `<p>Contacto: ${config.whatsapp}</p>` : ''}
+                    </div>
+                </div>
+            </body>
+        </html>
+    `;
 
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Reporte:`, 15, 125);
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
 
-    // Función para manejar textos largos sin que se salgan de la página
-    const splitFalla = doc.splitTextToSize(ticket.falla, 160);
-    doc.text(splitFalla, 35, 125);
-
-    // --- PRESUPUESTO Y ESTADO ---
-    const alturaPresupuesto = 125 + (splitFalla.length * 7) + 20;
-
-    doc.setDrawColor(200, 200, 200);
-    doc.line(15, alturaPresupuesto - 10, 195, alturaPresupuesto - 10);
-
-    doc.setFontSize(12);
-    doc.text('Estado actual:', 15, alturaPresupuesto);
-    doc.setFont('helvetica', 'bold');
-    doc.text(ticket.estado.toUpperCase(), 45, alturaPresupuesto);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(16);
-    doc.text('Total Presupuestado:', 15, alturaPresupuesto + 15);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 139, 34); // Color verde para el dinero
-    doc.text(`$${ticket.presupuesto.toLocaleString('es-AR')}`, 65, alturaPresupuesto + 15);
-
-    // --- PIE DE PÁGINA LEGAL ---
-    doc.setTextColor(150, 150, 150);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Términos y Condiciones:', 15, 260);
-    doc.text('1. Los presupuestos tienen una validez de 7 días hábiles.', 15, 265);
-    doc.text('2. Pasados los 90 días sin retirar, el equipo se considerará abandonado.', 15, 270);
-    doc.text('Generado automáticamente por la plataforma Wepairr.', 15, 285);
-
-    // Dispara la descarga en el navegador
-    doc.save(`Ticket_${ticket.id}_Wepairr.pdf`);
+    // Esperamos a que el navegador renderice para lanzar la ventana de impresión
+    setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        // Opcional: printWindow.close() después de imprimir;
+    }, 250);
 };
+
+export default generarPDF;
