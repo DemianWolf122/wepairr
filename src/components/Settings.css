@@ -1,4 +1,3 @@
-/* --- LAYOUT GLOBAL --- */
 .settings-editor-layout {
     display: flex;
     height: 100%;
@@ -25,7 +24,7 @@
     background: var(--bg-panel);
 }
 
-/* FIX: Forzamos el texto claro u oscuro seg├║n el tema general, sin importar la vista previa */
+/* Fuerza color claro para textos del panel independientemente de la tienda */
 .settings-controls-panel {
     width: 420px;
     flex-shrink: 0;
@@ -37,6 +36,11 @@
     box-sizing: border-box;
     z-index: 10;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
+}
+
+.app-root.dark .settings-controls-panel {
+    background: var(--bg-panel);
+    color: #ffffff;
 }
 
 .settings-preview-canvas {
@@ -73,7 +77,6 @@
     transform: scale(0.96);
 }
 
-/* --- RESPONSIVE DEL EDITOR --- */
 @media (max-width: 900px) {
     .settings-editor-layout {
         flex-direction: column;
@@ -107,7 +110,7 @@
     }
 }
 
-/* --- MOCKUPS FÍSICOS Y CONTENEDOR DE PANTALLA --- */
+/* --- MOCKUPS --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -141,7 +144,7 @@
     margin: auto;
 }
 
-/* FIX: CONTENEDOR RELATIVO PARA ENJAULAR AL WHATSAPP */
+/* FIX: CONTENEDOR RELATIVO PARA ATRAPAR EL WHATSAPP */
 .shop-screen-container {
     flex: 1;
     position: relative;
@@ -159,11 +162,11 @@
     border-bottom-right-radius: 14px;
 }
 
-/* FIX: BOT├ôN WHATSAPP ATADO A SU CONTENEDOR */
+/* FIX: WHATSAPP ATRAPADO AL CONTENEDOR (YA NO SE SALE) */
 .floating-wa-btn-preview {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 25px;
+    right: 25px;
     width: 55px;
     height: 55px;
     background: #25D366;
@@ -175,7 +178,7 @@
     box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
     z-index: 100;
     cursor: pointer;
-    transition: transform 0.2s var(--ease-bounce);
+    transition: transform 0.2s;
 }
 
 .desktop-mockup-final .floating-wa-btn-preview {
@@ -267,7 +270,7 @@
     text-align: center;
 }
 
-/* --- PANTALLA DE LA TIENDA --- */
+/* --- PANTALLA RENDERIZADA BASE --- */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -278,6 +281,7 @@
     overflow-x: hidden;
     position: relative;
     font-family: var(--shop-font);
+    transition: background-color 0.3s ease, color 0.3s ease;
     scrollbar-width: none;
 }
 
@@ -290,7 +294,12 @@
     top: 0;
     z-index: 50;
     border-bottom: 1px solid var(--shop-border);
+    transition: background 0.3s, border-color 0.3s;
     padding: 15px 20px;
+}
+
+.desktop-mockup-final .shop-nav {
+    padding: 20px 50px;
 }
 
 .shop-logo {
@@ -304,6 +313,12 @@
     background-size: cover;
     background-position: center;
     background-color: var(--shop-bg-secondary);
+    transition: background-color 0.3s;
+    padding: 60px 0;
+}
+
+.desktop-mockup-final .shop-hero {
+    padding: 120px 0;
 }
 
 .shop-hero-overlay {
@@ -324,6 +339,7 @@
     align-items: center;
 }
 
+/* FIX RESPONSIVE TEXT: word-break */
 .shop-title {
     font-weight: 900;
     line-height: 1.1;
@@ -345,6 +361,18 @@
     transition: color 0.3s;
 }
 
+.shop-hours-hero {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    backdrop-filter: blur(5px);
+    padding: 5px 15px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
 .shop-cta-btn {
     background: var(--shop-accent);
     color: var(--shop-btn-text);
@@ -353,6 +381,7 @@
     font-weight: 800;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, color 0.3s;
 }
 
 .shop-trust-badge-hero {
@@ -373,6 +402,12 @@
 
 .shop-section {
     border-top: 1px solid var(--shop-border);
+    transition: border-color 0.3s, background-color 0.3s;
+    padding: 40px 20px;
+}
+
+.desktop-mockup-final .shop-section {
+    padding: 80px 40px;
 }
 
 .shop-section-tracking {
@@ -392,9 +427,11 @@
     text-align: left;
     max-width: 90%;
     margin: 0 auto;
+    transition: background-color 0.3s, border-color 0.3s;
     box-sizing: border-box;
 }
 
+/* FIX TRACKING: Input y Botón en Modo Oscuro */
 .tracking-input-group {
     display: flex;
     gap: 10px;
@@ -411,6 +448,7 @@
     background: var(--shop-bg);
     color: var(--shop-text);
     font-family: inherit;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .tracking-input-group button {
@@ -423,6 +461,11 @@
     font-weight: 900;
     text-align: center;
     margin-bottom: 20px;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .shop-services-grid {
@@ -439,6 +482,7 @@
     text-align: center;
     gap: 10px;
     border: 1px solid var(--shop-border);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .shop-map-preview {
@@ -452,11 +496,7 @@
     text-align: center;
 }
 
-/* SIZING */
-.phone-mockup-final .shop-hero {
-    padding: 60px 0;
-}
-
+/* MOBILE / DESKTOP SIZING PREVIEW (Se mantienen proporciones) */
 .phone-mockup-final .shop-avatar-placeholder {
     width: 70px;
     height: 70px;
@@ -486,10 +526,6 @@
     font-size: 0.85rem;
 }
 
-.phone-mockup-final .shop-section {
-    padding: 40px 20px;
-}
-
 .phone-mockup-final .shop-services-grid {
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 15px;
@@ -500,16 +536,8 @@
     padding: 20px;
 }
 
-.desktop-mockup-final .shop-nav {
-    padding: 20px 50px;
-}
-
 .desktop-mockup-final .shop-logo {
     font-size: 1.8rem;
-}
-
-.desktop-mockup-final .shop-hero {
-    padding: 120px 0;
 }
 
 .desktop-mockup-final .shop-avatar-placeholder {
@@ -543,10 +571,6 @@
     margin-top: 30px;
 }
 
-.desktop-mockup-final .shop-section {
-    padding: 80px 40px;
-}
-
 .desktop-mockup-final .shop-services-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
@@ -557,7 +581,7 @@
     padding: 35px;
 }
 
-/* --- ESTILOS DEL SIDEBAR DE EDICI├ôN --- */
+/* --- ESTILOS DEL SIDEBAR DE EDICIÓN --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -576,6 +600,18 @@
     margin: 0;
     color: var(--text-secondary);
     font-size: 0.95rem;
+}
+
+.plan-select {
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    font-weight: 800;
+    outline: none;
+    font-size: 0.9rem;
+    padding: 5px;
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
 .accordions-container {
@@ -634,11 +670,11 @@
     padding: 0 22px 25px 22px;
 }
 
-/* FIX: DISTANCIA Y SEPARACI├ôN ENTRE LABELS E INPUTS */
+/* FIX: DISTANCIA Y SEPARACIÓN ENTRE LABELS E INPUTS */
 .settings-form-group {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 20px;
 }
 
 .settings-label {
@@ -647,10 +683,10 @@
     font-size: 0.9rem;
     font-weight: 700;
     margin-bottom: 0;
+    transition: color 0.3s;
 }
 
-.settings-input,
-.select-input {
+.settings-input {
     width: 100%;
     padding: 14px;
     background: var(--bg-input-glass);
@@ -662,8 +698,36 @@
     transition: all 0.2s;
     box-sizing: border-box;
     font-family: inherit;
+    user-select: auto;
+    -webkit-user-select: auto;
     margin-top: 10px;
-    /* Aqu├¡ est├í el aire */
+    /* AQUÍ ESTÁ EL AIRE (WHITE SPACE) QUE FALTABA */
+}
+
+/* FIX DESPLEGABLES: DISEÑO PREMIUM, NO EL DE WINDOWS DEFAULT */
+.select-input {
+    width: 100%;
+    padding: 14px 40px 14px 14px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    border-radius: 12px;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    font-family: inherit;
+    user-select: auto;
+    -webkit-user-select: auto;
+    margin-top: 10px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px auto;
 }
 
 .app-root.light .settings-input,
@@ -685,6 +749,8 @@
 
 .settings-textarea {
     line-height: 1.5;
+    user-select: auto;
+    -webkit-user-select: auto;
     padding-bottom: 25px;
     margin-top: 0;
 }
@@ -710,7 +776,6 @@
     grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
 }
 
-/* BOTONES MÁS CHICOS */
 .color-preset-btn {
     width: 100%;
     aspect-ratio: 1/1;
@@ -733,10 +798,6 @@
     z-index: 2;
 }
 
-.app-root.light .color-preset-btn.active {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
 .toggle-box {
     padding: 18px;
     border-radius: 16px;
@@ -744,6 +805,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: border-color 0.3s, background-color 0.3s;
 }
 
 .app-root.light .toggle-box {
@@ -874,16 +936,6 @@ input:checked+.slider:before {
     background: rgba(255, 255, 255, 0.4);
 }
 
-.lock-icon {
-    color: var(--text-primary);
-}
-
-.premium-label {
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: var(--text-primary);
-}
-
 .device-toggles {
     display: flex;
     gap: 10px;
@@ -900,6 +952,7 @@ input:checked+.slider:before {
     font-weight: 800;
     font-size: 0.95rem;
     cursor: pointer;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -910,4 +963,72 @@ input:checked+.slider:before {
     color: var(--bg-main);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     transform: scale(1.05);
+}
+
+/* INSTAGRAM FEED SIMULACIÓN */
+.btn-connect-ig {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s;
+    margin-top: 10px;
+}
+
+.btn-connect-ig:hover {
+    transform: scale(1.02);
+}
+
+.ig-connected-box {
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.ig-status {
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ig-preview-grid {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.ig-preview-item {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #f09433, #bc1888);
+    border-radius: 8px;
+    opacity: 0.7;
+}
+
+.btn-disconnect {
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
 }

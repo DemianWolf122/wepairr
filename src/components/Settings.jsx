@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import './Settings.css';
 
-// --- LIBRERÍA DE ICONOS SVG ---
 const SvgChevronDown = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="chevron-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>;
 const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
@@ -101,6 +100,7 @@ function Settings({ config, onUpdate }) {
     const handlePreviewChange = (mode) => {
         if (mode === previewMode || isAnimatingPreview) return;
         setIsAnimatingPreview(true);
+        setMobileMenuOpen(false);
         setTimeout(() => { setPreviewMode(mode); setTimeout(() => setIsAnimatingPreview(false), 50); }, 350);
     };
 
@@ -112,8 +112,13 @@ function Settings({ config, onUpdate }) {
         const isDark = config.shopDarkMode;
         const defaultText = isDark ? '#ffffff' : '#0f172a';
         const defaultSub = isDark ? '#f8fafc' : '#334155';
-        if (config.colorTitulo && !checkColorSafety(config.colorTitulo, currentBgColor)) updates.colorTitulo = defaultText;
-        if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo, currentBgColor)) updates.colorSubtitulo = defaultSub;
+
+        if (config.colorTitulo && !checkColorSafety(config.colorTitulo, currentBgColor)) {
+            updates.colorTitulo = defaultText;
+        }
+        if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo, currentBgColor)) {
+            updates.colorSubtitulo = defaultSub;
+        }
         if (Object.keys(updates).length > 0) onUpdate({ ...config, ...updates });
     }, [config.shopDarkMode, config.colorTema]);
 
@@ -133,7 +138,6 @@ function Settings({ config, onUpdate }) {
 
         const userTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
         const userSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
-
         const heroOverlayStyle = hasBanner ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))' : 'linear-gradient(to bottom, transparent, transparent)';
         const heroTextColor = hasBanner ? '#ffffff' : userTitleColor;
         const heroSubtextColor = hasBanner ? 'rgba(255,255,255,0.85)' : userSubtitleColor;
@@ -173,7 +177,6 @@ function Settings({ config, onUpdate }) {
                 </div>
 
                 <div className="accordions-container">
-                    {/* IDENTIDAD */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Textos Principales</span>
@@ -191,7 +194,7 @@ function Settings({ config, onUpdate }) {
                                     <label className="settings-label">Descripción Corta (Máx 120):
                                         <AutoResizeTextarea name="descripcion" value={config.descripcion} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} />
                                     </label>
-                                    <label className="settings-label">Horarios de Atención (Opcional):
+                                    <label className="settings-label">Horarios de Atención:
                                         <input type="text" name="horariosAtencion" value={config.horariosAtencion || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Lun a Vie 9 a 18hs" maxLength={50} />
                                     </label>
                                 </div>
@@ -199,7 +202,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* APARIENCIA */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
                             <span className="accordion-title"><SvgPalette /> Estilos y Colores</span>
@@ -227,7 +229,7 @@ function Settings({ config, onUpdate }) {
                                     </div>
                                     <div className="settings-form-group" style={{ marginTop: '20px' }}>
                                         <label className="settings-label">Tipografía Corporativa:
-                                            <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input">
+                                            <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input select-input">
                                                 {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                                             </select>
                                         </label>
@@ -237,7 +239,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
@@ -255,8 +256,7 @@ function Settings({ config, onUpdate }) {
                                         </div>
                                         <label className="settings-label" style={{ marginTop: '15px' }}>Video de Presentación (YouTube):</label>
                                         <div className="file-upload-container">
-                                            <span className="input-prefix-icon"><SvgVideo /></span>
-                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://youtube.com/watch?v=..." style={{ paddingLeft: '40px' }} />
+                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://youtube.com/watch?v=..." />
                                         </div>
                                     </div>
                                 </PremiumGate>
@@ -264,7 +264,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* REDES */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('redes')}>
                             <span className="accordion-title"><SvgShare /> Contacto & Redes</span>
@@ -273,7 +272,7 @@ function Settings({ config, onUpdate }) {
                         {seccionAbierta === 'redes' && (
                             <div className="accordion-content">
                                 <div className="settings-form-group">
-                                    <label className="settings-label">WhatsApp (Máx 15):
+                                    <label className="settings-label">WhatsApp:
                                         <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 1123456789" maxLength={15} />
                                     </label>
                                     <PremiumGate isPremium={isPremium}>
@@ -285,7 +284,7 @@ function Settings({ config, onUpdate }) {
                                             </button>
                                         ) : (
                                             <div className="ig-connected-box animate-fade-in">
-                                                <div className="ig-status"><SvgInstagram /> Conectado como @tu_taller</div>
+                                                <div className="ig-status"><SvgInstagram /> Conectado</div>
                                                 <button type="button" onClick={() => onUpdate({ ...config, instagramConnected: false })} className="btn-disconnect">Desvincular</button>
                                                 <div className="ig-preview-grid">
                                                     <div className="ig-preview-item"></div><div className="ig-preview-item"></div><div className="ig-preview-item"></div>
@@ -298,7 +297,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* FUNCIONALIDADES */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Visibilidad de Módulos</span>
@@ -323,16 +321,18 @@ function Settings({ config, onUpdate }) {
                                         </div>
                                         {config.mostrarGarantia && (
                                             <div>
+                                                <label className="settings-label">Texto de Garantía:</label>
                                                 <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 6 Meses / De por vida" maxLength={30} />
                                             </div>
                                         )}
-                                        <div className="toggle-box glass-input-effect">
-                                            <div><strong className="toggle-title">Google Maps</strong></div>
+                                        <div className="toggle-box glass-input-effect" style={{ marginTop: '10px' }}>
+                                            <div><strong className="toggle-title">Ubicación (Google Maps)</strong></div>
                                             <label className="switch"><input type="checkbox" name="mostrarMapa" checked={config.mostrarMapa || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                         {config.mostrarMapa && (
                                             <div>
-                                                <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega la URL de Google Maps" />
+                                                <label className="settings-label">Enlace de Google Maps:</label>
+                                                <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega el link de Google Maps" />
                                             </div>
                                         )}
                                     </PremiumGate>
@@ -343,7 +343,7 @@ function Settings({ config, onUpdate }) {
                 </div>
             </div>
 
-            {/* === LIENZO DE VISTA PREVIA AISLADO === */}
+            {/* === LIENZO DE VISTA PREVIA === */}
             <div className="settings-preview-canvas">
                 <div className="canvas-header">
                     <div className="device-toggles glass-effect">
@@ -361,8 +361,8 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
-                        {/* ESTE CONTENEDOR ES LA JAULA DEL WHATSAPP Y EL SCROLL */}
-                        <div className="shop-screen-container">
+                        {/* AQUÍ ESTÁ LA JAULA DEL WHATSAPP Y EL OVERFLOW */}
+                        <div className="shop-screen-container" style={{ position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column' }}>
                             <div className="shop-screen" style={shopStyles}>
                                 <div className="shop-nav">
                                     <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
@@ -437,7 +437,7 @@ function Settings({ config, onUpdate }) {
                                 )}
                             </div>
 
-                            {/* WHATSAPP ANCLADO AL CONTENEDOR PADRE */}
+                            {/* WHATSAPP ABSOLUTO (No se sale porque su contenedor es relativo y hidden) */}
                             {config.whatsapp && (
                                 <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                             )}
