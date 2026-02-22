@@ -7,14 +7,12 @@ import MetricsView from './MetricsView';
 import InventoryView from './InventoryView';
 import ToolsView from './ToolsView';
 import FeaturesManager from '../components/FeaturesManager';
-import NewTicketForm from '../components/NewTicketForm'; // <-- NUEVA IMPORTACIÓN
+import NewTicketForm from '../components/NewTicketForm';
+import AIChatAssistant from '../components/AIChatAssistant'; // El Bot de IA Global
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
-// ... (MANTÉN TODOS TUS SVGs EXISTENTES AQUÍ: MoonIcon, SunIcon, etc.) ...
-// Agrega este nuevo SVG para el botón de ingreso manual:
-const SvgAddTicket = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>;
-
+// --- LIBRERÍA DE ICONOS SVG PARA EL DASHBOARD ---
 const MoonIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
 const SunIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const SvgInbox = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>;
@@ -23,13 +21,14 @@ const SvgTrash = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="c
 const SvgExternal = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>;
 const SvgSubTickets = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>;
 const SvgSubFeatures = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>;
-
+const SvgAddTicket = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>;
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
 
-    const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, convertirATicket } = useContext(TicketContext);
+    const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket } = useContext(TicketContext);
+
     const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
@@ -40,7 +39,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const obtenerTicketsAMostrar = () => {
         if (vistaActual === 'inbox') return consultasNuevas;
         if (vistaActual === 'activos') return reparacionesActivas;
-        return ticketsPapelera;
+        if (vistaActual === 'papelera') return ticketsPapelera;
+        return [];
     };
 
     const ticketsMostrados = obtenerTicketsAMostrar();
@@ -59,9 +59,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         if (ticketId) moverAPapelera(ticketId);
     };
 
-    // Callback para volver a la lista de activos tras crear un ticket
     const handleTicketCreated = () => {
-        setVistaActual('activos');
+        setVistaActual('activos'); // Volver a la lista al guardar manualmente
     };
 
     return (
@@ -70,6 +69,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 <div className="tech-brand">
                     <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Wepairr <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
+
+                {/* MENÚ DE NAVEGACIÓN PRINCIPAL */}
                 <div className="nav-menu">
                     <button onClick={() => setSeccionPrincipal('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
                     <button onClick={() => setSeccionPrincipal('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
@@ -78,6 +79,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <button onClick={() => setSeccionPrincipal('comunidad')} className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`}>Comunidad</button>
                     <button onClick={() => setSeccionPrincipal('configuracion')} className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`}>Ajustes</button>
                 </div>
+
                 <div className="nav-actions">
                     <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
@@ -88,6 +90,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 </div>
             </nav>
 
+            {/* CONTENEDOR DINÁMICO: Si estamos en Configuración, rompe la caja limitante */}
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
 
                 {seccionPrincipal === 'gestion' && (
@@ -101,34 +104,36 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </button>
                         </div>
 
+                        {/* SUB-SECCIÓN: TICKETS */}
                         {subSeccionGestion === 'tickets' && (
                             <>
                                 <header className="dashboard-tabs">
                                     <button onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}><SvgInbox /> Inbox ({consultasNuevas.length})</button>
                                     <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}><SvgWrench /> Taller Activo ({reparacionesActivas.length})</button>
                                     <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}><SvgTrash /> Papelera ({ticketsPapelera.length})</button>
-
-                                    {/* NUEVO BOTÓN DE INGRESO MANUAL */}
-                                    <button onClick={() => setVistaActual('nuevo')} className={`tab-btn tab-btn-action ${vistaActual === 'nuevo' ? 'tab-active' : 'tab-inactive'}`}>
-                                        <SvgAddTicket /> Ingreso Manual
-                                    </button>
+                                    <button onClick={() => setVistaActual('nuevo')} className={`tab-btn tab-btn-action ${vistaActual === 'nuevo' ? 'tab-active' : 'tab-inactive'}`}><SvgAddTicket /> Ingreso Manual</button>
                                 </header>
 
                                 {vistaActual === 'nuevo' ? (
-                                    // RENDERIZA EL NUEVO FORMULARIO
                                     <NewTicketForm onTicketCreated={handleTicketCreated} />
                                 ) : (
-                                    // RENDERIZA LA LISTA NORMAL
                                     <>
                                         <div className="ticket-list">
                                             {ticketsMostrados.length === 0 && <p className="ticket-list-empty">{vistaActual === 'inbox' ? 'No hay consultas nuevas.' : (vistaActual === 'activos' ? 'No hay equipos en reparación.' : 'La papelera está vacía.')}</p>}
                                             {ticketsMostrados.map(ticket => (
                                                 <div key={ticket.id} className="ticket-item-wrapper">
                                                     <TicketCard ticket={ticket} vista={vistaActual} onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null} onBudgetChange={actualizarPresupuesto} />
+
                                                     {vistaActual === 'inbox' && (
                                                         <div className="ticket-actions-absolute ticket-actions-inbox">
                                                             <button onClick={() => convertirATicket(ticket.id)} className="action-btn btn-green">Aceptar</button>
                                                             <button onClick={() => moverAPapelera(ticket.id)} className="action-btn btn-dark">Ignorar</button>
+                                                        </div>
+                                                    )}
+                                                    {vistaActual === 'papelera' && (
+                                                        <div className="ticket-actions-absolute ticket-actions-trash">
+                                                            <button onClick={() => restaurarTicket(ticket.id)} className="action-btn btn-green">Restaurar</button>
+                                                            <button onClick={() => eliminarDefinitivamente(ticket.id)} className="action-btn btn-red">Eliminar</button>
                                                         </div>
                                                     )}
                                                 </div>
@@ -145,19 +150,25 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </>
                         )}
 
+                        {/* SUB-SECCIÓN: GESTOR DE FUNCIONALIDADES (FAQ, TURNOS, ETC) */}
                         {subSeccionGestion === 'features' && (
                             <FeaturesManager config={config} onUpdate={setConfig} />
                         )}
                     </>
                 )}
 
+                {/* EL RESTO DE LAS PESTAÑAS */}
                 {seccionPrincipal === 'metricas' && <MetricsView tickets={tickets} />}
                 {seccionPrincipal === 'inventario' && <InventoryView />}
                 {seccionPrincipal === 'herramientas' && <ToolsView />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
                 {seccionPrincipal === 'configuracion' && <Settings config={config} onUpdate={setConfig} />}
             </main>
+
+            {/* EL BOT DE IA GLOBAL FLOTANTE */}
+            <AIChatAssistant />
         </div>
     );
 }
+
 export default Dashboard;

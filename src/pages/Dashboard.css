@@ -1,11 +1,13 @@
+/* --- LAYOUT BASE --- */
 .dashboard-wrapper {
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+    background: var(--bg-main);
 }
 
-/* NAVEGACIÓN SUPERIOR ANTI-SELECCIÓN */
+/* --- NAVEGACIÓN SUPERIOR (NATIVE APP FEEL) --- */
 .tech-navbar {
     background: var(--bg-panel-glass);
     backdrop-filter: blur(16px);
@@ -19,13 +21,14 @@
     height: 70px;
     z-index: 10;
 
+    /* ANTI-SELECCIÓN: Bloquea el resaltado azul de texto para dar sensación nativa */
     user-select: none;
     -webkit-user-select: none;
 }
 
 .tech-brand {
     font-size: 1.2rem;
-    font-weight: bold;
+    font-weight: 800;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -42,13 +45,14 @@
     border: none;
     color: var(--text-secondary);
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     padding: 0 20px;
     height: 100%;
-    transition: all 0.2s;
+    transition: color 0.2s var(--ease-premium), background-color 0.2s;
     border-bottom: 2px solid transparent;
     position: relative;
+    font-family: inherit;
 }
 
 .nav-link-btn:hover {
@@ -58,6 +62,7 @@
 
 .nav-link-active {
     color: var(--accent-color);
+    font-weight: 800;
 }
 
 .nav-link-active::after {
@@ -85,11 +90,10 @@
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 12px;
-    transition: all 0.2s;
+    transition: transform 0.2s var(--ease-bounce), background-color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(5px);
 }
 
 .theme-toggle-btn:hover {
@@ -108,7 +112,10 @@
     border-radius: 12px;
     background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    transition: all 0.3s;
+    transition: transform 0.3s var(--ease-bounce), box-shadow 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-view-site:hover {
@@ -117,7 +124,7 @@
 }
 
 
-/* --- CONTENEDOR PRINCIPAL DEL DASHBOARD --- */
+/* --- CONTENEDOR PRINCIPAL --- */
 .dashboard-content {
     flex: 1;
     padding: 30px;
@@ -129,8 +136,12 @@
     box-sizing: border-box;
     overflow-y: auto;
     transition: all var(--speed-normal) var(--ease-premium);
+    /* Scrollbar estilizada en Webkit */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-glass) transparent;
 }
 
+/* MAGIA ARQUITECTÓNICA: Al entrar a Ajustes, rompe la caja central y ocupa el 100% de la pantalla */
 .dashboard-content.modo-editor-activo {
     max-width: 100%;
     padding: 0;
@@ -139,8 +150,50 @@
     overflow: hidden;
 }
 
+/* --- SUB-NAVEGACIÓN (GESTIÓN) --- */
+.gestion-sub-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    padding: 5px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    width: fit-content;
+    backdrop-filter: blur(10px);
+    user-select: none;
+    -webkit-user-select: none;
+}
 
-/* PESTAÑAS ANTI-SELECCIÓN */
+.sub-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-premium);
+    font-family: inherit;
+}
+
+.sub-nav-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover-glass);
+}
+
+.sub-nav-btn.active {
+    background: var(--bg-panel);
+    color: var(--accent-color);
+    box-shadow: var(--shadow-glass);
+    border: 1px solid var(--border-glass);
+}
+
+/* --- PESTAÑAS DE TICKETS --- */
 .dashboard-tabs {
     display: flex;
     gap: 15px;
@@ -149,28 +202,33 @@
     margin-bottom: 25px;
     user-select: none;
     -webkit-user-select: none;
+    flex-wrap: wrap;
 }
 
 .tab-btn {
     padding: 10px 20px;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s var(--ease-premium);
     font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-weight: 600;
 }
 
 .tab-active {
     background: var(--bg-input-glass);
     color: var(--accent-color);
-    border: 1px solid var(--accent-color);
-    font-weight: bold;
-    backdrop-filter: blur(5px);
+    border-color: var(--accent-color);
+    font-weight: 800;
 }
 
 .tab-inactive {
     background: transparent;
     color: var(--text-secondary);
-    border: 1px solid transparent;
 }
 
 .tab-inactive:hover {
@@ -178,13 +236,31 @@
     color: var(--text-primary);
 }
 
-/* LOS TICKETS SÍ DEBEN SER SELECCIONABLES (Para copiar números y datos) */
+/* Destacar el botón de Nuevo Ingreso */
+.tab-btn-action {
+    margin-left: auto;
+    border: 1px dashed var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.tab-btn-action:hover {
+    background: rgba(37, 99, 235, 0.1);
+    border-style: solid;
+}
+
+.tab-btn-action.tab-active {
+    background: var(--accent-color);
+    color: white;
+}
+
+/* --- LISTA DE TICKETS (ESTA SÍ DEBE SER SELECCIONABLE PARA COPIAR DATOS) --- */
 .ticket-list {
     flex: 1;
     overflow-y: auto;
     margin-bottom: 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 25px;
     align-content: start;
     padding-bottom: 20px;
@@ -198,12 +274,14 @@
     margin-top: 40px;
     grid-column: 1 / -1;
     font-size: 1.1rem;
+    font-weight: 600;
 }
 
 .ticket-item-wrapper {
     position: relative;
 }
 
+/* Acciones absolutas de Inbox/Papelera */
 .ticket-actions-absolute {
     position: absolute;
     right: 15px;
@@ -228,18 +306,19 @@
     cursor: pointer;
     font-weight: bold;
     font-size: 0.8rem;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(5px);
+    transition: transform 0.2s var(--ease-bounce), filter 0.2s;
+    font-family: inherit;
 }
 
 .action-btn:hover {
     transform: translateY(-2px);
+    filter: brightness(1.1);
 }
 
 .btn-green {
-    background: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.15);
     color: var(--success);
-    border: 1px solid var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .btn-dark {
@@ -249,92 +328,62 @@
 }
 
 .btn-red {
-    background: rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.15);
     color: var(--danger);
-    border: 1px solid var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+/* --- DROPZONE PARA ELIMINAR --- */
 .dropzone {
     border-radius: 16px;
-    padding: 30px;
+    padding: 25px;
     text-align: center;
-    transition: all 0.3s;
+    transition: all 0.3s var(--ease-premium);
     margin-top: auto;
-    backdrop-filter: blur(10px);
     user-select: none;
-}
-
-.dropzone-idle {
+    -webkit-user-select: none;
     border: 2px dashed var(--border-glass);
     background-color: var(--bg-input-glass);
     color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
 }
 
 .dropzone-active {
-    border: 2px dashed var(--danger);
+    border-color: var(--danger);
     background-color: rgba(239, 68, 68, 0.1);
     color: var(--danger);
     transform: scale(1.02);
 }
 
-.dropzone-icon {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: 10px;
+.dropzone svg {
+    width: 32px;
+    height: 32px;
     opacity: 0.7;
 }
 
-/* ... (Tus estilos anteriores) ... */
 
-/* ESTILOS PARA LA SUB-NAVEGACIÓN DE GESTIÓN */
-.gestion-sub-nav {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-    padding: 5px;
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    border-radius: 12px;
-    width: fit-content;
-    backdrop-filter: blur(10px);
+/* =======================================================
+   RESPONSIVE GLOBAL (SOPORTE HASTA 320PX)
+======================================================= */
+@media (max-width: 900px) {
+    .ticket-list {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
 }
 
-.sub-nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    font-weight: 700;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s var(--ease-premium);
-}
-
-.sub-nav-btn:hover {
-    color: var(--text-primary);
-    background: var(--bg-hover-glass);
-}
-
-.sub-nav-btn.active {
-    background: var(--bg-panel);
-    color: var(--accent-color);
-    box-shadow: var(--shadow-glass);
-}
-
-/* --- RESPONSIVE GLOBAL (Soporte desde 320px) --- */
 @media (max-width: 768px) {
 
-    /* Barra de navegación deslizable en móvil */
+    /* Barra Superior Deslizable en Móvil */
     .tech-navbar {
         padding: 0 15px;
     }
 
     .tech-brand {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
     .nav-menu {
@@ -344,40 +393,37 @@
         padding-bottom: 5px;
     }
 
+    .nav-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Ocultar scrollbar en el menu movil */
     .nav-link-btn {
-        font-size: 0.9rem;
-        padding: 0 10px;
+        font-size: 0.95rem;
+        padding: 0 12px;
     }
 
     .btn-view-site {
         padding: 8px 12px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
     }
 
+    .btn-view-site svg {
+        display: none;
+    }
+
+    /* Simplificamos botón en móvil */
     .theme-toggle-btn {
         display: none;
-        /* Ocultamos el modo nocturno en pantallas minúsculas para ahorrar espacio */
     }
 
-    /* Dashboard Grid adaptativo */
+    /* Ocultar para ahorrar espacio en header móvil */
+
+    /* Contenido General */
     .dashboard-content {
         padding: 15px;
     }
 
-    .dashboard-tabs {
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 10px;
-    }
-
-    .ticket-list {
-        grid-template-columns: 1fr;
-    }
-
-    /* Tickets apilados a 1 columna */
-
-    /* Submenú de gestión adaptable */
     .gestion-sub-nav {
         width: 100%;
         flex-direction: column;
@@ -385,14 +431,44 @@
 
     .sub-nav-btn {
         justify-content: center;
+        width: 100%;
     }
+
+    /* Pestañas de Tickets (Scroll horizontal) */
+    .dashboard-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px;
+    }
+
+    .dashboard-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tab-btn-action {
+        margin-left: 0;
+    }
+
+    /* En móvil todo va alineado a la izq en scroll */
+
+    .ticket-list {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tickets apilados a 1 columna */
 }
 
 @media (max-width: 400px) {
 
-    /* Ajustes específicos para 320px (iPhone SE, Galaxy Fold) */
+    /* Ajustes específicos para 320px (iPhone SE) */
     .tech-navbar {
         height: 60px;
+    }
+
+    .tech-brand {
+        font-size: 1rem;
     }
 
     .action-btn {
