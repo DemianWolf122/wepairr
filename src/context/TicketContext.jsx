@@ -3,8 +3,8 @@ import React, { createContext, useState, useEffect } from 'react';
 export const TicketContext = createContext();
 
 const TICKETS_INICIALES = [
-    { id: 101, tipo: 'ticket', cliente: { nombre: 'Julián Rossi', telefono: '112345678' }, dispositivo: 'Nvidia RTX 3080 Ti', problema: 'Artefactos en pantalla.', fechaIngreso: '2024-05-20T10:30:00Z', estado: 'Ingresado', prioridad: 'Alta', presupuesto: '85000', borrado: false },
-    { id: 102, tipo: 'ticket', cliente: { nombre: 'Martín Gómez', telefono: '119876543' }, dispositivo: 'iPhone 13 Pro', problema: 'Cambio de módulo.', fechaIngreso: '2024-05-19T15:45:00Z', estado: 'En Proceso', prioridad: 'Normal', presupuesto: '120000', borrado: false }
+    { id: 101, tipo: 'consulta', cliente: { nombre: 'Ana Clara', telefono: '112345678' }, dispositivo: 'iPhone 11', problema: 'Pantalla rota, táctil no responde en la zona superior.', fechaIngreso: '2024-05-20T10:30:00Z', estado: 'Pendiente', presupuesto: null, borrado: false },
+    { id: 102, tipo: 'ticket', cliente: { nombre: 'Carlos Ruiz', telefono: '119876543' }, dispositivo: 'Samsung S21 FE', problema: 'No carga, puerto flojo.', fechaIngreso: '2024-05-19T15:45:00Z', estado: 'En Proceso', presupuesto: '45000', borrado: false }
 ];
 
 export const TicketProvider = ({ children }) => {
@@ -15,7 +15,9 @@ export const TicketProvider = ({ children }) => {
                 const parsed = JSON.parse(datosGuardados);
                 if (Array.isArray(parsed)) return parsed;
             }
-        } catch (e) { console.error("Error leyendo tickets."); }
+        } catch (e) {
+            console.error("Error leyendo tickets, restaurando base de prueba.");
+        }
         return TICKETS_INICIALES;
     });
 
@@ -28,11 +30,7 @@ export const TicketProvider = ({ children }) => {
     };
 
     const actualizarPresupuesto = (id, nuevoPresupuesto) => {
-        setTickets(prev => prev.map(t => t.id === id ? { ...t, presupuesto: nuevoPresupuesto } : t));
-    };
-
-    const editarTicket = (id, datosActualizados) => {
-        setTickets(prev => prev.map(t => t.id === id ? { ...t, ...datosActualizados } : t));
+        setTickets(prev => prev.map(t => t.id === id ? { ...t, presupuesto: nuevoPresupuesto, estado: t.estado === 'Ingresado' ? 'Presupuestado' : t.estado } : t));
     };
 
     const moverAPapelera = (id) => {
@@ -53,23 +51,28 @@ export const TicketProvider = ({ children }) => {
 
     const agregarTicketManual = (datosTicket) => {
         const nuevoId = tickets.length > 0 ? Math.max(...tickets.map(t => t.id)) + 1 : 101;
+        const ahora = new Date();
         const nuevoTicket = {
             id: nuevoId,
             tipo: 'ticket',
-            fechaIngreso: new Date().toISOString(),
+            fechaIngreso: ahora.toISOString(),
             estado: 'Ingresado',
-            presupuesto: null,
-            prioridad: datosTicket.prioridad || 'Normal',
+            presupuesto: datosTicket.presupuestoInicial || null,
             borrado: false,
             ...datosTicket
         };
         setTickets(prev => [nuevoTicket, ...prev]);
     };
 
+    // NUEVA FUNCIÓN: Editar contenido del ticket
+    const editarTicket = (id, datosActualizados) => {
+        setTickets(prev => prev.map(t => t.id === id ? { ...t, ...datosActualizados } : t));
+    };
+
     return (
         <TicketContext.Provider value={{
-            tickets, actualizarEstadoTicket, actualizarPresupuesto, editarTicket,
-            moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, agregarTicketManual
+            tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera,
+            restaurarTicket, eliminarDefinitivamente, convertirATicket, agregarTicketManual, editarTicket
         }}>
             {children}
         </TicketContext.Provider>
