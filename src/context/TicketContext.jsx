@@ -3,14 +3,23 @@ import React, { createContext, useState, useEffect } from 'react';
 export const TicketContext = createContext();
 
 const TICKETS_INICIALES = [
-    { id: 101, tipo: 'consulta', cliente: { nombre: 'Ana Clara', telefono: '112345678' }, dispositivo: 'iPhone 11', problema: 'Pantalla rota, táctil no responde.', fecha: '2024-05-20 10:30', estado: 'Pendiente', presupuesto: null, borrado: false },
-    { id: 102, tipo: 'ticket', cliente: { nombre: 'Carlos Ruiz', telefono: '119876543' }, dispositivo: 'Samsung S21 FE', problema: 'No carga, puerto flojo.', fecha: '2024-05-19 15:45', estado: 'En Proceso', presupuesto: '45000', borrado: false }
+    { id: 101, tipo: 'consulta', cliente: { nombre: 'Ana Clara', telefono: '112345678' }, dispositivo: 'iPhone 11', problema: 'Pantalla rota, táctil no responde en la zona superior.', fechaIngreso: '2024-05-20T10:30:00Z', estado: 'Pendiente', presupuesto: null, borrado: false },
+    { id: 102, tipo: 'ticket', cliente: { nombre: 'Carlos Ruiz', telefono: '119876543' }, dispositivo: 'Samsung S21 FE', problema: 'No carga, puerto flojo.', fechaIngreso: '2024-05-19T15:45:00Z', estado: 'En Proceso', presupuesto: '45000', borrado: false }
 ];
 
 export const TicketProvider = ({ children }) => {
+    // SISTEMA ANTI-CRASH PARA TICKETS
     const [tickets, setTickets] = useState(() => {
-        const datosGuardados = localStorage.getItem('wepairr_tickets');
-        return datosGuardados ? JSON.parse(datosGuardados) : TICKETS_INICIALES;
+        try {
+            const datosGuardados = localStorage.getItem('wepairr_tickets');
+            if (datosGuardados) {
+                const parsed = JSON.parse(datosGuardados);
+                if (Array.isArray(parsed)) return parsed; // Solo carga si es un array válido
+            }
+        } catch (e) {
+            console.error("Error leyendo tickets, restaurando base de prueba.");
+        }
+        return TICKETS_INICIALES;
     });
 
     useEffect(() => {
