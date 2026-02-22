@@ -88,12 +88,13 @@
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 12px;
-    transition: transform 0.2s var(--ease-bounce), background-color 0.2s;
+    transition: transform 0.3s ease, background-color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+/* FIX: Escala suave */
 .theme-toggle-btn:hover {
     background: var(--bg-hover-glass);
     transform: scale(1.05);
@@ -110,14 +111,15 @@
     border-radius: 12px;
     background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    transition: transform 0.3s var(--ease-bounce), box-shadow 0.3s;
+    transition: transform 0.3s ease, box-shadow 0.3s;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
+/* FIX: Escala suave en lugar de traslación Y */
 .btn-view-site:hover {
-    transform: translateY(-2px);
+    transform: scale(1.02);
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
 }
 
@@ -172,7 +174,7 @@
     font-size: 0.95rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s var(--ease-premium);
+    transition: all 0.3s ease;
     font-family: inherit;
 }
 
@@ -204,7 +206,7 @@
     padding: 10px 20px;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s var(--ease-premium);
+    transition: all 0.3s ease;
     font-size: 0.95rem;
     display: flex;
     align-items: center;
@@ -229,6 +231,7 @@
 .tab-inactive:hover {
     background: var(--bg-hover-glass);
     color: var(--text-primary);
+    transform: scale(1.02);
 }
 
 .tab-btn-action {
@@ -236,11 +239,13 @@
     border: 1px dashed var(--accent-color);
     color: var(--accent-color);
     background: rgba(37, 99, 235, 0.05);
+    transition: all 0.3s ease;
 }
 
 .tab-btn-action:hover {
     background: rgba(37, 99, 235, 0.1);
     border-style: solid;
+    transform: scale(1.02);
 }
 
 .tab-btn-action.tab-active {
@@ -299,12 +304,13 @@
     cursor: pointer;
     font-weight: bold;
     font-size: 0.8rem;
-    transition: transform 0.2s var(--ease-bounce), filter 0.2s;
+    transition: transform 0.3s ease, filter 0.2s;
     font-family: inherit;
 }
 
+/* FIX: Escala suave */
 .action-btn:hover {
-    transform: translateY(-2px);
+    transform: scale(1.05);
     filter: brightness(1.1);
 }
 
@@ -331,7 +337,7 @@
     border-radius: 16px;
     padding: 25px;
     text-align: center;
-    transition: all 0.3s var(--ease-premium);
+    transition: all 0.3s ease;
     margin-top: auto;
     user-select: none;
     -webkit-user-select: none;

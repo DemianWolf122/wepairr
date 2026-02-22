@@ -6,12 +6,11 @@
     flex-direction: column;
     gap: 18px;
     transition: all 0.3s ease;
-    /* Transición súper relajada */
+    /* Transición súper relajada para el Hover */
     position: relative;
     border: 1px solid rgba(226, 232, 240, 0.5);
     background: var(--bg-panel-glass);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    /* Sombra súper sutil */
     cursor: grab;
 }
 
@@ -39,6 +38,35 @@
 
 .app-root.dark .ticket-card-soft:hover:not(.is-editing) {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* --- SISTEMA DE PRIORIDADES (SOFT GLOW) --- */
+.priority-urgente {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.priority-urgente:hover:not(.is-editing) {
+    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.app-root.dark .priority-urgente {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+}
+
+.priority-alta {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.priority-alta:hover:not(.is-editing) {
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.25);
+    border-color: rgba(245, 158, 11, 0.5);
+}
+
+.app-root.dark .priority-alta {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
 }
 
 /* --- CABECERA --- */
@@ -79,7 +107,6 @@
     user-select: none;
 }
 
-/* FIX: Escala ultra suave en las etiquetas */
 .tc-badge-soft:hover {
     transform: scale(1.02);
 }

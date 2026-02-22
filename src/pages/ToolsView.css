@@ -31,6 +31,13 @@
     border-radius: 20px;
     display: flex;
     flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+/* FIX: Escala suave en tarjeta */
+.tool-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .tool-card-header {
@@ -74,8 +81,13 @@
     border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     flex: 1;
+}
+
+/* FIX: Escala suave */
+.btn-tool-action:hover {
+    transform: scale(1.02);
 }
 
 .btn-tool-ghost {
@@ -86,8 +98,14 @@
     border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     flex: 1;
+}
+
+/* FIX: Escala suave */
+.btn-tool-ghost:hover {
+    transform: scale(1.02);
+    background: var(--bg-hover-glass);
 }
 
 .ohm-calculator {
@@ -122,6 +140,11 @@
     text-align: right;
     font-weight: bold;
     outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.ohm-input-group input:focus {
+    border-color: var(--accent-color);
 }
 
 .ohm-actions {

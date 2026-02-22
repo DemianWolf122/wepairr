@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import TicketCard from '../components/TicketCard';
 import Settings from '../components/Settings';
@@ -21,10 +21,12 @@ const SvgExternal = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke
 const SvgSubTickets = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>;
 const SvgSubFeatures = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>;
 const SvgAddTicket = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>;
+const SvgSort = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>;
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
+    const [ordenarPrioridad, setOrdenarPrioridad] = useState(false);
 
     // Extraemos editarTicket del contexto
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
@@ -32,18 +34,19 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
-    const consultasNuevas = tickets.filter(t => t.tipo === 'consulta' && !t.borrado);
-    const reparacionesActivas = tickets.filter(t => t.tipo === 'ticket' && !t.borrado);
-    const ticketsPapelera = tickets.filter(t => t.borrado);
+    const priorityWeight = { 'Urgente': 3, 'Alta': 2, 'Normal': 1, 'Baja': 0 };
 
-    const obtenerTicketsAMostrar = () => {
-        if (vistaActual === 'inbox') return consultasNuevas;
-        if (vistaActual === 'activos') return reparacionesActivas;
-        if (vistaActual === 'papelera') return ticketsPapelera;
-        return [];
-    };
+    const ticketsMostrados = useMemo(() => {
+        let base = [];
+        if (vistaActual === 'inbox') base = tickets.filter(t => t.tipo === 'consulta' && !t.borrado);
+        else if (vistaActual === 'activos') base = tickets.filter(t => t.tipo === 'ticket' && !t.borrado);
+        else if (vistaActual === 'papelera') base = tickets.filter(t => t.borrado);
 
-    const ticketsMostrados = obtenerTicketsAMostrar();
+        if (ordenarPrioridad) {
+            return [...base].sort((a, b) => (priorityWeight[b.prioridad] || 0) - (priorityWeight[a.prioridad] || 0));
+        }
+        return base;
+    }, [tickets, vistaActual, ordenarPrioridad]);
 
     const ciclarEstado = (id, estadoActual) => {
         const SECUENCIA_ESTADOS = ['Ingresado', 'En Proceso', 'Finalizado', 'Entregado'];
@@ -59,9 +62,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         if (ticketId) moverAPapelera(ticketId);
     };
 
-    const handleTicketCreated = () => {
-        setVistaActual('activos');
-    };
+    const handleTicketCreated = () => setVistaActual('activos');
 
     return (
         <div className="dashboard-wrapper">
@@ -102,10 +103,18 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         {subSeccionGestion === 'tickets' && (
                             <>
                                 <header className="dashboard-tabs">
-                                    <button onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}><SvgInbox /> Inbox ({consultasNuevas.length})</button>
-                                    <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}><SvgWrench /> Taller Activo ({reparacionesActivas.length})</button>
-                                    <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}><SvgTrash /> Papelera ({ticketsPapelera.length})</button>
-                                    <button onClick={() => setVistaActual('nuevo')} className={`tab-btn tab-btn-action ${vistaActual === 'nuevo' ? 'tab-active' : 'tab-inactive'}`}><SvgAddTicket /> Ingreso Manual</button>
+                                    <button onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}><SvgInbox /> Inbox</button>
+                                    <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}><SvgWrench /> Activos</button>
+                                    <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}><SvgTrash /> Papelera</button>
+
+                                    <button
+                                        className={`btn-sort-priority ${ordenarPrioridad ? 'active' : ''}`}
+                                        onClick={() => setOrdenarPrioridad(!ordenarPrioridad)}
+                                    >
+                                        <SvgSort /> {ordenarPrioridad ? 'Prioridad On' : 'Priorizar'}
+                                    </button>
+
+                                    <button onClick={() => setVistaActual('nuevo')} className={`tab-btn tab-btn-action ${vistaActual === 'nuevo' ? 'tab-active' : 'tab-inactive'}`}><SvgAddTicket /> Nuevo</button>
                                 </header>
 
                                 {vistaActual === 'nuevo' ? (
@@ -113,10 +122,9 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 ) : (
                                     <>
                                         <div className="ticket-list">
-                                            {ticketsMostrados.length === 0 && <p className="ticket-list-empty">{vistaActual === 'inbox' ? 'No hay consultas nuevas.' : (vistaActual === 'activos' ? 'No hay equipos en reparación.' : 'La papelera está vacía.')}</p>}
+                                            {ticketsMostrados.length === 0 && <p className="ticket-list-empty">Sección vacía.</p>}
                                             {ticketsMostrados.map(ticket => (
                                                 <div key={ticket.id} className="ticket-item-wrapper">
-                                                    {/* PASAMOS LA FUNCIÓN ON EDIT TICKET A LA TARJETA */}
                                                     <TicketCard
                                                         ticket={ticket}
                                                         vista={vistaActual}
@@ -142,7 +150,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                         {vistaActual !== 'papelera' && ticketsMostrados.length > 0 && (
                                             <div onDrop={handleDropTrash} onDragOver={(e) => { e.preventDefault(); setIsDragOverTrash(true); }} onDragLeave={() => setIsDragOverTrash(false)} className={`dropzone ${isDragOverTrash ? 'dropzone-active' : 'dropzone-idle'}`}>
                                                 <SvgTrash />
-                                                <span>Arrastrá un ticket acá para descartarlo</span>
+                                                <span>Soltar aquí para descartar</span>
                                             </div>
                                         )}
                                     </>

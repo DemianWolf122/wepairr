@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import generarPDF from '../utils/generarPDF';
 import './TicketCard.css';
 
-// --- SVGs Premium ---
-const SvgPhone = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
+// --- SVGs Premium & Multirubro ---
+const IconPhone = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
+const IconPC = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" /><line x1="8" y1="6" x2="16" y2="6" /><line x1="8" y1="10" x2="16" y2="10" /></svg>;
+const IconConsole = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M6 12h4m-2-2v4m7-2h.01M18 10h.01M3 7l2 10h14l2-10H3z" /></svg>;
+const IconGPU = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 18v2m4-2v2m4-2v2m4-2v2M2 10h20M7 10l2 4m3-4l2 4" /></svg>;
+
 const SvgUser = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 const SvgCalendar = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
@@ -25,6 +29,15 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
             telefono: ticket.cliente?.telefono || ''
         }
     });
+
+    // --- DETECCIÓN INTELIGENTE DE ICONOS ---
+    const getDeviceIcon = (dispositivo = "") => {
+        const name = dispositivo.toLowerCase();
+        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa de video') || name.includes('grafica') || name.includes('gpu')) return <IconGPU />;
+        if (name.includes('pc') || name.includes('notebook') || name.includes('escritorio') || name.includes('mother')) return <IconPC />;
+        if (name.includes('ps4') || name.includes('ps5') || name.includes('xbox') || name.includes('consola')) return <IconConsole />;
+        return <IconPhone />;
+    };
 
     const getStatusStyle = (estado) => {
         switch (estado) {
@@ -61,7 +74,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     };
 
     const handleCancelEdit = () => {
-        // Restaurar valores originales si cancela
         setEditData({
             dispositivo: ticket.dispositivo || '',
             problema: ticket.problema || '',
@@ -71,16 +83,17 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     };
 
     const statusStyle = getStatusStyle(ticket.estado);
+    const prioridad = ticket.prioridad ? ticket.prioridad.toLowerCase() : 'normal';
 
     return (
         <div
-            className={`ticket-card-soft glass-effect ${isEditing ? 'is-editing' : ''}`}
-            draggable={!isEditing} // Deshabilita el arrastre al editar para no cometer errores
+            // Aquí se añade la clase de prioridad para el Soft Glow
+            className={`ticket-card-soft priority-${prioridad} glass-effect ${isEditing ? 'is-editing' : ''}`}
+            draggable={!isEditing}
             onDragStart={(e) => {
                 if (!isEditing) e.dataTransfer.setData('ticketId', ticket.id);
             }}
         >
-            {/* CABECERA */}
             <div className="tc-header-soft">
                 <div className="tc-id-soft">#{ticket.id}</div>
                 <div className="tc-actions-top">
@@ -103,7 +116,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                 </div>
             </div>
 
-            {/* CUERPO DEL TICKET (VISTA VS EDICIÓN) */}
             {isEditing ? (
                 <div className="tc-body-edit animate-fade-in">
                     <input
@@ -131,7 +143,8 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                 </div>
             ) : (
                 <div className="tc-body-soft">
-                    <h3 className="tc-device-soft"><SvgPhone /> {ticket.dispositivo || 'Dispositivo N/A'}</h3>
+                    {/* Renderizamos el icono detectado */}
+                    <h3 className="tc-device-soft">{getDeviceIcon(ticket.dispositivo)} {ticket.dispositivo || 'Dispositivo N/A'}</h3>
                     <p className="tc-problem-soft">"{ticket.problema}"</p>
 
                     <div className="tc-client-row">
@@ -150,7 +163,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                 </div>
             )}
 
-            {/* PIE DE PÁGINA (FECHA Y PRESUPUESTO) */}
             <div className="tc-footer-soft">
                 <div className="tc-date-soft"><SvgCalendar /> {formatDate(ticket.fechaIngreso || ticket.fecha)}</div>
 
