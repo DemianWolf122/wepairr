@@ -1,3 +1,4 @@
+/* --- LAYOUT GLOBAL --- */
 .settings-editor-layout {
     display: flex;
     height: 100%;
@@ -24,7 +25,7 @@
     background: var(--bg-panel);
 }
 
-/* Fuerza color claro para textos del panel independientemente de la tienda */
+/* FUERZA COLOR DE TEXTO EN EL PANEL IZQUIERDO PARA MODO OSCURO GLOBAL */
 .settings-controls-panel {
     width: 420px;
     flex-shrink: 0;
@@ -40,7 +41,6 @@
 
 .app-root.dark .settings-controls-panel {
     background: var(--bg-panel);
-    color: #ffffff;
 }
 
 .settings-preview-canvas {
@@ -67,7 +67,7 @@
     align-items: center;
     padding: 20px;
     overflow: auto;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
     opacity: 1;
     transform: scale(1);
 }
@@ -110,7 +110,7 @@
     }
 }
 
-/* --- MOCKUPS --- */
+/* --- MOCKUPS FÍSICOS Y CONTENEDOR DE PANTALLA --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -144,7 +144,7 @@
     margin: auto;
 }
 
-/* FIX: CONTENEDOR RELATIVO PARA ATRAPAR EL WHATSAPP */
+/* LA SOLUCIÓN AL WHATSAPP FUGITIVO: Contenedor Relativo con Overflow Hidden */
 .shop-screen-container {
     flex: 1;
     position: relative;
@@ -162,7 +162,7 @@
     border-bottom-right-radius: 14px;
 }
 
-/* FIX: WHATSAPP ATRAPADO AL CONTENEDOR (YA NO SE SALE) */
+/* FIX WHATSAPP PREVIEW */
 .floating-wa-btn-preview {
     position: absolute;
     bottom: 25px;
@@ -178,7 +178,7 @@
     box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
     z-index: 100;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s var(--ease-bounce);
 }
 
 .desktop-mockup-final .floating-wa-btn-preview {
@@ -431,7 +431,7 @@
     box-sizing: border-box;
 }
 
-/* FIX TRACKING: Input y Botón en Modo Oscuro */
+/* FIX TRACKING INPUT DARK MODE */
 .tracking-input-group {
     display: flex;
     gap: 10px;
@@ -496,7 +496,67 @@
     text-align: center;
 }
 
-/* MOBILE / DESKTOP SIZING PREVIEW (Se mantienen proporciones) */
+.shop-video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: var(--shop-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.shop-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.shop-ig-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.shop-ig-post {
+    aspect-ratio: 1/1;
+    background: var(--shop-bg-secondary);
+    border: 1px solid var(--shop-border);
+    border-radius: 12px;
+}
+
+/* --- MOBILE SIZING PARA VISTA PREVIA --- */
+.phone-mockup-final .shop-nav {
+    padding: 15px 20px;
+}
+
+.phone-mockup-final .shop-logo {
+    font-size: 1.2rem;
+}
+
+.phone-mockup-final .mobile-nav-dropdown {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: var(--shop-bg);
+    border-bottom: 1px solid var(--shop-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.phone-mockup-final .mobile-nav-dropdown span {
+    padding: 15px 25px;
+    font-weight: 700;
+    color: var(--shop-text-secondary);
+    border-bottom: 1px solid var(--shop-border);
+}
+
+.phone-mockup-final .shop-hero {
+    padding: 60px 0;
+}
+
 .phone-mockup-final .shop-avatar-placeholder {
     width: 70px;
     height: 70px;
@@ -526,6 +586,10 @@
     font-size: 0.85rem;
 }
 
+.phone-mockup-final .shop-section {
+    padding: 40px 20px;
+}
+
 .phone-mockup-final .shop-services-grid {
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 15px;
@@ -536,8 +600,17 @@
     padding: 20px;
 }
 
+/* --- DESKTOP SIZING --- */
+.desktop-mockup-final .shop-nav {
+    padding: 20px 50px;
+}
+
 .desktop-mockup-final .shop-logo {
     font-size: 1.8rem;
+}
+
+.desktop-mockup-final .shop-hero {
+    padding: 120px 0;
 }
 
 .desktop-mockup-final .shop-avatar-placeholder {
@@ -571,6 +644,10 @@
     margin-top: 30px;
 }
 
+.desktop-mockup-final .shop-section {
+    padding: 80px 40px;
+}
+
 .desktop-mockup-final .shop-services-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 25px;
@@ -580,6 +657,7 @@
 .desktop-mockup-final .shop-service-card {
     padding: 35px;
 }
+
 
 /* --- ESTILOS DEL SIDEBAR DE EDICIÓN --- */
 .settings-header-row {
@@ -686,7 +764,8 @@
     transition: color 0.3s;
 }
 
-.settings-input {
+.settings-input,
+.select-input {
     width: 100%;
     padding: 14px;
     background: var(--bg-input-glass);
@@ -704,22 +783,9 @@
     /* AQUÍ ESTÁ EL AIRE (WHITE SPACE) QUE FALTABA */
 }
 
-/* FIX DESPLEGABLES: DISEÑO PREMIUM, NO EL DE WINDOWS DEFAULT */
+/* FIX DESPLEGABLES PREMIUM */
 .select-input {
-    width: 100%;
     padding: 14px 40px 14px 14px;
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    border-radius: 12px;
-    outline: none;
-    font-size: 1rem;
-    transition: all 0.2s;
-    box-sizing: border-box;
-    font-family: inherit;
-    user-select: auto;
-    -webkit-user-select: auto;
-    margin-top: 10px;
     cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -796,6 +862,10 @@
     transform: scale(1.2);
     box-shadow: 0 0 15px currentColor;
     z-index: 2;
+}
+
+.app-root.light .color-preset-btn.active {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .toggle-box {
@@ -936,6 +1006,16 @@ input:checked+.slider:before {
     background: rgba(255, 255, 255, 0.4);
 }
 
+.lock-icon {
+    color: var(--text-primary);
+}
+
+.premium-label {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
 .device-toggles {
     display: flex;
     gap: 10px;
@@ -952,10 +1032,10 @@ input:checked+.slider:before {
     font-weight: 800;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.2s;
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: all 0.2s;
 }
 
 .device-btn.active {
@@ -968,18 +1048,18 @@ input:checked+.slider:before {
 /* INSTAGRAM FEED SIMULACIÓN */
 .btn-connect-ig {
     width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
+    padding: 15px;
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     color: white;
-    font-weight: 800;
-    font-size: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    font-size: 1rem;
     transition: transform 0.2s;
     margin-top: 10px;
 }
@@ -1031,4 +1111,20 @@ input:checked+.slider:before {
     cursor: pointer;
     font-size: 0.9rem;
     margin-bottom: 15px;
+}
+
+.animate-pop-in {
+    animation: popIn 0.5s var(--ease-bounce);
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

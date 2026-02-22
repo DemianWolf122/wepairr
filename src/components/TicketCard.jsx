@@ -28,7 +28,9 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange }) {
         <div
             className="ticket-card-premium glass-effect"
             draggable={true}
-            onDragStart={(e) => { e.dataTransfer.setData('ticketId', ticket.id); }}
+            onDragStart={(e) => {
+                e.dataTransfer.setData('ticketId', ticket.id);
+            }}
         >
             <div className="tc-header">
                 <span className="tc-id">#{ticket.id}</span>
@@ -60,7 +62,7 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange }) {
                 </div>
 
                 {vista === 'activos' && (
-                    <div className="tc-budget-box">
+                    <div className="tc-budget-box animate-fade-in">
                         <span>Presupuesto:</span>
                         <div className="budget-input-wrapper">
                             <span>$</span>

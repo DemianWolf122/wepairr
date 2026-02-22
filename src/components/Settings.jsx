@@ -36,7 +36,6 @@ const PremiumGate = ({ children, isPremium }) => {
 const ACCENT_COLORS = [{ hex: '#2563eb' }, { hex: '#10b981' }, { hex: '#8b5cf6' }, { hex: '#e11d48' }, { hex: '#f97316' }, { hex: '#334155' }, { hex: '#ec4899' }, { hex: '#06b6d4' }, { hex: '#eab308' }, { hex: '#4f46e5' }];
 const TEXT_COLORS = [{ hex: '#000000' }, { hex: '#0f172a' }, { hex: '#334155' }, { hex: '#1e3a8a' }, { hex: '#ffffff' }, { hex: '#f8fafc' }, { hex: '#cbd5e1' }, { hex: '#e0f2fe' }];
 const FONTS = [{ label: 'Inter (Corporativa)', value: '"Inter", system-ui, sans-serif' }, { label: 'Helvetica (Premium)', value: '"Helvetica Neue", Helvetica, sans-serif' }, { label: 'Montserrat (Tech)', value: '"Montserrat", sans-serif' }];
-const BORDER_STYLES = [{ label: 'Suaves (16px)', value: '16px' }, { label: 'Píldora (30px)', value: '30px' }, { label: 'Cuadrados (4px)', value: '4px' }];
 
 const getLuminance = (hex) => {
     if (!hex) return 0;
@@ -138,7 +137,11 @@ function Settings({ config, onUpdate }) {
 
         const userTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
         const userSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
-        const heroOverlayStyle = hasBanner ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))' : 'linear-gradient(to bottom, transparent, transparent)';
+
+        const heroOverlayStyle = hasBanner
+            ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))'
+            : 'linear-gradient(to bottom, transparent, transparent)';
+
         const heroTextColor = hasBanner ? '#ffffff' : userTitleColor;
         const heroSubtextColor = hasBanner ? 'rgba(255,255,255,0.85)' : userSubtitleColor;
 
@@ -177,6 +180,7 @@ function Settings({ config, onUpdate }) {
                 </div>
 
                 <div className="accordions-container">
+                    {/* IDENTIDAD */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Textos Principales</span>
@@ -202,8 +206,9 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* APARIENCIA */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'apariencia' ? null : 'apariencia')}>
                             <span className="accordion-title"><SvgPalette /> Estilos y Colores</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -239,8 +244,9 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'multimedia' ? null : 'multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -256,7 +262,8 @@ function Settings({ config, onUpdate }) {
                                         </div>
                                         <label className="settings-label" style={{ marginTop: '15px' }}>Video de Presentación (YouTube):</label>
                                         <div className="file-upload-container">
-                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://youtube.com/watch?v=..." />
+                                            <span className="input-prefix-icon"><SvgVideo /></span>
+                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://youtube.com/watch?v=..." style={{ paddingLeft: '40px' }} />
                                         </div>
                                     </div>
                                 </PremiumGate>
@@ -264,15 +271,16 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* REDES */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('redes')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
                             <span className="accordion-title"><SvgShare /> Contacto & Redes</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'redes' && (
                             <div className="accordion-content">
                                 <div className="settings-form-group">
-                                    <label className="settings-label">WhatsApp:
+                                    <label className="settings-label">WhatsApp (Máx 15):
                                         <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 1123456789" maxLength={15} />
                                     </label>
                                     <PremiumGate isPremium={isPremium}>
@@ -284,7 +292,7 @@ function Settings({ config, onUpdate }) {
                                             </button>
                                         ) : (
                                             <div className="ig-connected-box animate-fade-in">
-                                                <div className="ig-status"><SvgInstagram /> Conectado</div>
+                                                <div className="ig-status"><SvgInstagram /> Conectado como @tu_taller</div>
                                                 <button type="button" onClick={() => onUpdate({ ...config, instagramConnected: false })} className="btn-disconnect">Desvincular</button>
                                                 <div className="ig-preview-grid">
                                                     <div className="ig-preview-item"></div><div className="ig-preview-item"></div><div className="ig-preview-item"></div>
@@ -297,8 +305,9 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* FUNCIONALIDADES */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'funcionalidades' ? null : 'funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Visibilidad de Módulos</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -326,12 +335,12 @@ function Settings({ config, onUpdate }) {
                                             </div>
                                         )}
                                         <div className="toggle-box glass-input-effect" style={{ marginTop: '10px' }}>
-                                            <div><strong className="toggle-title">Ubicación (Google Maps)</strong></div>
+                                            <div><strong className="toggle-title">Google Maps</strong></div>
                                             <label className="switch"><input type="checkbox" name="mostrarMapa" checked={config.mostrarMapa || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                         {config.mostrarMapa && (
                                             <div>
-                                                <label className="settings-label">Enlace de Google Maps:</label>
+                                                <label className="settings-label">URL del Mapa:</label>
                                                 <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega el link de Google Maps" />
                                             </div>
                                         )}
@@ -343,7 +352,7 @@ function Settings({ config, onUpdate }) {
                 </div>
             </div>
 
-            {/* === LIENZO DE VISTA PREVIA === */}
+            {/* === LIENZO DE VISTA PREVIA AISLADO (No se sale el WhatsApp) === */}
             <div className="settings-preview-canvas">
                 <div className="canvas-header">
                     <div className="device-toggles glass-effect">
@@ -361,7 +370,7 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
-                        {/* AQUÍ ESTÁ LA JAULA DEL WHATSAPP Y EL OVERFLOW */}
+                        {/* ESTE CONTENEDOR RELATIVO ES LA JAULA DEL WHATSAPP Y EL SCROLL */}
                         <div className="shop-screen-container" style={{ position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column' }}>
                             <div className="shop-screen" style={shopStyles}>
                                 <div className="shop-nav">
@@ -437,7 +446,7 @@ function Settings({ config, onUpdate }) {
                                 )}
                             </div>
 
-                            {/* WHATSAPP ABSOLUTO (No se sale porque su contenedor es relativo y hidden) */}
+                            {/* WHATSAPP ANCLADO: Nunca saldrá del contenedor .shop-screen-container */}
                             {config.whatsapp && (
                                 <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                             )}

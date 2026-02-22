@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import ClientReception from './pages/ClientReception';
 import Home from './pages/Home';
+import StatusTracking from './pages/StatusTracking';
 import Directory from './pages/Directory';
 import { TicketProvider } from './context/TicketContext';
+import './index.css';
+
+function Login() {
+  return (
+    <div style={{ padding: '50px', backgroundColor: 'var(--bg-main)', height: '100vh', color: 'var(--text-primary)', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Acceso Técnicos</h1>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
+      <Link to="/dashboard" style={{ display: 'inline-block', padding: '15px 30px', backgroundColor: 'var(--accent-color)', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
+        Entrar a mi Cuenta
+      </Link>
+    </div>
+  );
+}
 
 const CONFIG_INICIAL = {
   plan: 'premium',
@@ -23,6 +37,7 @@ const CONFIG_INICIAL = {
   videoUrl: '',
   mostrarPresupuestador: true,
   mostrarTracking: true,
+  mostrarTurnos: false,
   mostrarGarantia: true,
   tiempoGarantia: '90 Días',
   mostrarMapa: true,
@@ -32,12 +47,22 @@ const CONFIG_INICIAL = {
 };
 
 function App() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('wepairr_theme') || 'dark';
+  });
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const nextTheme = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('wepairr_theme', nextTheme);
+      return nextTheme;
+    });
+  };
+
   const [config, setConfig] = useState(() => {
     const saved = localStorage.getItem('wepairr_config');
     return saved ? JSON.parse(saved) : CONFIG_INICIAL;
   });
-
-  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
     localStorage.setItem('wepairr_config', JSON.stringify(config));
@@ -49,18 +74,20 @@ function App() {
     else document.documentElement.classList.remove('dark');
   }, [theme]);
 
-  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
-
   return (
     <TicketProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
-          <Route path="/talleres" element={<Directory />} />
-          <Route path="/dashboard/*" element={<Dashboard config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />} />
-          <Route path="/taller/:slug" element={<ClientReception config={config} />} />
-        </Routes>
-      </Router>
+      <div className={`app-root ${theme}`}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home theme={theme} toggleTheme={toggleTheme} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard/*" element={<Dashboard config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />} />
+            <Route path="/taller/:slug" element={<ClientReception config={config} />} />
+            <Route path="/tracking" element={<StatusTracking />} />
+            <Route path="/directorio" element={<Directory theme={theme} toggleTheme={toggleTheme} />} />
+          </Routes>
+        </Router>
+      </div>
     </TicketProvider>
   );
 }

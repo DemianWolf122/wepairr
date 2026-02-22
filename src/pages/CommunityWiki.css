@@ -1,5 +1,6 @@
 .wiki-wrapper {
     padding: 20px;
+    animation: fadeIn 0.4s ease;
     position: relative;
 }
 
@@ -21,7 +22,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     color: #fff;
     border: none;
     padding: 12px 24px;
@@ -29,6 +30,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
+    font-size: 1rem;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
@@ -74,7 +76,7 @@
     gap: 10px;
 }
 
-/* FIX: DESPLEGABLE PREMIUM SIN ESTILO NATIVO FEO */
+/* FIX: DESPLEGABLE PREMIUM */
 .sort-select {
     background-color: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
