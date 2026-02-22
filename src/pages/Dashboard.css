@@ -20,8 +20,6 @@
     padding: 0 30px;
     height: 70px;
     z-index: 10;
-
-    /* ANTI-SELECCIÓN: Bloquea el resaltado azul de texto para dar sensación nativa */
     user-select: none;
     -webkit-user-select: none;
 }
@@ -123,7 +121,6 @@
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
 }
 
-
 /* --- CONTENEDOR PRINCIPAL --- */
 .dashboard-content {
     flex: 1;
@@ -136,7 +133,6 @@
     box-sizing: border-box;
     overflow-y: auto;
     transition: all var(--speed-normal) var(--ease-premium);
-    /* Scrollbar estilizada en Webkit */
     scrollbar-width: thin;
     scrollbar-color: var(--border-glass) transparent;
 }
@@ -236,7 +232,6 @@
     color: var(--text-primary);
 }
 
-/* Destacar el botón de Nuevo Ingreso */
 .tab-btn-action {
     margin-left: auto;
     border: 1px dashed var(--accent-color);
@@ -260,7 +255,7 @@
     overflow-y: auto;
     margin-bottom: 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 25px;
     align-content: start;
     padding-bottom: 20px;
@@ -365,7 +360,6 @@
     opacity: 0.7;
 }
 
-
 /* =======================================================
    RESPONSIVE GLOBAL (SOPORTE HASTA 320PX)
 ======================================================= */
@@ -397,7 +391,6 @@
         display: none;
     }
 
-    /* Ocultar scrollbar en el menu movil */
     .nav-link-btn {
         font-size: 0.95rem;
         padding: 0 12px;
@@ -412,12 +405,9 @@
         display: none;
     }
 
-    /* Simplificamos botón en móvil */
     .theme-toggle-btn {
         display: none;
     }
-
-    /* Ocultar para ahorrar espacio en header móvil */
 
     /* Contenido General */
     .dashboard-content {
@@ -451,18 +441,12 @@
         margin-left: 0;
     }
 
-    /* En móvil todo va alineado a la izq en scroll */
-
     .ticket-list {
         grid-template-columns: 1fr;
     }
-
-    /* Tickets apilados a 1 columna */
 }
 
 @media (max-width: 400px) {
-
-    /* Ajustes específicos para 320px (iPhone SE) */
     .tech-navbar {
         height: 60px;
     }
@@ -475,6 +459,4 @@
         font-size: 0.75rem;
         padding: 6px 10px;
     }
-        font-size: 0.75rem;
-        padding: 6px 10px;
 }
