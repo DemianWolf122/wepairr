@@ -116,6 +116,8 @@
     font-weight: bold;
 }
 
+/* ... TODO TU CSS ANTERIOR DE NEW TICKET FORM SE MANTIENE, SÓLO CAMBIA ESTO: ... */
+
 .btn-save-ticket {
     width: 100%;
     padding: 15px;
@@ -126,14 +128,17 @@
     font-size: 1.1rem;
     font-weight: 800;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
+/* FIX: Escala suave */
 .btn-save-ticket:hover {
-    transform: translateY(-2px);
+    transform: scale(1.02);
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
 }
+
+/* (Asegúrate de dejar las clases .success-notification como estaban) */
 
 .success-notification {
     position: absolute;
