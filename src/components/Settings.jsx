@@ -9,7 +9,6 @@ const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke=
 const SvgMedia = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>;
 const SvgZap = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
 const SvgShare = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="18" cy="5" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line></svg>;
-const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
 const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>;
@@ -20,8 +19,8 @@ const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" s
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
+const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 const SvgVideo = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>;
-
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -38,6 +37,7 @@ const PremiumGate = ({ children, isPremium }) => {
 const ACCENT_COLORS = [{ hex: '#2563eb' }, { hex: '#10b981' }, { hex: '#8b5cf6' }, { hex: '#e11d48' }, { hex: '#f97316' }, { hex: '#334155' }, { hex: '#ec4899' }, { hex: '#06b6d4' }, { hex: '#eab308' }, { hex: '#4f46e5' }];
 const TEXT_COLORS = [{ hex: '#000000' }, { hex: '#0f172a' }, { hex: '#334155' }, { hex: '#1e3a8a' }, { hex: '#ffffff' }, { hex: '#f8fafc' }, { hex: '#cbd5e1' }, { hex: '#e0f2fe' }];
 const FONTS = [{ label: 'Inter (Corporativa)', value: '"Inter", system-ui, sans-serif' }, { label: 'Helvetica (Premium)', value: '"Helvetica Neue", Helvetica, sans-serif' }, { label: 'Montserrat (Tech)', value: '"Montserrat", sans-serif' }];
+const BORDER_STYLES = [{ label: 'Suaves (16px)', value: '16px' }, { label: 'Píldora (30px)', value: '30px' }, { label: 'Cuadrados (4px)', value: '4px' }];
 
 const getLuminance = (hex) => {
     if (!hex) return 0;
@@ -88,6 +88,7 @@ function Settings({ config, onUpdate }) {
         }
     };
     const triggerFileInput = () => fileInputRef.current?.click();
+    const toggleSeccion = (seccion) => setSeccionAbierta(prev => prev === seccion ? null : seccion);
 
     const handleConnectIg = () => {
         setIgConnecting(true);
@@ -123,7 +124,8 @@ function Settings({ config, onUpdate }) {
 
         const autoBtnText = getLuminance(accent) > 0.179 ? '#000000' : '#ffffff';
         let safeIconColor = accent;
-        if (getContrastRatio(safeIconColor, isDarkMode ? '#090e17' : '#ffffff') < 3.0) {
+        const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
+        if (getContrastRatio(safeIconColor, bgLuminance) < 3.0) {
             let amt = isDarkMode ? 60 : -60; let c = accent.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join('');
             let num = parseInt(c, 16);
             if (!isNaN(num)) { let r = Math.min(255, Math.max(0, (num >> 16) + amt)); let b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt)); let g = Math.min(255, Math.max(0, (num & 0x0000FF) + amt)); safeIconColor = "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0'); }
@@ -131,6 +133,7 @@ function Settings({ config, onUpdate }) {
 
         const userTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
         const userSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
+
         const heroOverlayStyle = hasBanner ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))' : 'linear-gradient(to bottom, transparent, transparent)';
         const heroTextColor = hasBanner ? '#ffffff' : userTitleColor;
         const heroSubtextColor = hasBanner ? 'rgba(255,255,255,0.85)' : userSubtitleColor;
@@ -172,7 +175,7 @@ function Settings({ config, onUpdate }) {
                 <div className="accordions-container">
                     {/* IDENTIDAD */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'identidad' ? null : 'identidad')}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Textos Principales</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -198,7 +201,7 @@ function Settings({ config, onUpdate }) {
 
                     {/* APARIENCIA */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'apariencia' ? null : 'apariencia')}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
                             <span className="accordion-title"><SvgPalette /> Estilos y Colores</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -234,9 +237,9 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* MULTIMEDIA (FOTO Y VIDEO) */}
+                    {/* MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'multimedia' ? null : 'multimedia')}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -250,11 +253,10 @@ function Settings({ config, onUpdate }) {
                                             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
                                             <button type="button" className="btn-upload-file" onClick={triggerFileInput}><SvgUpload /> Subir</button>
                                         </div>
-
                                         <label className="settings-label" style={{ marginTop: '15px' }}>Video de Presentación (YouTube):</label>
                                         <div className="file-upload-container">
                                             <span className="input-prefix-icon"><SvgVideo /></span>
-                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://www.youtube.com/watch?v=..." style={{ paddingLeft: '40px' }} />
+                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://youtube.com/watch?v=..." style={{ paddingLeft: '40px' }} />
                                         </div>
                                     </div>
                                 </PremiumGate>
@@ -262,9 +264,9 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* REDES Y CONTACTO (RESTAURADO) */}
+                    {/* REDES */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('redes')}>
                             <span className="accordion-title"><SvgShare /> Contacto & Redes</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -274,7 +276,6 @@ function Settings({ config, onUpdate }) {
                                     <label className="settings-label">WhatsApp (Máx 15):
                                         <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 1123456789" maxLength={15} />
                                     </label>
-
                                     <PremiumGate isPremium={isPremium}>
                                         <hr className="settings-divider-soft" />
                                         <label className="settings-label">Instagram Feed:</label>
@@ -289,7 +290,6 @@ function Settings({ config, onUpdate }) {
                                                 <div className="ig-preview-grid">
                                                     <div className="ig-preview-item"></div><div className="ig-preview-item"></div><div className="ig-preview-item"></div>
                                                 </div>
-                                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textAlign: 'center' }}>Se mostrarán tus últimas 3 publicaciones.</p>
                                             </div>
                                         )}
                                     </PremiumGate>
@@ -300,7 +300,7 @@ function Settings({ config, onUpdate }) {
 
                     {/* FUNCIONALIDADES */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'funcionalidades' ? null : 'funcionalidades')}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Visibilidad de Módulos</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -322,17 +322,17 @@ function Settings({ config, onUpdate }) {
                                             <label className="switch"><input type="checkbox" name="mostrarGarantia" checked={config.mostrarGarantia || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                         {config.mostrarGarantia && (
-                                            <div style={{ padding: '0 10px' }}>
-                                                <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 6 Meses / De por vida" maxLength={30} style={{ padding: '10px', fontSize: '0.9rem' }} />
+                                            <div>
+                                                <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 6 Meses / De por vida" maxLength={30} />
                                             </div>
                                         )}
-                                        <div className="toggle-box glass-input-effect" style={{ marginTop: '10px' }}>
+                                        <div className="toggle-box glass-input-effect">
                                             <div><strong className="toggle-title">Google Maps</strong></div>
                                             <label className="switch"><input type="checkbox" name="mostrarMapa" checked={config.mostrarMapa || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
                                         {config.mostrarMapa && (
-                                            <div style={{ padding: '0 10px' }}>
-                                                <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega la URL de Google Maps" style={{ padding: '10px', fontSize: '0.9rem' }} />
+                                            <div>
+                                                <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega la URL de Google Maps" />
                                             </div>
                                         )}
                                     </PremiumGate>
@@ -343,7 +343,7 @@ function Settings({ config, onUpdate }) {
                 </div>
             </div>
 
-            {/* === LIENZO DE VISTA PREVIA === */}
+            {/* === LIENZO DE VISTA PREVIA AISLADO === */}
             <div className="settings-preview-canvas">
                 <div className="canvas-header">
                     <div className="device-toggles glass-effect">
@@ -361,6 +361,7 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
+                        {/* ESTE CONTENEDOR ES LA JAULA DEL WHATSAPP Y EL SCROLL */}
                         <div className="shop-screen-container">
                             <div className="shop-screen" style={shopStyles}>
                                 <div className="shop-nav">
@@ -386,6 +387,7 @@ function Settings({ config, onUpdate }) {
                                         )}
 
                                         <div className="shop-hero-actions"><button className="shop-cta-btn">Solicitar Reparación</button></div>
+
                                         {config.mostrarGarantia && isPremium && config.tiempoGarantia && (
                                             <div className="shop-trust-badge-hero"><SvgCheckShield /><span>Garantía: {config.tiempoGarantia}</span></div>
                                         )}
@@ -404,6 +406,16 @@ function Settings({ config, onUpdate }) {
                                     </div>
                                 )}
 
+                                {config.mostrarPresupuestador !== false && (
+                                    <div className="shop-section">
+                                        <h2 className="shop-section-title">Cotizar Reparación</h2>
+                                        <div className="shop-services-grid">
+                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span></div>
+                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span></div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
                                     <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
                                         <h2 className="shop-section-title">Presentación</h2>
@@ -413,26 +425,19 @@ function Settings({ config, onUpdate }) {
                                     </div>
                                 )}
 
-                                {config.instagramConnected && isPremium && (
-                                    <div className="shop-section">
-                                        <h2 className="shop-section-title"><SvgInstagram /> En Instagram</h2>
-                                        <div className="shop-ig-grid">
-                                            <div className="shop-ig-post"></div><div className="shop-ig-post"></div><div className="shop-ig-post"></div>
-                                        </div>
-                                    </div>
-                                )}
-
                                 {config.mostrarMapa && isPremium && config.mapaUrl && (
                                     <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
                                         <h2 className="shop-section-title">Nuestra Ubicación</h2>
                                         <div className="shop-map-preview">
                                             <SvgMapPin style={{ color: 'var(--shop-accent)', width: '32px', height: '32px' }} />
-                                            <p style={{ margin: '10px 0', fontSize: '0.9rem', color: 'var(--shop-text-secondary)' }}>Mapa Interactivo Oculto en Previa</p>
-                                            <span className="shop-secondary-btn" style={{ fontSize: '0.85rem', padding: '8px 15px' }}>Abrir Google Maps</span>
+                                            <p style={{ margin: '10px 0', fontSize: '0.9rem', color: 'var(--shop-text-secondary)' }}>Vista previa de Mapas</p>
+                                            <span className="shop-secondary-btn" style={{ fontSize: '0.85rem', padding: '8px 15px' }}>Abrir Maps</span>
                                         </div>
                                     </div>
                                 )}
                             </div>
+
+                            {/* WHATSAPP ANCLADO AL CONTENEDOR PADRE */}
                             {config.whatsapp && (
                                 <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                             )}

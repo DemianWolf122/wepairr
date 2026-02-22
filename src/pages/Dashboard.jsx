@@ -8,11 +8,11 @@ import InventoryView from './InventoryView';
 import ToolsView from './ToolsView';
 import FeaturesManager from '../components/FeaturesManager';
 import NewTicketForm from '../components/NewTicketForm';
-import AIChatAssistant from '../components/AIChatAssistant'; // El Bot de IA Global
+import AIChatAssistant from '../components/AIChatAssistant';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
-// --- LIBRERÍA DE ICONOS SVG PARA EL DASHBOARD ---
+// --- LIBRERÍA DE ICONOS SVG ---
 const MoonIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
 const SunIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const SvgInbox = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>;
@@ -60,7 +60,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     };
 
     const handleTicketCreated = () => {
-        setVistaActual('activos'); // Volver a la lista al guardar manualmente
+        setVistaActual('activos');
     };
 
     return (
@@ -69,8 +69,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 <div className="tech-brand">
                     <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Wepairr <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
-
-                {/* MENÚ DE NAVEGACIÓN PRINCIPAL */}
                 <div className="nav-menu">
                     <button onClick={() => setSeccionPrincipal('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
                     <button onClick={() => setSeccionPrincipal('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
@@ -79,7 +77,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <button onClick={() => setSeccionPrincipal('comunidad')} className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`}>Comunidad</button>
                     <button onClick={() => setSeccionPrincipal('configuracion')} className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`}>Ajustes</button>
                 </div>
-
                 <div className="nav-actions">
                     <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
@@ -90,7 +87,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 </div>
             </nav>
 
-            {/* CONTENEDOR DINÁMICO: Si estamos en Configuración, rompe la caja limitante */}
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
 
                 {seccionPrincipal === 'gestion' && (
@@ -104,7 +100,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </button>
                         </div>
 
-                        {/* SUB-SECCIÓN: TICKETS */}
                         {subSeccionGestion === 'tickets' && (
                             <>
                                 <header className="dashboard-tabs">
@@ -123,7 +118,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                             {ticketsMostrados.map(ticket => (
                                                 <div key={ticket.id} className="ticket-item-wrapper">
                                                     <TicketCard ticket={ticket} vista={vistaActual} onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null} onBudgetChange={actualizarPresupuesto} />
-
                                                     {vistaActual === 'inbox' && (
                                                         <div className="ticket-actions-absolute ticket-actions-inbox">
                                                             <button onClick={() => convertirATicket(ticket.id)} className="action-btn btn-green">Aceptar</button>
@@ -150,14 +144,12 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </>
                         )}
 
-                        {/* SUB-SECCIÓN: GESTOR DE FUNCIONALIDADES (FAQ, TURNOS, ETC) */}
                         {subSeccionGestion === 'features' && (
                             <FeaturesManager config={config} onUpdate={setConfig} />
                         )}
                     </>
                 )}
 
-                {/* EL RESTO DE LAS PESTAÑAS */}
                 {seccionPrincipal === 'metricas' && <MetricsView tickets={tickets} />}
                 {seccionPrincipal === 'inventario' && <InventoryView />}
                 {seccionPrincipal === 'herramientas' && <ToolsView />}
@@ -165,10 +157,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 {seccionPrincipal === 'configuracion' && <Settings config={config} onUpdate={setConfig} />}
             </main>
 
-            {/* EL BOT DE IA GLOBAL FLOTANTE */}
             <AIChatAssistant />
         </div>
     );
 }
-
 export default Dashboard;
