@@ -421,4 +421,96 @@
     .inv-form-row {
         flex-direction: column;
     }
+        flex-direction: column;
 }
+
+/* ... (MANTENER CSS ANTERIOR, REEMPLAZAR LA BARRA DE HERRAMIENTAS) ... */
+
+.inventory-tools-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--bg-panel-glass);
+    border: 1px solid var(--border-glass);
+}
+
+.search-box-inventory {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 250px;
+    background: var(--bg-input-glass);
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+}
+
+.search-box-inventory input {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.tools-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.sort-box-inventory {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-secondary);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* FIX: DESPLEGABLE INVENTARIO PREMIUM */
+.sort-select-inventory {
+    background-color: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 10px 40px 10px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px auto;
+    transition: all 0.2s;
+}
+
+.app-root.light .sort-select-inventory {
+    border-color: rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
+}
+
+.sort-select-inventory:hover {
+    border-color: var(--accent-color);
+}
+
+.sort-select-inventory:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ... (Todo lo dem├ís del inventario se mantiene intacto) ... */

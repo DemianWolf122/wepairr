@@ -25,21 +25,18 @@
     background: var(--bg-panel);
 }
 
+/* FIX: Forzamos el texto claro u oscuro seg├║n el tema general, sin importar la vista previa */
 .settings-controls-panel {
     width: 420px;
     flex-shrink: 0;
     padding: 30px;
     border-right: 1px solid var(--border-glass);
     background: var(--bg-panel);
+    color: var(--text-primary);
     overflow-y: auto;
     box-sizing: border-box;
     z-index: 10;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
-    color: var(--text-primary);
-}
-
-.app-root.dark .settings-controls-panel {
-    background: var(--bg-panel);
 }
 
 .settings-preview-canvas {
@@ -66,7 +63,7 @@
     align-items: center;
     padding: 20px;
     overflow: auto;
-    transition: opacity 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
+    transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
     transform: scale(1);
 }
@@ -76,6 +73,7 @@
     transform: scale(0.96);
 }
 
+/* --- RESPONSIVE DEL EDITOR --- */
 @media (max-width: 900px) {
     .settings-editor-layout {
         flex-direction: column;
@@ -143,6 +141,7 @@
     margin: auto;
 }
 
+/* FIX: CONTENEDOR RELATIVO PARA ENJAULAR AL WHATSAPP */
 .shop-screen-container {
     flex: 1;
     position: relative;
@@ -160,10 +159,11 @@
     border-bottom-right-radius: 14px;
 }
 
+/* FIX: BOT├ôN WHATSAPP ATADO A SU CONTENEDOR */
 .floating-wa-btn-preview {
     position: absolute;
-    bottom: 25px;
-    right: 25px;
+    bottom: 20px;
+    right: 20px;
     width: 55px;
     height: 55px;
     background: #25D366;
@@ -221,7 +221,53 @@
     background: #0f172a;
 }
 
-/* --- PANTALLA RENDERIZADA BASE --- */
+.desktop-header-bar {
+    height: 45px;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.app-root.light .desktop-header-bar {
+    background: rgba(255, 255, 255, 0.7);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mac-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.mac-red {
+    background: #ff5f56;
+}
+
+.mac-yellow {
+    background: #ffbd2e;
+}
+
+.mac-green {
+    background: #27c93f;
+}
+
+.desktop-url-bar {
+    margin-left: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-family: monospace;
+    opacity: 0.8;
+    flex: 1;
+    text-align: center;
+}
+
+/* --- PANTALLA DE LA TIENDA --- */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -232,7 +278,6 @@
     overflow-x: hidden;
     position: relative;
     font-family: var(--shop-font);
-    transition: background-color 0.3s ease, color 0.3s ease;
     scrollbar-width: none;
 }
 
@@ -245,7 +290,7 @@
     top: 0;
     z-index: 50;
     border-bottom: 1px solid var(--shop-border);
-    transition: background 0.3s, border-color 0.3s;
+    padding: 15px 20px;
 }
 
 .shop-logo {
@@ -259,7 +304,6 @@
     background-size: cover;
     background-position: center;
     background-color: var(--shop-bg-secondary);
-    transition: background-color 0.3s;
 }
 
 .shop-hero-overlay {
@@ -301,18 +345,6 @@
     transition: color 0.3s;
 }
 
-.shop-hours-hero {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    margin-bottom: 25px;
-    backdrop-filter: blur(5px);
-    padding: 5px 15px;
-    border-radius: 20px;
-    background: rgba(0, 0, 0, 0.1);
-}
-
 .shop-cta-btn {
     background: var(--shop-accent);
     color: var(--shop-btn-text);
@@ -321,7 +353,6 @@
     font-weight: 800;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s, color 0.3s;
 }
 
 .shop-trust-badge-hero {
@@ -342,7 +373,6 @@
 
 .shop-section {
     border-top: 1px solid var(--shop-border);
-    transition: border-color 0.3s, background-color 0.3s;
 }
 
 .shop-section-tracking {
@@ -362,11 +392,9 @@
     text-align: left;
     max-width: 90%;
     margin: 0 auto;
-    transition: background-color 0.3s, border-color 0.3s;
     box-sizing: border-box;
 }
 
-/* FIX TRACKING INPUT DARK MODE */
 .tracking-input-group {
     display: flex;
     gap: 10px;
@@ -383,7 +411,6 @@
     background: var(--shop-bg);
     color: var(--shop-text);
     font-family: inherit;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .tracking-input-group button {
@@ -396,11 +423,6 @@
     font-weight: 900;
     text-align: center;
     margin-bottom: 20px;
-    transition: color 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
 }
 
 .shop-services-grid {
@@ -417,7 +439,6 @@
     text-align: center;
     gap: 10px;
     border: 1px solid var(--shop-border);
-    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .shop-map-preview {
@@ -431,45 +452,7 @@
     text-align: center;
 }
 
-.shop-video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    border-radius: var(--shop-radius);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.shop-video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.shop-ig-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.shop-ig-post {
-    aspect-ratio: 1/1;
-    background: var(--shop-bg-secondary);
-    border: 1px solid var(--shop-border);
-    border-radius: 12px;
-}
-
-/* --- MOBILE SIZING --- */
-.phone-mockup-final .shop-nav {
-    padding: 15px 20px;
-}
-
-.phone-mockup-final .shop-logo {
-    font-size: 1.2rem;
-}
-
+/* SIZING */
 .phone-mockup-final .shop-hero {
     padding: 60px 0;
 }
@@ -517,7 +500,6 @@
     padding: 20px;
 }
 
-/* --- DESKTOP SIZING --- */
 .desktop-mockup-final .shop-nav {
     padding: 20px 50px;
 }
@@ -575,7 +557,7 @@
     padding: 35px;
 }
 
-/* --- ESTILOS DEL SIDEBAR --- */
+/* --- ESTILOS DEL SIDEBAR DE EDICI├ôN --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -594,18 +576,6 @@
     margin: 0;
     color: var(--text-secondary);
     font-size: 0.95rem;
-}
-
-.plan-select {
-    background: transparent;
-    border: none;
-    color: var(--accent-color);
-    font-weight: 800;
-    outline: none;
-    font-size: 0.9rem;
-    padding: 5px;
-    user-select: auto;
-    -webkit-user-select: auto;
 }
 
 .accordions-container {
@@ -664,18 +634,11 @@
     padding: 0 22px 25px 22px;
 }
 
-.chevron-icon {
-    transition: transform 0.3s var(--ease-premium);
-}
-
-.accordion-item.active .chevron-icon {
-    transform: rotate(180deg);
-}
-
+/* FIX: DISTANCIA Y SEPARACI├ôN ENTRE LABELS E INPUTS */
 .settings-form-group {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 22px;
 }
 
 .settings-label {
@@ -683,10 +646,11 @@
     color: var(--text-primary);
     font-size: 0.9rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
-.settings-input {
+.settings-input,
+.select-input {
     width: 100%;
     padding: 14px;
     background: var(--bg-input-glass);
@@ -698,26 +662,46 @@
     transition: all 0.2s;
     box-sizing: border-box;
     font-family: inherit;
-    user-select: auto;
-    -webkit-user-select: auto;
+    margin-top: 10px;
+    /* Aqu├¡ est├í el aire */
 }
 
-.app-root.light .settings-input {
+.app-root.light .settings-input,
+.app-root.light .select-input {
     border-color: rgba(0, 0, 0, 0.25);
     background: #ffffff;
 }
 
-.settings-input:focus {
+.settings-input:focus,
+.select-input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.input-prefix-icon {
+.textarea-container {
+    position: relative;
+    margin-top: 10px;
+}
+
+.settings-textarea {
+    line-height: 1.5;
+    padding-bottom: 25px;
+    margin-top: 0;
+}
+
+.no-resize-handle {
+    resize: none;
+    overflow-y: hidden;
+}
+
+.char-count {
     position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
+    bottom: 8px;
+    right: 12px;
+    font-size: 0.75rem;
     color: var(--text-secondary);
+    font-weight: bold;
+    pointer-events: none;
 }
 
 .color-presets-grid {
@@ -734,6 +718,7 @@
     border: 3px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s var(--ease-bounce);
 }
 
 .app-root.light .color-preset-btn {
@@ -748,68 +733,181 @@
     z-index: 2;
 }
 
-/* ESTILOS INSTAGRAM */
-.btn-connect-ig {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+.app-root.light .color-preset-btn.active {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-box {
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.app-root.light .toggle-box {
+    border-color: rgba(0, 0, 0, 0.2);
+    background: #ffffff;
+}
+
+.toggle-title {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.app-root.light .slider {
+    border-color: rgba(0, 0, 0, 0.25);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(22px);
+}
+
+.file-upload-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.file-url-input {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-top: 0;
+}
+
+.btn-upload-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    background: var(--accent-color);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
     font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.premium-gate-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.premium-content-blurred {
+    filter: blur(5px);
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
+    padding-bottom: 10px;
+}
+
+.premium-lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 2;
+    gap: 10px;
+    backdrop-filter: blur(3px);
+}
+
+.app-root.light .premium-lock-overlay {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.lock-icon {
+    color: var(--text-primary);
+}
+
+.premium-label {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.device-toggles {
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 99px;
+}
+
+.device-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 10px 24px;
+    border-radius: 99px;
+    font-weight: 800;
+    font-size: 0.95rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 1rem;
-    transition: transform 0.2s;
-}
-
-.btn-connect-ig:hover {
-    transform: scale(1.02);
-}
-
-.ig-connected-box {
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-}
-
-.ig-status {
-    font-weight: bold;
-    color: var(--text-primary);
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 8px;
 }
 
-.ig-preview-grid {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    justify-content: center;
-}
-
-.ig-preview-item {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(45deg, #f09433, #bc1888);
-    border-radius: 8px;
-    opacity: 0.7;
-}
-
-.btn-disconnect {
-    background: transparent;
-    border: 1px solid var(--border-glass);
-    color: var(--text-secondary);
-    padding: 8px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
+.device-btn.active {
+    background: var(--text-primary);
+    color: var(--bg-main);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
 }

@@ -10,9 +10,8 @@
     border: 1px solid var(--border-glass);
     box-shadow: var(--shadow-glass);
     background: var(--bg-panel-glass);
-
-    /* CURSOR PARA INDICAR QUE SE PUEDE ARRASTRAR */
     cursor: grab;
+    /* Muestra que se puede arrastrar */
 }
 
 .ticket-card-premium:active {
@@ -90,6 +89,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    pointer-events: none;
 }
 
 .tc-device-title {
@@ -100,7 +100,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    pointer-events: none;
 }
 
 .tc-device-title svg {
@@ -113,10 +112,9 @@
     font-size: 0.9rem;
     line-height: 1.4;
     display: -webkit-box;
-    line-clamp: 2;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    pointer-events: none;
 }
 
 .tc-client-info {
@@ -130,7 +128,6 @@
     padding: 8px 12px;
     border-radius: 8px;
     width: fit-content;
-    pointer-events: none;
 }
 
 .tc-client-info svg {
@@ -149,7 +146,6 @@
     border-top: 1px solid var(--border-glass);
     font-size: 0.8rem;
     color: var(--text-secondary);
-    pointer-events: none;
 }
 
 .tc-date {
@@ -157,6 +153,7 @@
     align-items: center;
     gap: 6px;
     font-weight: 600;
+    pointer-events: none;
 }
 
 .tc-budget-box {
@@ -190,13 +187,11 @@
     font-family: inherit;
     text-align: right;
     -moz-appearance: textfield;
-    appearance: textfield;
     cursor: text;
 }
 
 .tc-budget-input::-webkit-outer-spin-button,
 .tc-budget-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
-    appearance: none;
     margin: 0;
 }

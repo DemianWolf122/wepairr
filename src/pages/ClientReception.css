@@ -326,6 +326,8 @@
         opacity: 1;
         transform: scale(1);
     }
+        opacity: 1;
+        transform: scale(1);
 }
 
 /* RESPONSIVE MÓVIL REAL */
@@ -419,4 +421,8 @@
         width: 60px;
         height: 60px;
     }
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
 }

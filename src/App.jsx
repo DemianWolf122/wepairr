@@ -23,7 +23,7 @@ const CONFIG_INICIAL = {
   videoUrl: '',
   mostrarPresupuestador: true,
   mostrarTracking: true,
-  mostrarTurnos: true,
+  mostrarTurnos: false,
   mostrarGarantia: true,
   tiempoGarantia: '90 Días',
   mostrarMapa: true,
@@ -33,20 +33,19 @@ const CONFIG_INICIAL = {
 };
 
 function App() {
-  // 1. Cargamos el estado global desde la base de datos local
+  // 1. CARGA INICIAL DESDE LA MEMORIA LOCAL
   const [config, setConfig] = useState(() => {
-    const saved = localStorage.getItem('wepairr_config');
-    return saved ? JSON.parse(saved) : CONFIG_INICIAL;
+    const guardado = localStorage.getItem('wepairr_config');
+    return guardado ? JSON.parse(guardado) : CONFIG_INICIAL;
   });
 
   const [theme, setTheme] = useState('dark');
 
-  // 2. MAGIA DE SINCRONIZACIÓN: Cada vez que cambias algo en el editor, se guarda inmediatamente
+  // 2. MAGIA DE SINCRONIZACIÓN: Guarda los cambios al instante
   useEffect(() => {
     localStorage.setItem('wepairr_config', JSON.stringify(config));
   }, [config]);
 
-  // Gestión del Modo Oscuro del Dashboard (No de la tienda)
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     if (theme === 'dark') document.documentElement.classList.add('dark');

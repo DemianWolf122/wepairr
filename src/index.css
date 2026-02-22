@@ -41,13 +41,12 @@ body {
     background: var(--bg-main);
     color: var(--text-primary);
     overflow: hidden;
-    /* Evita doble scrollbar */
 }
 
-/* --- BARRAS DE DESPLAZAMIENTO A MEDIDA --- */
+/* === BARRAS DE SCROLL PERSONALIZADAS (MÁS FINAS Y ELEGANTES) === */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -55,13 +54,27 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--text-secondary);
+    background-color: var(--border-glass);
     border-radius: 10px;
-    opacity: 0.5;
+    border: 2px solid transparent;
+    background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--accent-color);
+    background-color: var(--text-secondary);
+}
+
+/* === ARREGLO GLOBAL DE FLECHAS (ACORDEONES) === */
+.accordion-chevron,
+.chevron-icon {
+    display: inline-block;
+    transition: transform 0.3s var(--ease-premium);
+    font-size: 0.8rem;
+}
+
+.accordion-item.active .accordion-chevron,
+.nav-group-active .chevron-icon {
+    transform: rotate(180deg);
 }
 
 * {
