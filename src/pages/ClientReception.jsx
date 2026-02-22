@@ -9,14 +9,10 @@ const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke=
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
-const SvgInstagram = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 
 const getLuminance = (hex) => {
     if (!hex) return 0;
-    let cleanHex = hex.replace('#', '');
-    if (cleanHex.length === 3) cleanHex = cleanHex.split('').map(x => x + x).join('');
-    let rgb = parseInt(cleanHex, 16);
-    if (isNaN(rgb)) return 0;
+    let c = hex.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join(''); let rgb = parseInt(c, 16); if (isNaN(rgb)) return 0;
     let r = (rgb >> 16) & 0xff, g = (rgb >> 8) & 0xff, b = (rgb >> 0) & 0xff;
     let a = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
@@ -36,7 +32,7 @@ function ClientReception({ config }) {
         const autoBtnText = getLuminance(accent) > 0.179 ? '#000000' : '#ffffff';
         let safeIconColor = accent;
         const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
-        if (getContrastRatio(safeIconColor, isDarkMode ? '#090e17' : '#ffffff') < 3.0) {
+        if (getContrastRatio(safeIconColor, bgLuminance) < 3.0) {
             let amt = isDarkMode ? 60 : -60; let c = accent.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join('');
             let num = parseInt(c, 16);
             if (!isNaN(num)) { let r = Math.min(255, Math.max(0, (num >> 16) + amt)); let b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt)); let g = Math.min(255, Math.max(0, (num & 0x0000FF) + amt)); safeIconColor = "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0'); }
@@ -44,7 +40,11 @@ function ClientReception({ config }) {
 
         const userTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
         const userSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
-        const heroOverlayStyle = hasBanner ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))' : 'linear-gradient(to bottom, transparent, transparent)';
+
+        const heroOverlayStyle = hasBanner
+            ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))'
+            : 'linear-gradient(to bottom, transparent, transparent)';
+
         const heroTextColor = hasBanner ? '#ffffff' : userTitleColor;
         const heroSubtextColor = hasBanner ? 'rgba(255,255,255,0.85)' : userSubtitleColor;
 
@@ -67,7 +67,7 @@ function ClientReception({ config }) {
     return (
         <div className="public-shop-wrapper" style={shopStyles}>
             <div className="shop-nav">
-                <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
+                <span className="shop-logo">{config.nombreNegocio}</span>
                 <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
                 <div className="shop-menu-icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}><SvgMenu /></div>
                 {mobileMenuOpen && (<div className="mobile-nav-dropdown"><span>Inicio</span><span>Servicios</span></div>)}
@@ -77,8 +77,8 @@ function ClientReception({ config }) {
                 <div className="shop-hero-overlay" style={{ background: 'var(--hero-overlay)' }}></div>
                 <div className="shop-hero-content animate-pop-in">
                     <div className="shop-avatar-placeholder"><SvgBuilding /></div>
-                    <h1 className="shop-title" style={{ color: 'var(--hero-text-color)' }}>{config.titulo || 'Tu Título Principal'}</h1>
-                    <p className="shop-desc" style={{ color: 'var(--hero-subtext-color)' }}>{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
+                    <h1 className="shop-title" style={{ color: 'var(--hero-text-color)' }}>{config.titulo}</h1>
+                    <p className="shop-desc" style={{ color: 'var(--hero-subtext-color)' }}>{config.descripcion}</p>
 
                     {config.horariosAtencion && (
                         <div className="shop-hours-hero" style={{ color: 'var(--hero-subtext-color)' }}>
@@ -111,20 +111,21 @@ function ClientReception({ config }) {
                 </div>
             )}
 
+            {config.mostrarPresupuestador !== false && (
+                <div className="shop-section">
+                    <h2 className="shop-section-title">Cotizar Reparación</h2>
+                    <div className="shop-services-grid">
+                        <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span>Pantallas</span></div>
+                        <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span>Baterías</span></div>
+                    </div>
+                </div>
+            )}
+
             {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
                 <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
                     <h2 className="shop-section-title">Presentación</h2>
                     <div className="shop-video-container">
                         <iframe src={getEmbedUrl(config.videoUrl)} title="Video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                    </div>
-                </div>
-            )}
-
-            {config.instagramConnected && isPremium && (
-                <div className="shop-section">
-                    <h2 className="shop-section-title"><SvgInstagram /> En Instagram</h2>
-                    <div className="shop-ig-grid">
-                        <div className="shop-ig-post"></div><div className="shop-ig-post"></div><div className="shop-ig-post"></div>
                     </div>
                 </div>
             )}

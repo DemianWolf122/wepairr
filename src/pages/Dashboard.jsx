@@ -154,7 +154,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
                 {seccionPrincipal === 'configuracion' && <Settings config={config} onUpdate={setConfig} />}
             </main>
-            {/* EL BOT DE IA ESTÁ AQUÍ */}
+
             <AIChatAssistant />
         </div>
     );

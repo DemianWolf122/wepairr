@@ -24,6 +24,8 @@ function CommunityWiki() {
     const [busqueda, setBusqueda] = useState('');
     const [orden, setOrdenarPor] = useState('recientes');
     const [nuevoPost, setNuevoPost] = useState({ titulo: '', categoria: 'General', contenido: '', imagenPrincipal: null, imagenesSecundarias: [] });
+
+    // LIGHTBOX PARA IMÁGENES
     const [imagenLightbox, setImagenLightbox] = useState(null);
 
     const fileInputPrincipalRef = useRef(null);
@@ -109,7 +111,7 @@ function CommunityWiki() {
                 ))}
             </div>
 
-            {/* MODAL DETALLE ANTI-CRASH */}
+            {/* MODAL DETALLE (Evita crashes con optional chaining) */}
             {postSeleccionado && (
                 <div className="wiki-modal-overlay" onClick={() => setPostSeleccionado(null)}>
                     <div className="wiki-modal-container animate-scale-in" onClick={e => e.stopPropagation()}>
@@ -165,25 +167,42 @@ function CommunityWiki() {
                         <form onSubmit={crearPost} className="wiki-modal-body-scroll form-body">
                             <div className="form-group">
                                 <label>Título del Aporte *</label>
-                                <input type="text" value={nuevoPost.titulo} onChange={e => setNuevoPost({ ...nuevoPost, titulo: e.target.value })} placeholder="Ej. Solución IC..." required className="wiki-input" maxLength={80} />
+                                <input type="text" value={nuevoPost.titulo} onChange={e => setNuevoPost({ ...nuevoPost, titulo: e.target.value })} placeholder="Ej. Solución IC de carga iPhone X" required className="wiki-input" maxLength={80} />
                             </div>
+
                             <div className="form-group">
                                 <label>Categoría</label>
                                 <select value={nuevoPost.categoria} onChange={e => setNuevoPost({ ...nuevoPost, categoria: e.target.value })} className="wiki-input sort-select">
                                     <option>General</option><option>Microelectrónica</option><option>Software</option><option>Hardware</option>
                                 </select>
                             </div>
+
                             <div className="form-group">
                                 <label>Descripción Detallada *</label>
-                                <textarea value={nuevoPost.contenido} onChange={e => setNuevoPost({ ...nuevoPost, contenido: e.target.value })} placeholder="Explica los pasos..." required className="wiki-input" rows={6} />
+                                <textarea value={nuevoPost.contenido} onChange={e => setNuevoPost({ ...nuevoPost, contenido: e.target.value })} placeholder="Explica los pasos de la solución..." required className="wiki-input" rows={6} />
                             </div>
+
                             <div className="form-group upload-section">
-                                <label>Imagen Principal (Thumbnail)</label>
+                                <label>Imagen Principal</label>
                                 <div className="upload-box" onClick={() => fileInputPrincipalRef.current.click()}>
-                                    {nuevoPost.imagenPrincipal ? <img src={nuevoPost.imagenPrincipal} alt="Preview" className="upload-preview" /> : <><SvgImage /> <span>Subir foto principal</span></>}
+                                    {nuevoPost.imagenPrincipal ? <img src={nuevoPost.imagenPrincipal} alt="Preview" className="upload-preview" /> : <><SvgImage /> <span>Subir foto de la placa o esquema</span></>}
                                 </div>
                                 <input type="file" ref={fileInputPrincipalRef} onChange={e => handleFileChange(e, 'principal')} accept="image/*" style={{ display: 'none' }} />
                             </div>
+
+                            <div className="form-group upload-section">
+                                <label>Imágenes Adicionales</label>
+                                <div className="upload-box" style={{ padding: '15px' }} onClick={() => fileInputSecundarioRef.current.click()}>
+                                    <SvgPlus /> <span>Añadir más fotos</span>
+                                </div>
+                                <input type="file" ref={fileInputSecundarioRef} onChange={e => handleFileChange(e, 'secundaria')} accept="image/*" multiple style={{ display: 'none' }} />
+                                <div className="secondary-previews">
+                                    {nuevoPost.imagenesSecundarias.map((img, idx) => (
+                                        <img key={idx} src={img} alt="Preview secondary" className="mini-preview" />
+                                    ))}
+                                </div>
+                            </div>
+
                             <button type="submit" className="btn-new-post" style={{ width: '100%', justifyContent: 'center', padding: '16px', fontSize: '1.1rem' }}>Publicar Aporte</button>
                         </form>
                     </div>

@@ -71,19 +71,8 @@
     gap: 15px;
 }
 
-.form-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-}
-
-/* Inputs y Textareas Inteligentes */
-.new-ticket-form-wrapper input[type="text"],
-.new-ticket-form-wrapper input[type="tel"],
-.new-ticket-form-wrapper textarea,
-.select-input {
+.new-ticket-form-wrapper input,
+.new-ticket-form-wrapper textarea {
     width: 100%;
     padding: 12px 15px;
     border-radius: 12px;
@@ -98,21 +87,19 @@
 }
 
 .app-root.light .new-ticket-form-wrapper input,
-.app-root.light .new-ticket-form-wrapper textarea,
-.app-root.light .select-input {
+.app-root.light .new-ticket-form-wrapper textarea {
     border-color: rgba(0, 0, 0, 0.15);
 }
 
 .new-ticket-form-wrapper input:focus,
-.new-ticket-form-wrapper textarea:focus,
-.select-input:focus {
+.new-ticket-form-wrapper textarea:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .textarea-auto {
     resize: none;
-    /* Quitamos el tirador manual */
+    margin-bottom: 5px;
 }
 
 .input-error {
@@ -120,20 +107,13 @@
     background: rgba(239, 68, 68, 0.05) !important;
 }
 
-.error-msg {
-    color: var(--danger);
-    font-size: 0.85rem;
-    margin-top: 5px;
-    display: block;
-    font-weight: bold;
-}
-
 .char-count {
     position: absolute;
-    bottom: -18px;
+    bottom: -20px;
     right: 5px;
     font-size: 0.8rem;
     color: var(--text-secondary);
+    font-weight: bold;
 }
 
 .btn-save-ticket {
@@ -146,10 +126,6 @@
     font-size: 1.1rem;
     font-weight: 800;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
     transition: all 0.2s;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
@@ -161,7 +137,7 @@
 
 .success-notification {
     position: absolute;
-    bottom: 20px;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
     background: var(--success);
@@ -175,14 +151,20 @@
     opacity: 0;
     transition: all 0.3s var(--ease-bounce);
     pointer-events: none;
+    z-index: 10;
 }
 
 .success-notification.show {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(50px);
 }
 
-.new-ticket-form-container {
-    position: relative;
-    /* Para que la notificación se posicione respecto a esto */
+@media (max-width: 768px) {
+    .ticket-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
 }

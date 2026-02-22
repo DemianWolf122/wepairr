@@ -137,7 +137,6 @@
     scrollbar-color: var(--border-glass) transparent;
 }
 
-/* MAGIA ARQUITECTÓNICA: Al entrar a Ajustes, rompe la caja central y ocupa el 100% de la pantalla */
 .dashboard-content.modo-editor-activo {
     max-width: 100%;
     padding: 0;
@@ -249,7 +248,7 @@
     color: white;
 }
 
-/* --- LISTA DE TICKETS (ESTA SÍ DEBE SER SELECCIONABLE PARA COPIAR DATOS) --- */
+/* --- LISTA DE TICKETS --- */
 .ticket-list {
     flex: 1;
     overflow-y: auto;
@@ -276,7 +275,6 @@
     position: relative;
 }
 
-/* Acciones absolutas de Inbox/Papelera */
 .ticket-actions-absolute {
     position: absolute;
     right: 15px;
@@ -361,7 +359,7 @@
 }
 
 /* =======================================================
-   RESPONSIVE GLOBAL (SOPORTE HASTA 320PX)
+   RESPONSIVE GLOBAL
 ======================================================= */
 @media (max-width: 900px) {
     .ticket-list {
@@ -370,8 +368,6 @@
 }
 
 @media (max-width: 768px) {
-
-    /* Barra Superior Deslizable en Móvil */
     .tech-navbar {
         padding: 0 15px;
     }
@@ -409,7 +405,6 @@
         display: none;
     }
 
-    /* Contenido General */
     .dashboard-content {
         padding: 15px;
     }
@@ -424,7 +419,6 @@
         width: 100%;
     }
 
-    /* Pestañas de Tickets (Scroll horizontal) */
     .dashboard-tabs {
         flex-wrap: nowrap;
         overflow-x: auto;
