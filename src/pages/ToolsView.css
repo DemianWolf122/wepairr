@@ -1,6 +1,5 @@
 .tools-wrapper {
     padding: 20px;
-    animation: fadeIn 0.4s var(--ease-premium);
 }
 
 .tools-header {
@@ -67,25 +66,6 @@
     font-size: 0.95rem;
 }
 
-.upload-zone {
-    border: 2px dashed var(--border-glass);
-    border-radius: 16px;
-    padding: 40px 20px;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.05);
-    transition: all 0.3s;
-    margin-top: auto;
-}
-
-.app-root.light .upload-zone {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.upload-zone:hover {
-    border-color: var(--accent-color);
-    background: var(--bg-hover-glass);
-}
-
 .btn-tool-action {
     background: var(--text-primary);
     color: var(--bg-main);
@@ -95,12 +75,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 0.95rem;
-}
-
-.btn-tool-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    flex: 1;
 }
 
 .btn-tool-ghost {
@@ -112,10 +87,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
-}
-
-.btn-tool-ghost:hover {
-    background: var(--bg-hover-glass);
+    flex: 1;
 }
 
 .ohm-calculator {
@@ -152,40 +124,8 @@
     outline: none;
 }
 
-.ohm-input-group input:focus {
-    border-color: var(--accent-color);
-}
-
 .ohm-actions {
     display: flex;
     gap: 10px;
     margin-top: 10px;
-}
-
-.ohm-actions button {
-    flex: 1;
-}
-
-.datasheet-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: auto;
-}
-
-.datasheet-input {
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid var(--border-glass);
-    background: var(--bg-input-glass);
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    font-weight: bold;
-    outline: none;
-    text-align: center;
-}
-
-.datasheet-input:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }

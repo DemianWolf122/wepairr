@@ -1,167 +1,154 @@
 .home-wrapper {
     min-height: 100vh;
+    background: var(--bg-main-gradient);
     display: flex;
     flex-direction: column;
 }
 
-/* Navbar principal de Wepairr en formato Glass */
 .home-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px;
-    background: var(--bg-panel-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
     border-bottom: 1px solid var(--border-glass);
-    box-shadow: var(--shadow-glass);
-    position: relative;
-    z-index: 10;
 }
 
 .home-logo {
     font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: -1px;
+    font-weight: 900;
     color: var(--text-primary);
+    letter-spacing: -1px;
 }
 
-.home-logo span {
-    color: var(--accent-color);
-}
-
-.home-links {
+.home-nav-links {
     display: flex;
     align-items: center;
+    gap: 20px;
 }
 
-/* Botón de cambio de tema */
 .theme-toggle-btn {
     background: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
     color: var(--text-primary);
     font-size: 1.2rem;
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: all 0.2s;
+    padding: 10px;
+    border-radius: 12px;
+    transition: transform 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(5px);
 }
 
 .theme-toggle-btn:hover {
-    background: var(--bg-hover-glass);
     transform: scale(1.05);
 }
 
-.btn-login-nav {
+.nav-btn-outline {
     color: var(--text-primary);
     text-decoration: none;
-    font-size: 1rem;
-    font-weight: 600;
-    border: 1px solid var(--border-glass);
-    background: var(--bg-input-glass);
-    padding: 8px 24px;
-    border-radius: 99px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 2px solid var(--border-glass);
     transition: all 0.2s;
-    backdrop-filter: blur(5px);
 }
 
-.btn-login-nav:hover {
-    background-color: var(--bg-hover-glass);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.nav-btn-outline:hover {
+    background: var(--text-primary);
+    color: var(--bg-main);
 }
 
-/* Fondo del Hero dinámico (Hereda de app-root, lo hacemos transparente) */
 .home-hero {
     flex: 1;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    padding: 20px;
     text-align: center;
-    padding: 0 20px;
-    position: relative;
 }
 
 .hero-content {
     max-width: 800px;
-    animation: fadeIn 0.8s ease;
-    z-index: 2;
 }
 
 .hero-title {
-    font-size: 4.5rem;
-    font-weight: 800;
-    margin: 0 0 20px 0;
-    line-height: 1.1;
-    letter-spacing: -2px;
+    font-size: 4rem;
+    font-weight: 900;
     color: var(--text-primary);
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
 }
 
-.hero-desc {
+.hero-subtitle {
     font-size: 1.3rem;
     color: var(--text-secondary);
-    margin: 0 auto 40px auto;
-    max-width: 600px;
+    margin-bottom: 40px;
     line-height: 1.6;
 }
 
 .hero-actions {
     display: flex;
-    gap: 20px;
     justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-.btn-primary-hero {
+.hero-btn-primary {
     background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-    color: #fff;
+    color: white;
     text-decoration: none;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-weight: 700;
+    padding: 16px 35px;
+    border-radius: 16px;
+    font-weight: 800;
     font-size: 1.1rem;
-    transition: all 0.3s;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
 }
 
-.btn-primary-hero:hover {
+.hero-btn-primary:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
 }
 
-.btn-secondary-hero {
+.hero-btn-secondary {
     background: var(--bg-panel-glass);
     color: var(--text-primary);
     border: 1px solid var(--border-glass);
     text-decoration: none;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-weight: 600;
+    padding: 16px 35px;
+    border-radius: 16px;
+    font-weight: 800;
     font-size: 1.1rem;
-    transition: all 0.3s;
-    backdrop-filter: blur(10px);
+    transition: all 0.2s;
 }
 
-.btn-secondary-hero:hover {
-    background-color: var(--bg-hover-glass);
+.hero-btn-secondary:hover {
+    background: var(--bg-hover-glass);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+@media (max-width: 768px) {
+    .home-nav {
+        padding: 15px 20px;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .hero-title {
+        font-size: 2.5rem;
     }
-        opacity: 1;
-        transform: translateY(0);
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .hero-btn-primary,
+    .hero-btn-secondary {
+        width: 100%;
+        justify-content: center;
+        display: flex;
+    }
 }

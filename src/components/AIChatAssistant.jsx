@@ -6,9 +6,7 @@ const SvgSend = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="cu
 
 function AIChatAssistant() {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState([
-        { text: "Hola, soy Wepairr AI. ¿Necesitas un boardview, diagrama o ayuda con una falla?", sender: "bot" }
-    ]);
+    const [messages, setMessages] = useState([{ text: "Hola, soy Wepairr AI. ¿En qué te ayudo?", sender: "bot" }]);
     const [input, setInput] = useState('');
 
     const handleSend = (e) => {
@@ -16,41 +14,23 @@ function AIChatAssistant() {
         if (!input.trim()) return;
         setMessages(prev => [...prev, { text: input, sender: "user" }]);
         setInput('');
-
-        // Simulación de respuesta AI
-        setTimeout(() => {
-            setMessages(prev => [...prev, { text: "Buscando esquemático en la base de datos global... (Función en desarrollo)", sender: "bot" }]);
-        }, 1000);
+        setTimeout(() => { setMessages(prev => [...prev, { text: "Buscando información...", sender: "bot" }]); }, 1000);
     };
 
     return (
         <div className="ai-chat-container">
             {isOpen && (
                 <div className="ai-chat-window glass-effect animate-scale-in">
-                    <div className="ai-chat-header">
-                        <SvgBot />
-                        <span>Wepairr Copilot</span>
-                        <button onClick={() => setIsOpen(false)} className="btn-close-chat">×</button>
-                    </div>
-                    <div className="ai-chat-body">
-                        {messages.map((msg, i) => (
-                            <div key={i} className={`chat-bubble ${msg.sender}`}>
-                                {msg.text}
-                            </div>
-                        ))}
-                    </div>
+                    <div className="ai-chat-header"><SvgBot /><span>Wepairr Copilot</span><button onClick={() => setIsOpen(false)} className="btn-close-chat">×</button></div>
+                    <div className="ai-chat-body">{messages.map((msg, i) => (<div key={i} className={`chat-bubble ${msg.sender}`}>{msg.text}</div>))}</div>
                     <form onSubmit={handleSend} className="ai-chat-input-area">
-                        <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder="Ej. Diagrama iPhone 12 Pro..." />
+                        <input type="text" value={input} onChange={e => setInput(e.target.value)} placeholder="Ej. Diagrama iPhone..." />
                         <button type="submit"><SvgSend /></button>
                     </form>
                 </div>
             )}
-
-            <button className={`ai-chat-trigger ${isOpen ? 'hidden' : ''}`} onClick={() => setIsOpen(true)}>
-                <SvgBot />
-            </button>
+            <button className={`ai-chat-trigger ${isOpen ? 'hidden' : ''}`} onClick={() => setIsOpen(true)}><SvgBot /></button>
         </div>
     );
 }
-
 export default AIChatAssistant;

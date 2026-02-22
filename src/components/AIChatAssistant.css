@@ -17,12 +17,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s var(--ease-bounce);
+    transition: all 0.3s;
 }
 
 .ai-chat-trigger:hover {
     transform: scale(1.1);
-    box-shadow: 0 15px 35px rgba(139, 92, 246, 0.5);
 }
 
 .ai-chat-trigger.hidden {
@@ -47,7 +46,6 @@
 
 .app-root.light .ai-chat-window {
     background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
 }
 
 .ai-chat-header {
@@ -67,11 +65,6 @@
     color: white;
     font-size: 1.5rem;
     cursor: pointer;
-    opacity: 0.8;
-}
-
-.btn-close-chat:hover {
-    opacity: 1;
 }
 
 .ai-chat-body {
@@ -124,10 +117,6 @@
     outline: none;
 }
 
-.ai-chat-input-area input:focus {
-    border-color: #3b82f6;
-}
-
 .ai-chat-input-area button {
     background: #3b82f6;
     color: white;
@@ -135,13 +124,5 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.ai-chat-input-area button:hover {
-    transform: scale(1.1);
 }
