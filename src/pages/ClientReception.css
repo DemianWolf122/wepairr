@@ -35,6 +35,16 @@
     cursor: pointer;
 }
 
+.shop-menu-icon {
+    display: none;
+    align-items: center;
+    cursor: pointer;
+}
+
+.mobile-nav-dropdown {
+    display: none;
+}
+
 .shop-hero {
     padding: 120px 20px;
     text-align: center;
@@ -50,7 +60,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), var(--shop-bg));
     z-index: 1;
 }
 
@@ -59,6 +68,9 @@
     z-index: 2;
     max-width: 800px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .shop-avatar-placeholder {
@@ -84,6 +96,7 @@
     font-size: 3.5rem;
     font-weight: 900;
     line-height: 1.1;
+    word-wrap: break-word;
 }
 
 .shop-desc {
@@ -91,6 +104,7 @@
     color: var(--shop-text-secondary);
     margin: 0 auto 40px auto;
     line-height: 1.6;
+    word-wrap: break-word;
 }
 
 .shop-hero-actions {
@@ -132,24 +146,11 @@
     transition: all 0.2s var(--ease-premium);
 }
 
-.shop-tracking-widget {
-    margin: -60px auto 40px auto;
-    position: relative;
-    z-index: 10;
-    max-width: 800px;
-    width: 90%;
-}
-
-.tracking-inner {
-    padding: 40px;
-    border-radius: 24px;
-    border: 1px solid var(--shop-border);
+.shop-secondary-btn:hover {
     background: var(--shop-bg-secondary);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-    text-align: left;
 }
 
-.shop-trust-badge {
+.shop-trust-badge-hero {
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.3);
     color: #10b981;
@@ -161,16 +162,34 @@
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin: 0 auto 0 auto;
-    max-width: max-content;
+    margin: 30px auto 0 auto;
     border-radius: 99px;
-    position: relative;
-    z-index: 10;
+    backdrop-filter: blur(5px);
 }
 
 .shop-section {
     padding: 80px 30px;
     border-top: 1px solid var(--shop-border);
+}
+
+.shop-section-tracking {
+    padding-top: 0 !important;
+    border-top: none !important;
+    margin-top: -60px;
+    position: relative;
+    z-index: 10;
+}
+
+.tracking-inner {
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid var(--shop-border);
+    background: var(--shop-bg-secondary);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    max-width: 800px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .shop-section-title {
@@ -182,26 +201,6 @@
     justify-content: center;
     align-items: center;
     gap: 15px;
-}
-
-.shop-video-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding-bottom: 56.25%;
-    border-radius: var(--shop-radius);
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--shop-border);
-}
-
-.shop-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
 }
 
 .shop-services-grid {
@@ -237,25 +236,18 @@
     margin-bottom: 10px;
 }
 
-.ig-feed-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    max-width: 1000px;
+.shop-map-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    background: var(--shop-bg);
+    border-radius: var(--shop-radius);
+    border: 1px solid var(--shop-border);
+    text-align: center;
+    max-width: 600px;
     margin: 0 auto;
-}
-
-.ig-post {
-    aspect-ratio: 1/1;
-    background-size: cover;
-    background-position: center;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
-}
-
-.ig-post:hover {
-    transform: scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .shop-footer {
@@ -268,7 +260,8 @@
     border-top: 1px solid var(--shop-border);
 }
 
-.floating-wa-btn {
+/* BOTÓN DE WHATSAPP PÚBLICO (FIJO A LA PANTALLA REAL) */
+.floating-wa-btn-public {
     position: fixed;
     bottom: 40px;
     right: 40px;
@@ -281,11 +274,11 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
-    z-index: 100;
+    z-index: 1000;
     transition: transform 0.3s var(--ease-bounce);
 }
 
-.floating-wa-btn:hover {
+.floating-wa-btn-public:hover {
     transform: scale(1.15) rotate(10deg);
 }
 
@@ -302,5 +295,102 @@
     to {
         opacity: 1;
         transform: scale(1);
+    }
+}
+
+/* RESPONSIVE MÓVIL REAL */
+@media (max-width: 768px) {
+    .shop-nav {
+        padding: 15px 20px;
+    }
+
+    .shop-logo {
+        font-size: 1.3rem;
+    }
+
+    .shop-nav-links {
+        display: none;
+    }
+
+    .shop-menu-icon {
+        display: flex;
+    }
+
+    .mobile-nav-dropdown {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--shop-bg);
+        border-bottom: 1px solid var(--shop-border);
+        flex-direction: column;
+    }
+
+    .mobile-nav-dropdown span {
+        padding: 15px 20px;
+        font-weight: 700;
+        border-bottom: 1px solid var(--shop-border);
+        color: var(--shop-text-secondary);
+    }
+
+    .shop-hero {
+        padding: 80px 20px;
+    }
+
+    .shop-title {
+        font-size: 2.2rem;
+    }
+
+    .shop-desc {
+        font-size: 1.1rem;
+    }
+
+    .shop-cta-btn {
+        padding: 16px 30px;
+        font-size: 1.1rem;
+        width: 100%;
+    }
+
+    .shop-secondary-btn {
+        padding: 16px 30px;
+        font-size: 1rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .shop-section-tracking {
+        margin-top: -30px;
+    }
+
+    .tracking-inner {
+        padding: 25px;
+    }
+
+    .tracking-inner div {
+        flex-direction: column;
+    }
+
+    .tracking-inner input {
+        width: 100%;
+    }
+
+    .tracking-inner button {
+        width: 100%;
+    }
+
+    .shop-section {
+        padding: 50px 20px;
+    }
+
+    .shop-services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .floating-wa-btn-public {
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
     }
 }

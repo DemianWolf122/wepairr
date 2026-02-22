@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'; // <-- AÑADIR useState AQUÍ
+import React, { useMemo, useState } from 'react';
 import './ClientReception.css';
 
-// ... (MANTÉN TODOS TUS SVG ICONS) ...
+// SVG Icons
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
 const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
 const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
@@ -9,6 +9,7 @@ const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="c
 const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect></svg>;
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
+const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
 
 const getLuminance = (hex) => {
     if (!hex || typeof hex !== 'string') return 0;
@@ -23,7 +24,7 @@ const getLuminance = (hex) => {
 
 function ClientReception({ config }) {
     const isPremium = config.plan === 'premium';
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Estado para menú móvil real
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
@@ -79,10 +80,8 @@ function ClientReception({ config }) {
             <div className="shop-nav">
                 <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
 
-                {/* Menú Desktop */}
                 <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
 
-                {/* Menú Mobile Hamburguesa */}
                 <div className="shop-menu-icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                     <SvgMenu />
                 </div>
@@ -107,10 +106,10 @@ function ClientReception({ config }) {
                             <button className="shop-secondary-btn"><SvgCalendar /> Agendar Turno</button>
                         )}
                     </div>
-                    {config.mostrarGarantia && isPremium && (
+                    {config.mostrarGarantia && isPremium && config.tiempoGarantia && (
                         <div className="shop-trust-badge-hero">
                             <SvgCheckShield />
-                            <span>Taller Verificado · Garantía de {config.tiempoGarantia || '90 Días'}</span>
+                            <span>Garantía de {config.tiempoGarantia}</span>
                         </div>
                     )}
                 </div>
@@ -131,7 +130,7 @@ function ClientReception({ config }) {
 
             {config.mostrarPresupuestador !== false && (
                 <div className="shop-section">
-                    <h2 className="shop-section-title">Nuestros Servicios</h2>
+                    <h2 className="shop-section-title">Cotizar Reparación</h2>
                     <div className="shop-services-grid">
                         <div className="shop-service-card">
                             <div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div>
@@ -147,11 +146,16 @@ function ClientReception({ config }) {
                 </div>
             )}
 
-            {/* GOOGLE MAPS INTEGRACIÓN */}
             {config.mostrarMapa && isPremium && config.mapaUrl && (
                 <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
                     <h2 className="shop-section-title">Nuestra Ubicación</h2>
-                    <div className="shop-map-wrapper" dangerouslySetInnerHTML={{ __html: config.mapaUrl }}></div>
+                    <div className="shop-map-preview">
+                        <SvgMapPin style={{ color: 'var(--shop-accent)' }} />
+                        <p style={{ margin: '10px 0', fontSize: '1.1rem', color: 'var(--shop-text-secondary)' }}>Encuéntranos en Google Maps</p>
+                        <a href={config.mapaUrl} target="_blank" rel="noopener noreferrer" className="shop-secondary-btn" style={{ textDecoration: 'none' }}>
+                            Ver Ubicación Exacta
+                        </a>
+                    </div>
                 </div>
             )}
 
@@ -159,8 +163,9 @@ function ClientReception({ config }) {
                 <p>© 2024 {config.nombreNegocio}.</p>
             </div>
 
+            {/* WA BUTTON REAL FIJO */}
             {config.whatsapp && (
-                <a href={`https://wa.me/${config.whatsapp}`} target="_blank" rel="noreferrer" className="floating-wa-btn">
+                <a href={`https://wa.me/${config.whatsapp}`} target="_blank" rel="noreferrer" className="floating-wa-btn-public">
                     <SvgWhatsApp />
                 </a>
             )}

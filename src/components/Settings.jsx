@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import './Settings.css';
 
-// --- LIBRERÍA DE ICONOS SVG ---
+// --- SVGs MINIMALISTAS ---
+const SvgChevronDown = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>;
 const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
 const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
@@ -19,7 +20,6 @@ const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" s
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
-
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -53,6 +53,12 @@ const FONTS = [
     { label: 'Inter (Corporativa)', value: '"Inter", system-ui, sans-serif' },
     { label: 'Helvetica (Premium)', value: '"Helvetica Neue", Helvetica, sans-serif' },
     { label: 'Montserrat (Tech)', value: '"Montserrat", sans-serif' }
+];
+
+const BORDER_STYLES = [
+    { label: 'Suaves (16px)', value: '16px' },
+    { label: 'Píldora (30px)', value: '30px' },
+    { label: 'Cuadrados (4px)', value: '4px' }
 ];
 
 const getLuminance = (hex) => {
@@ -92,6 +98,7 @@ function Settings({ config, onUpdate }) {
     const [currentPlan, setCurrentPlan] = useState(config.plan || 'standard');
     const isPremium = currentPlan === 'premium';
     const [previewMode, setPreviewMode] = useState('mobile');
+    const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
     const [seccionAbierta, setSeccionAbierta] = useState('identidad');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const fileInputRef = useRef(null);
@@ -112,8 +119,21 @@ function Settings({ config, onUpdate }) {
     const triggerFileInput = () => fileInputRef.current.click();
     const toggleSeccion = (seccion) => setSeccionAbierta(prev => prev === seccion ? null : seccion);
 
-    const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
+    const handleConnectIg = () => {
+        alert("Simulación: Instagram Conectado");
+        onUpdate({ ...config, instagramConnected: true });
+    };
 
+    const handlePreviewChange = (mode) => {
+        if (mode === previewMode || isAnimatingPreview) return;
+        setIsAnimatingPreview(true);
+        setTimeout(() => {
+            setPreviewMode(mode);
+            setTimeout(() => setIsAnimatingPreview(false), 50);
+        }, 350);
+    };
+
+    const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
     const checkColorSafety = (textColor, bgColor = currentBgColor) => getContrastRatio(textColor, bgColor) >= 4.5;
 
     useEffect(() => {
@@ -121,8 +141,13 @@ function Settings({ config, onUpdate }) {
         const isDark = config.shopDarkMode;
         const defaultText = isDark ? '#ffffff' : '#0f172a';
         const defaultSub = isDark ? '#f8fafc' : '#334155';
-        if (config.colorTitulo && !checkColorSafety(config.colorTitulo, currentBgColor)) updates.colorTitulo = defaultText;
-        if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo, currentBgColor)) updates.colorSubtitulo = defaultSub;
+
+        if (config.colorTitulo && !checkColorSafety(config.colorTitulo, currentBgColor)) {
+            updates.colorTitulo = defaultText;
+        }
+        if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo, currentBgColor)) {
+            updates.colorSubtitulo = defaultSub;
+        }
         if (Object.keys(updates).length > 0) onUpdate({ ...config, ...updates });
     }, [config.shopDarkMode, config.colorTema]);
 
@@ -135,10 +160,8 @@ function Settings({ config, onUpdate }) {
         const autoBtnText = accentLuminance > 0.179 ? '#000000' : '#ffffff';
 
         let safeIconColor = accent;
-        // Usamos el color de fondo de la TIENDA, no del editor
-        const shopBgColor = isDarkMode ? '#090e17' : '#ffffff';
-
-        if (getContrastRatio(safeIconColor, shopBgColor) < 3.0) {
+        const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
+        if (getContrastRatio(safeIconColor, isDarkMode ? '#090e17' : '#ffffff') < 3.0) {
             let amt = isDarkMode ? 60 : -60;
             let c = accent.replace('#', '');
             if (c.length === 3) c = c.split('').map(x => x + x).join('');
@@ -163,7 +186,7 @@ function Settings({ config, onUpdate }) {
             '--shop-accent': accent,
             '--shop-accent-icon': safeIconColor,
             '--shop-btn-text': autoBtnText,
-            '--shop-bg': shopBgColor,
+            '--shop-bg': isDarkMode ? '#090e17' : '#ffffff',
             '--shop-bg-secondary': isDarkMode ? '#141c2f' : '#f8fafc',
             '--shop-text': userTitleColor,
             '--shop-text-secondary': userSubtitleColor,
@@ -175,6 +198,13 @@ function Settings({ config, onUpdate }) {
             '--hero-subtext-color': heroSubtextColor
         };
     }, [config]);
+
+    const getEmbedUrl = (url) => {
+        if (!url) return null;
+        if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
+        if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
+        return url;
+    };
 
     return (
         <div className="settings-editor-layout">
@@ -199,8 +229,7 @@ function Settings({ config, onUpdate }) {
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Identidad del Negocio</span>
-                            {/* USO DEL NUEVO ESTILO GLOBAL PARA LA FLECHA */}
-                            <span className="accordion-chevron">▼</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'identidad' && (
                             <div className="accordion-content">
@@ -223,12 +252,12 @@ function Settings({ config, onUpdate }) {
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
                             <span className="accordion-title"><SvgPalette /> Apariencia y Colores</span>
-                            <span className="accordion-chevron">▼</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'apariencia' && (
                             <div className="accordion-content">
                                 <div className="toggle-box glass-input-effect" style={{ marginBottom: '20px' }}>
-                                    <div><strong className="toggle-title">Modo Oscuro (Vidriera)</strong></div>
+                                    <div><strong className="toggle-title">Modo Oscuro</strong></div>
                                     <label className="switch"><input type="checkbox" name="shopDarkMode" checked={config.shopDarkMode || false} onChange={handleChange} /><span className="slider round"></span></label>
                                 </div>
 
@@ -263,7 +292,7 @@ function Settings({ config, onUpdate }) {
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
-                            <span className="accordion-chevron">▼</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'multimedia' && (
                             <div className="accordion-content">
@@ -281,11 +310,40 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* FUNCIONALIDADES MARKETING */}
+                    {/* REDES */}
+                    <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('redes')}>
+                            <span className="accordion-title"><SvgShare /> Redes Sociales</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
+                        </div>
+                        {seccionAbierta === 'redes' && (
+                            <div className="accordion-content">
+                                <div className="settings-form-group">
+                                    <label className="settings-label">WhatsApp de Contacto:
+                                        <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 1123456789" maxLength={15} />
+                                    </label>
+                                    <hr className="settings-divider-soft" />
+                                    <label className="settings-label">Instagram Feed:</label>
+                                    {!config.instagramConnected ? (
+                                        <button type="button" onClick={handleConnectIg} className="btn-connect-ig" disabled={igConnecting}>
+                                            <SvgInstagram /> {igConnecting ? 'Conectando...' : 'Vincular Cuenta'}
+                                        </button>
+                                    ) : (
+                                        <div className="ig-connected-box">
+                                            <div className="ig-status"><SvgInstagram /> Conectado</div>
+                                            <button type="button" onClick={() => onUpdate({ ...config, instagramConnected: false })} className="btn-disconnect">Desvincular</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* FUNCIONALIDADES */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Visibilidad de Módulos</span>
-                            <span className="accordion-chevron">▼</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'funcionalidades' && (
                             <div className="accordion-content">
@@ -305,11 +363,9 @@ function Settings({ config, onUpdate }) {
                                             <div><strong className="toggle-title">Sello de Confianza</strong></div>
                                             <label className="switch"><input type="checkbox" name="mostrarGarantia" checked={config.mostrarGarantia || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
-
-                                        {/* CAMBIO: Input de texto libre para la garantía */}
                                         {config.mostrarGarantia && (
                                             <div style={{ padding: '0 10px' }}>
-                                                <label className="settings-label" style={{ fontSize: '0.8rem' }}>Texto de Garantía (Ej. "6 Meses"):</label>
+                                                <label className="settings-label" style={{ fontSize: '0.8rem' }}>Texto de Garantía:</label>
                                                 <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 90 Días Escritos" maxLength={30} style={{ padding: '10px', fontSize: '0.9rem' }} />
                                             </div>
                                         )}
@@ -318,7 +374,6 @@ function Settings({ config, onUpdate }) {
                                             <div><strong className="toggle-title">Ubicación (Google Maps)</strong></div>
                                             <label className="switch"><input type="checkbox" name="mostrarMapa" checked={config.mostrarMapa || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
-                                        {/* CAMBIO: Input simple para Enlace de Maps */}
                                         {config.mostrarMapa && (
                                             <div style={{ padding: '0 10px' }}>
                                                 <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega el enlace de tu ubicación en Google Maps" style={{ padding: '10px', fontSize: '0.9rem' }} />
@@ -335,14 +390,13 @@ function Settings({ config, onUpdate }) {
             {/* === COLUMNA DERECHA: LIENZO DE VISTA PREVIA === */}
             <div className="settings-preview-canvas">
                 <div className="canvas-header">
-                    {/* SELECTOR DE DISPOSITIVO ARREGLADO */}
                     <div className="device-toggles glass-effect">
-                        <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => setPreviewMode('mobile')}><SvgMobileDevice /> Celular</button>
-                        <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => setPreviewMode('desktop')}><SvgMonitorDevice /> Monitor</button>
+                        <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => handlePreviewChange('mobile')}><SvgMobileDevice /> Celular</button>
+                        <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => handlePreviewChange('desktop')}><SvgMonitorDevice /> Monitor</button>
                     </div>
                 </div>
 
-                <div className="preview-stage">
+                <div className={`preview-stage ${isAnimatingPreview ? 'animating-stage' : ''}`}>
                     <div className={previewMode === 'mobile' ? 'phone-mockup-final' : 'desktop-mockup-final'}>
                         {previewMode === 'mobile' && (
                             <div className="phone-header-bar">
@@ -351,7 +405,7 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
-                        {/* CONTENEDOR DE PANTALLA CON POSICION RELATIVA PARA EL WA BUTTON */}
+                        {/* CONTENEDOR DE PANTALLA: Atrapa el botón de WhatsApp */}
                         <div className="shop-screen-container">
                             <div className="shop-screen" style={shopStyles}>
                                 <div className="shop-nav">
@@ -391,8 +445,8 @@ function Settings({ config, onUpdate }) {
                                 {config.mostrarTracking && (
                                     <div className="shop-section shop-section-tracking">
                                         <div className="tracking-inner glass-effect">
-                                            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>Seguimiento de Equipo</h3>
-                                            {/* ARREGLO DEL BOTÓN BUSCAR QUE SE SALÍA */}
+                                            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: 'var(--shop-text)' }}>Seguimiento de Equipo</h3>
+                                            {/* INPUT FIX: No se sale del contenedor */}
                                             <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
                                                 <input type="text" placeholder="#12345" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--shop-border)', minWidth: 0 }} disabled />
                                                 <button className="shop-cta-btn" style={{ padding: '10px 20px', fontSize: '0.9rem', flexShrink: 0 }}>Buscar</button>
@@ -403,31 +457,29 @@ function Settings({ config, onUpdate }) {
 
                                 {config.mostrarPresupuestador !== false && (
                                     <div className="shop-section">
-                                        {/* CAMBIO DE TÍTULO EN VISTA PREVIA */}
                                         <h2 className="shop-section-title">Cotizar Reparación</h2>
                                         <div className="shop-services-grid">
-                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span>Pantallas</span></div>
-                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span>Baterías</span></div>
+                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span></div>
+                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span></div>
                                         </div>
                                     </div>
                                 )}
 
-                                {/* VISTA PREVIA SIMPLIFICADA DE MAPS */}
                                 {config.mostrarMapa && isPremium && config.mapaUrl && (
                                     <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
                                         <h2 className="shop-section-title">Nuestra Ubicación</h2>
                                         <div className="shop-map-preview">
                                             <SvgMapPin style={{ color: 'var(--shop-accent)' }} />
                                             <p style={{ margin: '10px 0', fontSize: '0.9rem', color: 'var(--shop-text-secondary)' }}>Vista previa del mapa</p>
-                                            <a href={config.mapaUrl} target="_blank" rel="noopener noreferrer" className="shop-secondary-btn" style={{ fontSize: '0.85rem', padding: '8px 15px', textDecoration: 'none' }}>
-                                                Ver en Google Maps
-                                            </a>
                                         </div>
                                     </div>
                                 )}
                             </div>
-                            {/* BOTÓN WHATSAPP DENTRO DEL CONTENEDOR RELATIVO */}
-                            <div className="floating-wa-btn"><SvgWhatsApp /></div>
+
+                            {/* FIX WHATSAPP: Posición Absoluta dentro del contenedor relativo de la pantalla */}
+                            {config.whatsapp && (
+                                <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
+                            )}
                         </div>
                     </div>
                 </div>
