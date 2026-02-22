@@ -26,7 +26,13 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange }) {
     };
 
     return (
-        <div className="ticket-card-premium glass-effect">
+        <div
+            className="ticket-card-premium glass-effect"
+            draggable={true} // <-- RESTAURAMOS EL ARRASTRE
+            onDragStart={(e) => {
+                e.dataTransfer.setData('ticketId', ticket.id); // <-- ENVIAMOS EL ID AL SOLTAR
+            }}
+        >
             <div className="tc-header">
                 <span className="tc-id">#{ticket.id}</span>
                 {vista === 'activos' && (
@@ -53,7 +59,7 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange }) {
 
             <div className="tc-footer">
                 <div className="tc-date">
-                    <SvgCalendar /> {formatDate(ticket.fechaIngreso)}
+                    <SvgCalendar /> {formatDate(ticket.fechaIngreso || ticket.fecha)}
                 </div>
 
                 {vista === 'activos' && (
