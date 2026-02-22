@@ -7,14 +7,28 @@ import Directory from './pages/Directory';
 import { TicketProvider } from './context/TicketContext';
 
 const CONFIG_INICIAL = {
-  plan: 'premium', nombreNegocio: 'TechFix Pro', titulo: 'Reparamos tu mundo.',
+  plan: 'premium',
+  nombreNegocio: 'TechFix Pro',
+  titulo: 'Reparamos tu mundo.',
   descripcion: 'Especialistas en microelectrónica y reparación de placas base.',
-  colorTema: '#2563eb', colorTitulo: '#ffffff', colorSubtitulo: '#cbd5e1', shopDarkMode: true,
-  fontFamily: '"Inter", system-ui, sans-serif', borderRadius: '16px', whatsapp: '549112345678',
-  instagramConnected: false, bannerUrl: 'https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=800&q=80',
-  videoUrl: '', mostrarPresupuestador: true, mostrarTracking: true, mostrarTurnos: false,
-  mostrarGarantia: true, tiempoGarantia: '90 Días de Garantía', mostrarMapa: true, mapaUrl: '',
-  mostrarFaq: true, horariosAtencion: 'Lun a Vie 9:00 - 18:00hs'
+  colorTema: '#2563eb',
+  colorTitulo: '#ffffff',
+  colorSubtitulo: '#cbd5e1',
+  shopDarkMode: true,
+  fontFamily: '"Inter", system-ui, sans-serif',
+  borderRadius: '16px',
+  whatsapp: '549112345678',
+  instagramConnected: false,
+  bannerUrl: 'https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=800&q=80',
+  videoUrl: '',
+  mostrarPresupuestador: true,
+  mostrarTracking: true,
+  mostrarGarantia: true,
+  tiempoGarantia: '90 Días',
+  mostrarMapa: true,
+  mapaUrl: '',
+  mostrarFaq: true,
+  horariosAtencion: 'Lun a Vie 9:00 - 18:00hs'
 };
 
 function App() {
@@ -25,8 +39,10 @@ function App() {
 
   const [theme, setTheme] = useState('dark');
 
-  // ESTO ASEGURA QUE LA VIDRIERA Y EL EDITOR ESTÉN SIEMPRE SINCRONIZADOS
-  useEffect(() => { localStorage.setItem('wepairr_config', JSON.stringify(config)); }, [config]);
+  useEffect(() => {
+    localStorage.setItem('wepairr_config', JSON.stringify(config));
+  }, [config]);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     if (theme === 'dark') document.documentElement.classList.add('dark');
