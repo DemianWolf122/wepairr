@@ -7,7 +7,7 @@
     background: var(--bg-main);
 }
 
-/* --- NAVEGACIÓN SUPERIOR (NATIVE APP FEEL) --- */
+/* --- NAVEGACIÓN SUPERIOR --- */
 .tech-navbar {
     background: var(--bg-panel-glass);
     backdrop-filter: blur(16px);
@@ -145,7 +145,7 @@
     overflow: hidden;
 }
 
-/* --- SUB-NAVEGACIÓN (GESTIÓN) --- */
+/* --- SUB-NAVEGACIÓN --- */
 .gestion-sub-nav {
     display: flex;
     gap: 10px;
@@ -188,7 +188,7 @@
     border: 1px solid var(--border-glass);
 }
 
-/* --- PESTAÑAS DE TICKETS Y FILTROS --- */
+/* --- PESTAÑAS Y CONTROLES --- */
 .dashboard-tabs {
     display: flex;
     gap: 15px;
@@ -232,23 +232,31 @@
     color: var(--text-primary);
 }
 
-/* --- NUEVO: DROPDOWN DE ORDENAMIENTO (PREMIUM UI) --- */
-.sort-dropdown-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    padding: 10px 18px;
-    border-radius: 14px;
+/* --- CUSTOM DROPDOWN PREMIUM UI --- */
+.custom-sort-wrapper {
+    position: relative;
     margin-left: auto;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-    cursor: pointer;
+    z-index: 50;
 }
 
-.sort-dropdown-container:hover,
-.sort-dropdown-container:focus-within {
+.custom-sort-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    padding: 12px 20px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.custom-sort-header:hover,
+.custom-sort-header.active {
     border-color: var(--accent-color);
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
     transform: scale(1.02);
@@ -256,36 +264,76 @@
 
 .sort-icon {
     color: var(--text-secondary);
-    pointer-events: none;
 }
 
-.sort-select-premium {
-    background: transparent;
-    border: none;
-    color: var(--text-primary);
-    font-weight: 800;
-    font-size: 0.95rem;
-    outline: none;
-    cursor: pointer;
-    padding-right: 25px;
-    font-family: inherit;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right center;
-    background-size: 16px auto;
+.sort-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+    color: var(--text-secondary);
 }
 
-.sort-select-premium option {
+.sort-chevron.open {
+    transform: rotate(180deg);
+    color: var(--accent-color);
+}
+
+.custom-sort-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
     background: var(--bg-panel);
-    color: var(--text-primary);
-    font-weight: 600;
-    padding: 10px;
+    border: 1px solid var(--border-glass);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: popIn 0.2s ease-out forwards;
+    transform-origin: top right;
 }
 
-/* --- FIX: BOTÓN INGRESO MANUAL AGRANDADO Y DESTACADO --- */
+.app-root.dark .custom-sort-menu {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-sort-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.custom-sort-item:hover {
+    background: var(--bg-hover-glass);
+    color: var(--text-primary);
+    transform: translateX(5px);
+}
+
+.custom-sort-item.active {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--accent-color);
+}
+
+.sort-item-icon {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- BOTÓN INGRESO MANUAL DESTACADO --- */
 .tab-btn-action {
     margin-left: 15px;
     border: none;
@@ -304,13 +352,8 @@
 
 .tab-btn-action:hover {
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
-    transform: scale(1.03);
+    transform: scale(1.03) translateY(-2px);
 }
-
-.tab-btn-action.tab-active {
-    background: linear-gradient(135deg, var(--accent-hover), var(--accent-color));
-}
-
 
 /* --- LISTA DE TICKETS --- */
 .ticket-list {
@@ -422,6 +465,19 @@
     opacity: 0.7;
 }
 
+/* ANIMACIONES */
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* =======================================================
    RESPONSIVE GLOBAL
 ======================================================= */
@@ -484,26 +540,29 @@
     }
 
     .dashboard-tabs {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 10px;
+        flex-wrap: wrap;
         gap: 10px;
+        padding-bottom: 10px;
     }
 
-    .dashboard-tabs::-webkit-scrollbar {
-        display: none;
-    }
-
-    .sort-dropdown-container {
+    .custom-sort-wrapper {
         margin-left: 0;
-        width: fit-content;
+        width: 100%;
+    }
+
+    .custom-sort-header {
+        justify-content: space-between;
+    }
+
+    .custom-sort-menu {
+        width: 100%;
+        min-width: unset;
     }
 
     .tab-btn-action {
         margin-left: 0;
-        width: fit-content;
+        width: 100%;
+        justify-content: center;
     }
 
     .ticket-list {

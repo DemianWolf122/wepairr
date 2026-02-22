@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import TicketCard from '../components/TicketCard';
 import Settings from '../components/Settings';
@@ -12,6 +12,7 @@ import AIChatAssistant from '../components/AIChatAssistant';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
+// --- SVGs ---
 const MoonIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
 const SunIcon = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const SvgInbox = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>;
@@ -22,22 +23,42 @@ const SvgSubTickets = () => <svg viewBox="0 0 24 24" width="18" height="18" stro
 const SvgSubFeatures = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>;
 const SvgAddTicket = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>;
 const SvgSort = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>;
+const SvgChevronDown = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>;
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
 
-    // --- NUEVO ESTADO: Menú desplegable para clasificar ---
+    // Estados del Dropdown Premium
     const [criterioOrden, setCriterioOrden] = useState('recientes');
+    const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
     const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
-    // --- LÓGICA DE ORDENAMIENTO (CORREGIDA Y AMPLIADA) ---
+    // Cerrar dropdown al hacer click afuera
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsSortMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // Opciones del menú desplegable
+    const sortOptions = [
+        { id: 'recientes', label: 'Recientes Primero', icon: '⏱️' },
+        { id: 'prioridad', label: 'Urgentes Primero', icon: '🚨' },
+        { id: 'estado', label: 'Ingresados Primero', icon: '📌' },
+        { id: 'antiguos', label: 'Más Antiguos', icon: '⏳' }
+    ];
+
     const priorityWeight = { 'Urgente': 3, 'Alta': 2, 'Normal': 1, 'Baja': 0 };
-    // Ingresado es prioridad #1 para el técnico, luego En Proceso.
     const statusWeight = { 'Ingresado': 3, 'En Proceso': 2, 'Finalizado': 1, 'Entregado': 0 };
 
     const ticketsMostrados = useMemo(() => {
@@ -49,16 +70,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         return [...base].sort((a, b) => {
             if (criterioOrden === 'prioridad') {
                 const diff = (priorityWeight[b.prioridad] || 0) - (priorityWeight[a.prioridad] || 0);
-                return diff !== 0 ? diff : b.id - a.id; // Desempata por el más nuevo
+                return diff !== 0 ? diff : b.id - a.id;
             }
             if (criterioOrden === 'estado') {
                 const diff = (statusWeight[b.estado] || 0) - (statusWeight[a.estado] || 0);
                 return diff !== 0 ? diff : b.id - a.id;
             }
-            if (criterioOrden === 'antiguos') {
-                return a.id - b.id; // IDs menores primero
-            }
-            // Por defecto: 'recientes'
+            if (criterioOrden === 'antiguos') return a.id - b.id;
             return b.id - a.id;
         });
     }, [tickets, vistaActual, criterioOrden]);
@@ -122,22 +140,37 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}><SvgWrench /> Activos</button>
                                     <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}><SvgTrash /> Papelera</button>
 
-                                    {/* --- NUEVO DROPDOWN DE ORDENAMIENTO ESTILIZADO --- */}
-                                    <div className="sort-dropdown-container">
-                                        <SvgSort className="sort-icon" />
-                                        <select
-                                            className="sort-select-premium"
-                                            value={criterioOrden}
-                                            onChange={(e) => setCriterioOrden(e.target.value)}
+                                    {/* --- DROPDOWN CUSTOM PREMIUM --- */}
+                                    <div className="custom-sort-wrapper" ref={dropdownRef}>
+                                        <div
+                                            className={`custom-sort-header ${isSortMenuOpen ? 'active' : ''}`}
+                                            onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
                                         >
-                                            <option value="recientes">Recientes Primero</option>
-                                            <option value="prioridad">🚨 Urgentes Primero</option>
-                                            <option value="estado">📌 Ingresados Primero</option>
-                                            <option value="antiguos">⏳ Más Antiguos</option>
-                                        </select>
+                                            <SvgSort className="sort-icon" />
+                                            <span>{sortOptions.find(o => o.id === criterioOrden)?.label}</span>
+                                            <SvgChevronDown className={`sort-chevron ${isSortMenuOpen ? 'open' : ''}`} />
+                                        </div>
+
+                                        {isSortMenuOpen && (
+                                            <div className="custom-sort-menu animate-fade-in">
+                                                {sortOptions.map(opt => (
+                                                    <div
+                                                        key={opt.id}
+                                                        className={`custom-sort-item ${criterioOrden === opt.id ? 'active' : ''}`}
+                                                        onClick={() => {
+                                                            setCriterioOrden(opt.id);
+                                                            setIsSortMenuOpen(false);
+                                                        }}
+                                                    >
+                                                        <span className="sort-item-icon">{opt.icon}</span>
+                                                        {opt.label}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* BOTÓN INGRESO MANUAL AGRANDADO (Configurado en el CSS) */}
+                                    {/* BOTÓN INGRESO MANUAL */}
                                     <button onClick={() => setVistaActual('nuevo')} className={`tab-btn tab-btn-action ${vistaActual === 'nuevo' ? 'tab-active' : 'tab-inactive'}`}>
                                         <SvgAddTicket /> Ingreso Manual
                                     </button>
