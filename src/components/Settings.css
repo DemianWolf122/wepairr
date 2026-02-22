@@ -109,7 +109,6 @@
     }
 }
 
-/* --- MOCKUPS --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -161,7 +160,7 @@
     border-bottom-right-radius: 14px;
 }
 
-/* FIX: WHATSAPP ATRAPADO AL CONTENEDOR */
+/* FIX: WHATSAPP ATRAPADO AL CONTENEDOR (YA NO SE SALE) */
 .floating-wa-btn-preview {
     position: absolute;
     bottom: 25px;
@@ -430,7 +429,6 @@
     box-sizing: border-box;
 }
 
-/* FIX TRACKING INPUT DARK MODE */
 .tracking-input-group {
     display: flex;
     gap: 10px;
@@ -525,7 +523,7 @@
     border-radius: 12px;
 }
 
-/* MOBILE / DESKTOP SIZING PREVIEW (Se mantienen proporciones) */
+/* MOBILE / DESKTOP SIZING PREVIEW */
 .phone-mockup-final .shop-avatar-placeholder {
     width: 70px;
     height: 70px;
@@ -699,15 +697,6 @@
     padding: 0 22px 25px 22px;
 }
 
-.chevron-icon {
-    transition: transform 0.3s var(--ease-premium);
-}
-
-.accordion-item.active .chevron-icon {
-    transform: rotate(180deg);
-    color: var(--accent-color);
-}
-
 /* FIX: DISTANCIA Y SEPARACIÓN ENTRE LABELS E INPUTS */
 .settings-form-group {
     display: flex;
@@ -739,10 +728,10 @@
     user-select: auto;
     -webkit-user-select: auto;
     margin-top: 10px;
-    /* AQUÍ ESTÁ EL AIRE (WHITE SPACE) QUE FALTABA */
+    /* AQUÍ ESTÁ EL AIRE QUE FALTABA */
 }
 
-/* FIX DESPLEGABLES: DISEÑO PREMIUM, NO EL DE WINDOWS DEFAULT */
+/* FIX DESPLEGABLES: DISEÑO PREMIUM */
 .select-input {
     width: 100%;
     padding: 14px 40px 14px 14px;

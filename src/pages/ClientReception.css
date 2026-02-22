@@ -40,6 +40,7 @@
     display: none;
     align-items: center;
     cursor: pointer;
+    padding: 5px;
 }
 
 .mobile-nav-dropdown {
@@ -92,7 +93,7 @@
     height: 50px;
 }
 
-/* FIX RESPONSIVE TEXTOS: Asegura que nada se salga */
+/* FIX RESPONSIVE: Word Break Total para que no colapse la pantalla */
 .shop-title {
     margin: 0 0 20px 0;
     font-size: 3.5rem;
@@ -418,6 +419,7 @@
         padding: 16px 30px;
         font-size: 1.1rem;
         width: 100%;
+        justify-content: center;
     }
 
     .shop-section-tracking {

@@ -18,7 +18,6 @@ const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" s
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
-const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 const SvgVideo = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>;
 
 const PremiumGate = ({ children, isPremium }) => {
@@ -38,12 +37,13 @@ const TEXT_COLORS = [{ hex: '#000000' }, { hex: '#0f172a' }, { hex: '#334155' },
 const FONTS = [{ label: 'Inter (Corporativa)', value: '"Inter", system-ui, sans-serif' }, { label: 'Helvetica (Premium)', value: '"Helvetica Neue", Helvetica, sans-serif' }, { label: 'Montserrat (Tech)', value: '"Montserrat", sans-serif' }];
 
 const getLuminance = (hex) => {
-    if (!hex) return 0;
+    if (!hex || typeof hex !== 'string') return 0;
     let c = hex.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join(''); let rgb = parseInt(c, 16); if (isNaN(rgb)) return 0;
     let r = (rgb >> 16) & 0xff, g = (rgb >> 8) & 0xff, b = (rgb >> 0) & 0xff;
     let a = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 };
+
 const getContrastRatio = (hex1, hex2) => { const l1 = getLuminance(hex1), l2 = getLuminance(hex2); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
 
 const AutoResizeTextarea = ({ name, value, onChange, placeholder, maxLength, className }) => {
@@ -104,7 +104,7 @@ function Settings({ config, onUpdate }) {
     };
 
     const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
-    const checkColorSafety = (textColor, bgColor = currentBgColor) => getContrastRatio(textColor, bgColor) >= 4.5;
+    const checkColorSafety = (textColor, bgColor = currentBgColor) => getContrastRatio(textColor || '#ffffff', bgColor) >= 4.5;
 
     useEffect(() => {
         let updates = {};
@@ -123,13 +123,14 @@ function Settings({ config, onUpdate }) {
 
     const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
-        const isDarkMode = config.shopDarkMode;
+        const isDarkMode = config.shopDarkMode || false;
         const hasBanner = !!config.bannerUrl && isPremium;
 
         const autoBtnText = getLuminance(accent) > 0.179 ? '#000000' : '#ffffff';
         let safeIconColor = accent;
         const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
-        if (getContrastRatio(safeIconColor, bgLuminance) < 3.0) {
+
+        if (getContrastRatio(safeIconColor, bgLuminance < 0.5 ? '#090e17' : '#ffffff') < 3.0) {
             let amt = isDarkMode ? 60 : -60; let c = accent.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join('');
             let num = parseInt(c, 16);
             if (!isNaN(num)) { let r = Math.min(255, Math.max(0, (num >> 16) + amt)); let b = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt)); let g = Math.min(255, Math.max(0, (num & 0x0000FF) + amt)); safeIconColor = "#" + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0'); }
@@ -137,7 +138,11 @@ function Settings({ config, onUpdate }) {
 
         const userTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
         const userSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
-        const heroOverlayStyle = hasBanner ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))' : 'linear-gradient(to bottom, transparent, transparent)';
+
+        const heroOverlayStyle = hasBanner
+            ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))'
+            : 'linear-gradient(to bottom, transparent, transparent)';
+
         const heroTextColor = hasBanner ? '#ffffff' : userTitleColor;
         const heroSubtextColor = hasBanner ? 'rgba(255,255,255,0.85)' : userSubtitleColor;
 
@@ -148,7 +153,7 @@ function Settings({ config, onUpdate }) {
             '--shop-font': config.fontFamily || '"Inter", system-ui, sans-serif', '--shop-radius': config.borderRadius || '16px',
             '--hero-overlay': heroOverlayStyle, '--hero-text-color': heroTextColor, '--hero-subtext-color': heroSubtextColor
         };
-    }, [config]);
+    }, [config, isPremium]);
 
     const getEmbedUrl = (url) => {
         if (!url) return null;
@@ -193,7 +198,7 @@ function Settings({ config, onUpdate }) {
                                     <label className="settings-label">Descripción Corta (Máx 120):
                                         <AutoResizeTextarea name="descripcion" value={config.descripcion} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} />
                                     </label>
-                                    <label className="settings-label">Horarios de Atención:
+                                    <label className="settings-label">Horarios de Atención (Opcional):
                                         <input type="text" name="horariosAtencion" value={config.horariosAtencion || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Lun a Vie 9 a 18hs" maxLength={50} />
                                     </label>
                                 </div>
@@ -202,7 +207,7 @@ function Settings({ config, onUpdate }) {
                     </div>
 
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('apariencia')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'apariencia' ? null : 'apariencia')}>
                             <span className="accordion-title"><SvgPalette /> Estilos y Colores</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -239,7 +244,7 @@ function Settings({ config, onUpdate }) {
                     </div>
 
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'multimedia' ? null : 'multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -265,7 +270,7 @@ function Settings({ config, onUpdate }) {
                     </div>
 
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('redes')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
                             <span className="accordion-title"><SvgShare /> Contacto & Redes</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -298,7 +303,7 @@ function Settings({ config, onUpdate }) {
                     </div>
 
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'funcionalidades' ? null : 'funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Visibilidad de Módulos</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
@@ -343,7 +348,6 @@ function Settings({ config, onUpdate }) {
                 </div>
             </div>
 
-            {/* === LIENZO DE VISTA PREVIA AISLADO (WhatsApp no se sale) === */}
             <div className="settings-preview-canvas">
                 <div className="canvas-header">
                     <div className="device-toggles glass-effect">
@@ -361,7 +365,7 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
-                        <div className="shop-screen-container">
+                        <div className="shop-screen-container" style={{ position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column' }}>
                             <div className="shop-screen" style={shopStyles}>
                                 <div className="shop-nav">
                                     <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
@@ -436,7 +440,6 @@ function Settings({ config, onUpdate }) {
                                 )}
                             </div>
 
-                            {/* WHATSAPP ANCLADO */}
                             {config.whatsapp && (
                                 <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                             )}
