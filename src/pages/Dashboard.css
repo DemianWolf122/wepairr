@@ -88,13 +88,12 @@
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 12px;
-    transition: transform 0.3s ease, background-color 0.2s;
+    transition: transform 0.2s var(--ease-bounce), background-color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* FIX: Escala suave */
 .theme-toggle-btn:hover {
     background: var(--bg-hover-glass);
     transform: scale(1.05);
@@ -111,15 +110,14 @@
     border-radius: 12px;
     background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s;
+    transition: transform 0.3s var(--ease-bounce), box-shadow 0.3s;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-/* FIX: Escala suave en lugar de traslación Y */
 .btn-view-site:hover {
-    transform: scale(1.02);
+    transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
 }
 
@@ -174,7 +172,7 @@
     font-size: 0.95rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s var(--ease-premium);
     font-family: inherit;
 }
 
@@ -190,7 +188,7 @@
     border: 1px solid var(--border-glass);
 }
 
-/* --- PESTAÑAS DE TICKETS --- */
+/* --- PESTAÑAS DE TICKETS Y FILTROS --- */
 .dashboard-tabs {
     display: flex;
     gap: 15px;
@@ -200,13 +198,14 @@
     user-select: none;
     -webkit-user-select: none;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .tab-btn {
     padding: 10px 20px;
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s var(--ease-premium);
     font-size: 0.95rem;
     display: flex;
     align-items: center;
@@ -231,27 +230,87 @@
 .tab-inactive:hover {
     background: var(--bg-hover-glass);
     color: var(--text-primary);
+}
+
+/* --- NUEVO: DROPDOWN DE ORDENAMIENTO (PREMIUM UI) --- */
+.sort-dropdown-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    padding: 10px 18px;
+    border-radius: 14px;
+    margin-left: auto;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+}
+
+.sort-dropdown-container:hover,
+.sort-dropdown-container:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
     transform: scale(1.02);
 }
 
+.sort-icon {
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.sort-select-premium {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-weight: 800;
+    font-size: 0.95rem;
+    outline: none;
+    cursor: pointer;
+    padding-right: 25px;
+    font-family: inherit;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 16px auto;
+}
+
+.sort-select-premium option {
+    background: var(--bg-panel);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 10px;
+}
+
+/* --- FIX: BOTÓN INGRESO MANUAL AGRANDADO Y DESTACADO --- */
 .tab-btn-action {
-    margin-left: auto;
-    border: 1px dashed var(--accent-color);
-    color: var(--accent-color);
-    background: rgba(37, 99, 235, 0.05);
+    margin-left: 15px;
+    border: none;
+    color: white;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    padding: 12px 25px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .tab-btn-action:hover {
-    background: rgba(37, 99, 235, 0.1);
-    border-style: solid;
-    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
+    transform: scale(1.03);
 }
 
 .tab-btn-action.tab-active {
-    background: var(--accent-color);
-    color: white;
+    background: linear-gradient(135deg, var(--accent-hover), var(--accent-color));
 }
+
 
 /* --- LISTA DE TICKETS --- */
 .ticket-list {
@@ -304,11 +363,10 @@
     cursor: pointer;
     font-weight: bold;
     font-size: 0.8rem;
-    transition: transform 0.3s ease, filter 0.2s;
+    transition: transform 0.2s ease, filter 0.2s;
     font-family: inherit;
 }
 
-/* FIX: Escala suave */
 .action-btn:hover {
     transform: scale(1.05);
     filter: brightness(1.1);
@@ -337,7 +395,7 @@
     border-radius: 16px;
     padding: 25px;
     text-align: center;
-    transition: all 0.3s ease;
+    transition: all 0.3s var(--ease-premium);
     margin-top: auto;
     user-select: none;
     -webkit-user-select: none;
@@ -431,14 +489,21 @@
         white-space: nowrap;
         -webkit-overflow-scrolling: touch;
         padding-bottom: 10px;
+        gap: 10px;
     }
 
     .dashboard-tabs::-webkit-scrollbar {
         display: none;
     }
 
+    .sort-dropdown-container {
+        margin-left: 0;
+        width: fit-content;
+    }
+
     .tab-btn-action {
         margin-left: 0;
+        width: fit-content;
     }
 
     .ticket-list {

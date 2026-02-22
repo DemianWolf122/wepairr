@@ -26,15 +26,19 @@ const SvgSort = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="cu
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
-    const [ordenarPrioridad, setOrdenarPrioridad] = useState(false);
 
-    // Extraemos editarTicket del contexto
+    // --- NUEVO ESTADO: Menú desplegable para clasificar ---
+    const [criterioOrden, setCriterioOrden] = useState('recientes');
+
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
     const [vistaActual, setVistaActual] = useState('inbox');
     const [isDragOverTrash, setIsDragOverTrash] = useState(false);
 
+    // --- LÓGICA DE ORDENAMIENTO (CORREGIDA Y AMPLIADA) ---
     const priorityWeight = { 'Urgente': 3, 'Alta': 2, 'Normal': 1, 'Baja': 0 };
+    // Ingresado es prioridad #1 para el técnico, luego En Proceso.
+    const statusWeight = { 'Ingresado': 3, 'En Proceso': 2, 'Finalizado': 1, 'Entregado': 0 };
 
     const ticketsMostrados = useMemo(() => {
         let base = [];
@@ -42,11 +46,22 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         else if (vistaActual === 'activos') base = tickets.filter(t => t.tipo === 'ticket' && !t.borrado);
         else if (vistaActual === 'papelera') base = tickets.filter(t => t.borrado);
 
-        if (ordenarPrioridad) {
-            return [...base].sort((a, b) => (priorityWeight[b.prioridad] || 0) - (priorityWeight[a.prioridad] || 0));
-        }
-        return base;
-    }, [tickets, vistaActual, ordenarPrioridad]);
+        return [...base].sort((a, b) => {
+            if (criterioOrden === 'prioridad') {
+                const diff = (priorityWeight[b.prioridad] || 0) - (priorityWeight[a.prioridad] || 0);
+                return diff !== 0 ? diff : b.id - a.id; // Desempata por el más nuevo
+            }
+            if (criterioOrden === 'estado') {
+                const diff = (statusWeight[b.estado] || 0) - (statusWeight[a.estado] || 0);
+                return diff !== 0 ? diff : b.id - a.id;
+            }
+            if (criterioOrden === 'antiguos') {
+                return a.id - b.id; // IDs menores primero
+            }
+            // Por defecto: 'recientes'
+            return b.id - a.id;
+        });
+    }, [tickets, vistaActual, criterioOrden]);
 
     const ciclarEstado = (id, estadoActual) => {
         const SECUENCIA_ESTADOS = ['Ingresado', 'En Proceso', 'Finalizado', 'Entregado'];
@@ -107,14 +122,25 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}><SvgWrench /> Activos</button>
                                     <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}><SvgTrash /> Papelera</button>
 
-                                    <button
-                                        className={`btn-sort-priority ${ordenarPrioridad ? 'active' : ''}`}
-                                        onClick={() => setOrdenarPrioridad(!ordenarPrioridad)}
-                                    >
-                                        <SvgSort /> {ordenarPrioridad ? 'Prioridad On' : 'Priorizar'}
-                                    </button>
+                                    {/* --- NUEVO DROPDOWN DE ORDENAMIENTO ESTILIZADO --- */}
+                                    <div className="sort-dropdown-container">
+                                        <SvgSort className="sort-icon" />
+                                        <select
+                                            className="sort-select-premium"
+                                            value={criterioOrden}
+                                            onChange={(e) => setCriterioOrden(e.target.value)}
+                                        >
+                                            <option value="recientes">Recientes Primero</option>
+                                            <option value="prioridad">🚨 Urgentes Primero</option>
+                                            <option value="estado">📌 Ingresados Primero</option>
+                                            <option value="antiguos">⏳ Más Antiguos</option>
+                                        </select>
+                                    </div>
 
-                                    <button onClick={() => setVistaActual('nuevo')} className={`tab-btn tab-btn-action ${vistaActual === 'nuevo' ? 'tab-active' : 'tab-inactive'}`}><SvgAddTicket /> Nuevo</button>
+                                    {/* BOTÓN INGRESO MANUAL AGRANDADO (Configurado en el CSS) */}
+                                    <button onClick={() => setVistaActual('nuevo')} className={`tab-btn tab-btn-action ${vistaActual === 'nuevo' ? 'tab-active' : 'tab-inactive'}`}>
+                                        <SvgAddTicket /> Ingreso Manual
+                                    </button>
                                 </header>
 
                                 {vistaActual === 'nuevo' ? (
