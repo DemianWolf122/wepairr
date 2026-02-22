@@ -9,16 +9,19 @@ const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke=
 const SvgMedia = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>;
 const SvgZap = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
 const SvgShare = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="18" cy="5" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line></svg>;
+const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
 const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>;
 const SvgCheckShield = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>;
-const SvgCalendar = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
+const SvgClock = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>;
 const SvgMobileDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
 const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
+const SvgVideo = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>;
+
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -45,7 +48,6 @@ const getLuminance = (hex) => {
 };
 const getContrastRatio = (hex1, hex2) => { const l1 = getLuminance(hex1), l2 = getLuminance(hex2); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
 
-// TEXTAREA AUTO CRECIENTE
 const AutoResizeTextarea = ({ name, value, onChange, placeholder, maxLength, className }) => {
     const textareaRef = useRef(null);
     useEffect(() => {
@@ -69,6 +71,7 @@ function Settings({ config, onUpdate }) {
     const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
     const [seccionAbierta, setSeccionAbierta] = useState('identidad');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [igConnecting, setIgConnecting] = useState(false);
     const fileInputRef = useRef(null);
 
     const handleChange = (e) => {
@@ -84,6 +87,15 @@ function Settings({ config, onUpdate }) {
             reader.readAsDataURL(file);
         }
     };
+    const triggerFileInput = () => fileInputRef.current?.click();
+
+    const handleConnectIg = () => {
+        setIgConnecting(true);
+        setTimeout(() => {
+            onUpdate({ ...config, instagramConnected: true });
+            setIgConnecting(false);
+        }, 1500);
+    };
 
     const handlePreviewChange = (mode) => {
         if (mode === previewMode || isAnimatingPreview) return;
@@ -94,13 +106,11 @@ function Settings({ config, onUpdate }) {
     const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
     const checkColorSafety = (textColor, bgColor = currentBgColor) => getContrastRatio(textColor, bgColor) >= 4.5;
 
-    // AUTO-CORRECCIÓN INTELIGENTE DE CONTRASTE
     useEffect(() => {
         let updates = {};
         const isDark = config.shopDarkMode;
         const defaultText = isDark ? '#ffffff' : '#0f172a';
         const defaultSub = isDark ? '#f8fafc' : '#334155';
-
         if (config.colorTitulo && !checkColorSafety(config.colorTitulo, currentBgColor)) updates.colorTitulo = defaultText;
         if (config.colorSubtitulo && !checkColorSafety(config.colorSubtitulo, currentBgColor)) updates.colorSubtitulo = defaultSub;
         if (Object.keys(updates).length > 0) onUpdate({ ...config, ...updates });
@@ -113,7 +123,6 @@ function Settings({ config, onUpdate }) {
 
         const autoBtnText = getLuminance(accent) > 0.179 ? '#000000' : '#ffffff';
         let safeIconColor = accent;
-        const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
         if (getContrastRatio(safeIconColor, isDarkMode ? '#090e17' : '#ffffff') < 3.0) {
             let amt = isDarkMode ? 60 : -60; let c = accent.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join('');
             let num = parseInt(c, 16);
@@ -122,11 +131,7 @@ function Settings({ config, onUpdate }) {
 
         const userTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
         const userSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
-
-        // GRADIENTE SUTIL SI NO HAY FOTO, OSCURO SI HAY FOTO
-        const heroOverlayStyle = hasBanner
-            ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))'
-            : 'linear-gradient(to bottom, transparent, transparent)';
+        const heroOverlayStyle = hasBanner ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))' : 'linear-gradient(to bottom, transparent, transparent)';
         const heroTextColor = hasBanner ? '#ffffff' : userTitleColor;
         const heroSubtextColor = hasBanner ? 'rgba(255,255,255,0.85)' : userSubtitleColor;
 
@@ -138,6 +143,13 @@ function Settings({ config, onUpdate }) {
             '--hero-overlay': heroOverlayStyle, '--hero-text-color': heroTextColor, '--hero-subtext-color': heroSubtextColor
         };
     }, [config]);
+
+    const getEmbedUrl = (url) => {
+        if (!url) return null;
+        if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
+        if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
+        return url;
+    };
 
     return (
         <div className="settings-editor-layout">
@@ -175,6 +187,9 @@ function Settings({ config, onUpdate }) {
                                     </label>
                                     <label className="settings-label">Descripción Corta (Máx 120):
                                         <AutoResizeTextarea name="descripcion" value={config.descripcion} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} />
+                                    </label>
+                                    <label className="settings-label">Horarios de Atención (Opcional):
+                                        <input type="text" name="horariosAtencion" value={config.horariosAtencion || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Lun a Vie 9 a 18hs" maxLength={50} />
                                     </label>
                                 </div>
                             </div>
@@ -219,7 +234,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* MULTIMEDIA */}
+                    {/* MULTIMEDIA (FOTO Y VIDEO) */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'multimedia' ? null : 'multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
@@ -235,13 +250,19 @@ function Settings({ config, onUpdate }) {
                                             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
                                             <button type="button" className="btn-upload-file" onClick={triggerFileInput}><SvgUpload /> Subir</button>
                                         </div>
+
+                                        <label className="settings-label" style={{ marginTop: '15px' }}>Video de Presentación (YouTube):</label>
+                                        <div className="file-upload-container">
+                                            <span className="input-prefix-icon"><SvgVideo /></span>
+                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://www.youtube.com/watch?v=..." style={{ paddingLeft: '40px' }} />
+                                        </div>
                                     </div>
                                 </PremiumGate>
                             </div>
                         )}
                     </div>
 
-                    {/* REDES */}
+                    {/* REDES Y CONTACTO (RESTAURADO) */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
                             <span className="accordion-title"><SvgShare /> Contacto & Redes</span>
@@ -253,6 +274,25 @@ function Settings({ config, onUpdate }) {
                                     <label className="settings-label">WhatsApp (Máx 15):
                                         <input type="text" name="whatsapp" value={config.whatsapp || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 1123456789" maxLength={15} />
                                     </label>
+
+                                    <PremiumGate isPremium={isPremium}>
+                                        <hr className="settings-divider-soft" />
+                                        <label className="settings-label">Instagram Feed:</label>
+                                        {!config.instagramConnected ? (
+                                            <button type="button" onClick={handleConnectIg} className="btn-connect-ig" disabled={igConnecting}>
+                                                <SvgInstagram /> {igConnecting ? 'Conectando...' : 'Vincular Cuenta'}
+                                            </button>
+                                        ) : (
+                                            <div className="ig-connected-box animate-fade-in">
+                                                <div className="ig-status"><SvgInstagram /> Conectado como @tu_taller</div>
+                                                <button type="button" onClick={() => onUpdate({ ...config, instagramConnected: false })} className="btn-disconnect">Desvincular</button>
+                                                <div className="ig-preview-grid">
+                                                    <div className="ig-preview-item"></div><div className="ig-preview-item"></div><div className="ig-preview-item"></div>
+                                                </div>
+                                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textAlign: 'center' }}>Se mostrarán tus últimas 3 publicaciones.</p>
+                                            </div>
+                                        )}
+                                    </PremiumGate>
                                 </div>
                             </div>
                         )}
@@ -283,7 +323,7 @@ function Settings({ config, onUpdate }) {
                                         </div>
                                         {config.mostrarGarantia && (
                                             <div style={{ padding: '0 10px' }}>
-                                                <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 6 Meses" maxLength={30} style={{ padding: '10px', fontSize: '0.9rem' }} />
+                                                <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 6 Meses / De por vida" maxLength={30} style={{ padding: '10px', fontSize: '0.9rem' }} />
                                             </div>
                                         )}
                                         <div className="toggle-box glass-input-effect" style={{ marginTop: '10px' }}>
@@ -321,7 +361,6 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
-                        {/* AISLAMIENTO TOTAL: Aquí es donde WhatsApp queda atrapado */}
                         <div className="shop-screen-container">
                             <div className="shop-screen" style={shopStyles}>
                                 <div className="shop-nav">
@@ -339,6 +378,13 @@ function Settings({ config, onUpdate }) {
                                         <div className="shop-avatar-placeholder"><SvgBuilding /></div>
                                         <h1 className="shop-title" style={{ color: 'var(--hero-text-color)' }}>{config.titulo || 'Tu Título Principal'}</h1>
                                         <p className="shop-desc" style={{ color: 'var(--hero-subtext-color)' }}>{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
+
+                                        {config.horariosAtencion && (
+                                            <div className="shop-hours-hero" style={{ color: 'var(--hero-subtext-color)' }}>
+                                                <SvgClock /> {config.horariosAtencion}
+                                            </div>
+                                        )}
+
                                         <div className="shop-hero-actions"><button className="shop-cta-btn">Solicitar Reparación</button></div>
                                         {config.mostrarGarantia && isPremium && config.tiempoGarantia && (
                                             <div className="shop-trust-badge-hero"><SvgCheckShield /><span>Garantía: {config.tiempoGarantia}</span></div>
@@ -358,12 +404,20 @@ function Settings({ config, onUpdate }) {
                                     </div>
                                 )}
 
-                                {config.mostrarPresupuestador !== false && (
+                                {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
+                                    <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
+                                        <h2 className="shop-section-title">Presentación</h2>
+                                        <div className="shop-video-container">
+                                            <iframe src={getEmbedUrl(config.videoUrl)} title="Video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {config.instagramConnected && isPremium && (
                                     <div className="shop-section">
-                                        <h2 className="shop-section-title">Cotizar Reparación</h2>
-                                        <div className="shop-services-grid">
-                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span></div>
-                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span></div>
+                                        <h2 className="shop-section-title"><SvgInstagram /> En Instagram</h2>
+                                        <div className="shop-ig-grid">
+                                            <div className="shop-ig-post"></div><div className="shop-ig-post"></div><div className="shop-ig-post"></div>
                                         </div>
                                     </div>
                                 )}
@@ -379,8 +433,6 @@ function Settings({ config, onUpdate }) {
                                     </div>
                                 )}
                             </div>
-
-                            {/* FIX WHATSAPP: Posición Absoluta dentro del contenedor relativo de la pantalla */}
                             {config.whatsapp && (
                                 <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                             )}

@@ -1,148 +1,33 @@
-.directory-wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+/* ... (Mantén todo el CSS anterior de Dashboard.css, solo reemplaza la clase .ticket-list) ... */
 
-.directory-content {
+/* --- LISTA DE TICKETS PREMIUM --- */
+.ticket-list {
     flex: 1;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-    padding: 40px 20px;
-    box-sizing: border-box;
-    animation: fadeIn 0.4s ease;
-}
-
-.directory-header {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.directory-header h1 {
-    font-size: 3.5rem;
-    letter-spacing: -1.5px;
-    margin: 0 0 15px 0;
-    color: var(--text-primary);
-}
-
-.directory-header p {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    margin-bottom: 30px;
-}
-
-.region-filter-glass {
-    background: var(--bg-panel-glass);
-    backdrop-filter: blur(16px);
-    border: 1px solid var(--border-glass);
-    padding: 15px 25px;
-    border-radius: 99px;
-    display: inline-flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: var(--shadow-glass);
-}
-
-.region-filter-glass label {
-    font-weight: bold;
-    color: var(--text-primary);
-}
-
-.region-select {
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    padding: 10px 20px;
-    border-radius: 99px;
-    font-size: 1rem;
-    outline: none;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.directory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-}
-
-.tech-directory-card {
-    padding: 30px;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s;
-}
-
-.tech-directory-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-color);
-}
-
-.tech-card-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.tech-logo-avatar {
-    font-size: 2.5rem;
-    background: var(--bg-input-glass);
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 16px;
-    border: 1px solid var(--border-glass);
-}
-
-.tech-rating-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--bg-input-glass);
-    padding: 10px 15px;
-    border-radius: 12px;
+    overflow-y: auto;
     margin-bottom: 20px;
-    border: 1px solid var(--border-glass);
+    display: grid;
+    /* Grilla más adaptable para las nuevas tarjetas */
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 25px;
+    align-content: start;
+    padding-bottom: 20px;
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
-.stars {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--warning);
-    font-weight: 800;
-    font-size: 1.1rem;
+/* ... (Resto del archivo igual) ... */
+@media (max-width: 900px) {
+    .ticket-list {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
 }
 
-.star-icon {
-    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-}
+@media (max-width: 768px) {
 
-.reviews-count {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    text-decoration: underline;
-    cursor: pointer;
-}
+    /* ... otros estilos ... */
+    .ticket-list {
+        grid-template-columns: 1fr;
+    }
 
-.btn-visit-shop {
-    text-align: center;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-    color: #fff;
-    text-decoration: none;
-    padding: 14px;
-    border-radius: 12px;
-    font-weight: bold;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    margin-top: auto;
-}
-
-.btn-visit-shop:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+    /* Una sola columna en móvil */
 }
