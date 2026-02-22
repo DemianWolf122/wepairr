@@ -25,7 +25,7 @@
     background: var(--bg-panel);
 }
 
-/* FUERZA COLOR DE TEXTO EN EL PANEL IZQUIERDO PARA QUE NO FALLE EN MODO OSCURO */
+/* FUERZA COLOR DE TEXTO EN EL PANEL IZQUIERDO PARA MODO OSCURO GLOBAL */
 .settings-controls-panel {
     width: 420px;
     flex-shrink: 0;
@@ -162,7 +162,7 @@
     border-bottom-right-radius: 14px;
 }
 
-/* FIX WHATSAPP: Ahora respeta el límite de shop-screen-container */
+/* FIX WHATSAPP PREVIEW */
 .floating-wa-btn-preview {
     position: absolute;
     bottom: 25px;
@@ -329,11 +329,13 @@
     align-items: center;
 }
 
+/* FIX RESPONSIVE TEXT: word-break */
 .shop-title {
     font-weight: 900;
     line-height: 1.1;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
     max-width: 100%;
     padding: 0 10px;
     transition: color 0.3s;
@@ -343,6 +345,7 @@
     line-height: 1.6;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
     max-width: 100%;
     padding: 0 15px;
     transition: color 0.3s;
@@ -399,6 +402,31 @@
     margin: 0 auto;
     transition: background-color 0.3s, border-color 0.3s;
     box-sizing: border-box;
+}
+
+/* FIX TRACKING INPUT Y BOTON PARA QUE NO SALGA */
+.tracking-input-group {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    align-items: stretch;
+}
+
+.tracking-input-group input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--shop-border);
+    background: var(--shop-bg);
+    color: var(--shop-text);
+    font-family: inherit;
+}
+
+.tracking-input-group button {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    font-size: 0.9rem;
 }
 
 .shop-section-title {
@@ -471,9 +499,6 @@
     width: 70px;
     height: 70px;
     margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .phone-mockup-final .shop-title {
@@ -527,9 +552,6 @@
     width: 100px;
     height: 100px;
     margin-bottom: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .desktop-mockup-final .shop-title {
@@ -568,7 +590,7 @@
     padding: 35px;
 }
 
-/* --- ESTILOS DEL SIDEBAR --- */
+/* --- ESTILOS DEL SIDEBAR (Acordeones arreglados visualmente para Modo Claro) --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -616,7 +638,7 @@
 }
 
 .app-root.light .accordion-item {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.8);
     border-color: rgba(0, 0, 0, 0.15);
 }
 
@@ -631,7 +653,6 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
-/* Arreglo Texto Modo Oscuro Global */
 .accordion-header {
     display: flex;
     justify-content: space-between;
@@ -641,13 +662,7 @@
     font-weight: 800;
     color: var(--text-primary);
     font-size: 1.05rem;
-    transition: background 0.2s, color 0.3s;
-}
-
-.accordion-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    transition: background 0.2s;
 }
 
 .accordion-header:hover {
@@ -670,9 +685,9 @@
     font-size: 0.9rem;
     font-weight: 700;
     margin-bottom: 8px;
-    transition: color 0.3s;
 }
 
+/* BORDES MÁS OSCUROS EN MODO CLARO PARA INPUTS */
 .settings-input {
     width: 100%;
     padding: 14px;
@@ -690,7 +705,7 @@
 }
 
 .app-root.light .settings-input {
-    border-color: rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 0, 0, 0.25);
     background: #ffffff;
 }
 
@@ -738,16 +753,11 @@
     border: 3px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s var(--ease-bounce);
 }
 
 .app-root.light .color-preset-btn {
     border-color: rgba(0, 0, 0, 0.1);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-.color-preset-btn:hover {
-    transform: scale(1.15);
 }
 
 .color-preset-btn.active {
@@ -757,6 +767,10 @@
     z-index: 2;
 }
 
+.app-root.light .color-preset-btn.active {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
 .toggle-box {
     padding: 18px;
     border-radius: 16px;
@@ -764,25 +778,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: border-color 0.3s, background-color 0.3s;
 }
 
 .app-root.light .toggle-box {
-    border-color: rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.2);
     background: #ffffff;
-}
-
-.toggle-title {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 1rem;
-    font-weight: 800;
-    color: var(--text-primary);
-}
-
-.toggle-desc {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
 }
 
 .switch {
@@ -811,7 +811,7 @@
 }
 
 .app-root.light .slider {
-    border-color: rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 0, 0, 0.25);
 }
 
 .slider:before {
@@ -930,7 +930,6 @@ input:checked+.slider:before {
     font-weight: 800;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.2s var(--ease-premium);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -941,20 +940,4 @@ input:checked+.slider:before {
     color: var(--bg-main);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     transform: scale(1.05);
-}
-
-.animate-pop-in {
-    animation: popIn 0.5s var(--ease-bounce);
-}
-
-@keyframes popIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
 }

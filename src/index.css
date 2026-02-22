@@ -14,10 +14,10 @@
     --success: #10b981;
     --warning: #f59e0b;
     --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-    --ease-premium: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-premium: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-    --sidebar-width: 280px;
+    --speed-fast: 0.3s;
+    --speed-normal: 0.5s;
 }
 
 .app-root.dark {
@@ -37,18 +37,17 @@
 
 body {
     margin: 0;
-    font-family: var(--font-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: var(--bg-main);
     color: var(--text-primary);
     overflow: hidden;
-    /* Evita doble scrollbar en el body */
+    /* Evita doble scrollbar */
 }
 
-/* --- BARRAS DE DESPLAZAMIENTO PERSONALIZADAS (SCROLLBARS) --- */
+/* --- BARRAS DE DESPLAZAMIENTO A MEDIDA --- */
 ::-webkit-scrollbar {
-    width: 8px;
-    /* Más finas */
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -56,32 +55,31 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--border-glass);
+    background-color: var(--text-secondary);
     border-radius: 10px;
-    border: 2px solid transparent;
-    /* Crea un margen visual */
-    background-clip: content-box;
+    opacity: 0.5;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--text-secondary);
+    background-color: var(--accent-color);
 }
 
-/* --- ESTILO GLOBAL PARA FLECHAS DE ACORDEÓN --- */
-.accordion-chevron,
-.chevron-icon {
-    display: inline-block;
-    transition: transform 0.3s var(--ease-premium);
-    font-size: 0.8rem;
-    /* Tamaño consistente */
+* {
+    transition-timing-function: var(--ease-premium);
 }
 
-/* Clase genérica para cuando un elemento padre está activo */
-.active>.accordion-header .accordion-chevron,
-.nav-group-active .chevron-icon {
-    transform: rotate(180deg);
+.glass-effect {
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
 }
 
+.glass-input-effect {
+    background: var(--bg-input-glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-glass);
+}
 
 .animate-fade-in {
     animation: fadeIn 0.4s var(--ease-premium);
@@ -111,17 +109,4 @@ body {
         opacity: 1;
         transform: scale(1);
     }
-}
-
-.glass-effect {
-    background: var(--bg-panel-glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-glass);
-}
-
-.glass-input-effect {
-    background: var(--bg-input-glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-glass);
 }

@@ -1,7 +1,6 @@
-/* ... (MANTÉN TODO EL CSS PREVIO) ... */
+/* ... (Mantén todo igual pero asegúrate de añadir/reemplazar el bloque de las imágenes y el texto largo) ... */
 .wiki-wrapper {
     padding: 20px;
-    animation: fadeIn 0.4s ease;
     position: relative;
 }
 
@@ -16,14 +15,14 @@
     color: var(--text-primary);
     margin: 0 0 10px 0;
     font-size: 2rem;
-    letter-spacing: -1px;
+    font-weight: 900;
 }
 
 .btn-new-post {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    background: var(--accent-color);
     color: #fff;
     border: none;
     padding: 12px 24px;
@@ -31,13 +30,65 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
-    font-size: 1rem;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
+/* Búsqueda */
+.wiki-tools-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--bg-panel-glass);
+    border: 1px solid var(--border-glass);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 250px;
+    background: var(--bg-input-glass);
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.sort-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-select {
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Tarjetas */
 .wiki-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 25px;
 }
 
@@ -51,17 +102,14 @@
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    position: relative;
-    isolation: isolate;
-    transform: translateZ(0);
+    transition: transform var(--speed-normal), border-color var(--speed-normal);
     overflow: hidden;
-    transition: transform var(--speed-normal) var(--ease-premium), border-color var(--speed-normal);
 }
 
 .wiki-card:hover {
     border-color: var(--accent-color);
-    transform: translateY(-8px) scale(1.01);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 .wiki-thumbnail {
@@ -76,30 +124,31 @@
     background: rgba(37, 99, 235, 0.1);
     padding: 6px 14px;
     border-radius: 99px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--accent-color);
     display: inline-block;
     align-self: flex-start;
     margin-bottom: 15px;
     font-weight: 800;
     border: 1px solid rgba(37, 99, 235, 0.2);
-    backdrop-filter: blur(5px);
 }
 
 .wiki-card h3 {
     margin: 0 0 15px 0;
     color: var(--text-primary);
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     line-height: 1.3;
     font-weight: 800;
+    word-break: break-word;
 }
 
-.wiki-card p {
+.wiki-card-desc {
     color: var(--text-secondary);
-    line-height: 1.7;
-    font-size: 1rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
     margin-bottom: 25px;
     flex: 1;
+    word-break: break-word;
 }
 
 .wiki-footer {
@@ -110,7 +159,6 @@
     color: var(--text-secondary);
     border-top: 1px solid var(--border-glass);
     padding-top: 20px;
-    margin-top: auto;
 }
 
 .read-more {
@@ -132,53 +180,48 @@
 .btn-like {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: rgba(128, 128, 128, 0.1);
+    gap: 6px;
+    background: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
-    padding: 8px 14px;
+    padding: 6px 12px;
     border-radius: 8px;
     color: var(--text-secondary);
     cursor: pointer;
-    font-size: 0.95rem;
+    font-weight: bold;
     transition: all 0.2s;
-    font-weight: 700;
-}
-
-.btn-like:hover {
-    color: var(--text-primary);
-    transform: translateY(-2px);
 }
 
 .btn-like.liked {
     color: var(--accent-color);
     border-color: var(--accent-color);
-    background: rgba(37, 99, 235, 0.1);
 }
 
-/* --- ESTILOS DEL MODAL ARREGLADOS --- */
+/* Modal y Lightbox */
 .wiki-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
     box-sizing: border-box;
-    animation: fadeIn 0.4s var(--ease-premium);
+}
+
+.app-root.light .wiki-modal-overlay {
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .wiki-modal-container {
-    background: var(--bg-panel-glass);
-    backdrop-filter: blur(30px);
+    background: var(--bg-panel);
     border: 1px solid var(--border-glass);
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
     width: 100%;
     max-width: 800px;
     max-height: 90vh;
@@ -191,18 +234,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 25px 40px;
-    background: rgba(0, 0, 0, 0.2);
+    padding: 20px 30px;
+    background: var(--bg-input-glass);
     border-bottom: 1px solid var(--border-glass);
-    flex-shrink: 0;
-}
-
-.app-root.light .wiki-modal-header-fixed {
-    background: #f8fafc;
 }
 
 .btn-close-modal {
-    background: var(--bg-input-glass);
+    background: var(--bg-panel);
     border: 1px solid var(--border-glass);
     border-radius: 50%;
     width: 40px;
@@ -210,9 +248,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     cursor: pointer;
-    transition: all 0.3s var(--ease-bounce);
+    transition: transform 0.2s;
 }
 
 .btn-close-modal:hover {
@@ -223,58 +261,44 @@
 }
 
 .wiki-modal-body-scroll {
-    padding: 40px;
+    padding: 30px;
     overflow-y: auto;
     scrollbar-width: thin;
 }
 
 .modal-title {
     margin: 0 0 10px 0;
-    font-size: 2.2rem;
-    line-height: 1.2;
+    font-size: 2rem;
     font-weight: 900;
-    letter-spacing: -1px;
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 .modal-author {
     color: var(--text-secondary);
-    font-size: 1rem;
     display: block;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
     border-bottom: 1px solid var(--border-glass);
-    padding-bottom: 20px;
-    font-weight: 600;
+    font-weight: bold;
 }
 
-.wiki-modal-text p {
-    color: var(--text-primary);
-    line-height: 1.8;
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    white-space: pre-wrap;
-    opacity: 0.9;
-}
-
-/* ARREGLO DE IMÁGENES EN MODAL */
+/* FIX DE IMAGEN (Nunca se corta) */
 .wiki-modal-image-container {
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
     margin-bottom: 25px;
     border: 1px solid var(--border-glass);
-    box-shadow: var(--shadow-glass);
+    background: var(--bg-input-glass);
     position: relative;
     cursor: zoom-in;
 }
 
-/* FIX: Usar object-fit contain y limitar altura */
 .wiki-modal-image-container img {
     width: 100%;
-    height: auto;
-    max-height: 400px;
+    max-height: 450px;
     object-fit: contain;
     display: block;
-    background: rgba(0, 0, 0, 0.05);
     transition: transform 0.3s;
 }
 
@@ -303,28 +327,6 @@
     opacity: 1;
 }
 
-.main-image {
-    max-height: 400px;
-}
-
-.secondary-images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.secondary-image {
-    height: 150px;
-    margin-bottom: 0;
-}
-
-.secondary-image img {
-    height: 100%;
-    object-fit: cover;
-}
-
-/* ESTILOS LIGHTBOX (VISOR A PANTALLA COMPLETA) */
 .lightbox-overlay {
     position: fixed;
     top: 0;
@@ -337,6 +339,7 @@
     justify-content: center;
     align-items: center;
     padding: 40px;
+    box-sizing: border-box;
 }
 
 .lightbox-image {
@@ -362,75 +365,29 @@
     align-items: center;
     justify-content: center;
     transition: background 0.3s;
+    z-index: 10001;
 }
 
 .btn-close-lightbox:hover {
     background: rgba(255, 255, 255, 0.4);
 }
 
-/* ... (MANTÉN EL RESTO DEL CSS DEL FORMULARIO) ... */
-.wiki-tools-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    border-radius: 16px;
-    margin-bottom: 30px;
-    gap: 20px;
-    flex-wrap: wrap;
-    background: var(--bg-panel-glass);
-    border: 1px solid var(--border-glass);
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 250px;
-    background: var(--bg-input-glass);
-    padding: 10px 15px;
+.wiki-input {
+    width: 100%;
+    padding: 15px;
     border-radius: 12px;
     border: 1px solid var(--border-glass);
-}
-
-.search-box svg {
-    color: var(--text-secondary);
-}
-
-.search-box input {
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    outline: none;
-    width: 100%;
-    font-size: 1rem;
-    font-family: inherit;
-}
-
-.sort-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sort-select {
     background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
     color: var(--text-primary);
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-weight: bold;
+    font-family: inherit;
+    font-size: 1rem;
     outline: none;
-    cursor: pointer;
+    box-sizing: border-box;
+    resize: vertical;
 }
 
-.new-post-form {
-    max-width: 700px;
-}
-
-.form-body {
-    padding: 30px;
+.wiki-input:focus {
+    border-color: var(--accent-color);
 }
 
 .form-group {
@@ -440,7 +397,7 @@
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 700;
+    font-weight: bold;
     color: var(--text-primary);
 }
 
@@ -461,64 +418,10 @@
 
 .upload-box:hover {
     border-color: var(--accent-color);
-    background: var(--bg-hover-glass);
     color: var(--text-primary);
 }
 
 .upload-preview {
     max-height: 200px;
     border-radius: 8px;
-}
-
-.secondary-upload {
-    padding: 20px;
-    flex-direction: row;
-    justify-content: center;
-}
-
-.secondary-previews {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-}
-
-.mini-preview {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid var(--border-glass);
-}
-
-@media (max-width: 768px) {
-    .wiki-header {
-        flex-direction: column;
-        gap: 20px;
-        align-items: stretch;
-    }
-
-    .wiki-header-text h2 {
-        font-size: 1.8rem;
-    }
-
-    .wiki-tools-bar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .sort-box {
-        justify-content: space-between;
-    }
-
-    .wiki-modal-container {
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-    }
-
-    .btn-close-lightbox {
-        top: 10px;
-        right: 10px;
-    }
 }
