@@ -324,3 +324,79 @@
     color: var(--accent-color);
     box-shadow: var(--shadow-glass);
 }
+
+/* --- RESPONSIVE GLOBAL (Soporte desde 320px) --- */
+@media (max-width: 768px) {
+
+    /* Barra de navegación deslizable en móvil */
+    .tech-navbar {
+        padding: 0 15px;
+    }
+
+    .tech-brand {
+        font-size: 1rem;
+    }
+
+    .nav-menu {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+    }
+
+    .nav-link-btn {
+        font-size: 0.9rem;
+        padding: 0 10px;
+    }
+
+    .btn-view-site {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .theme-toggle-btn {
+        display: none;
+        /* Ocultamos el modo nocturno en pantallas minúsculas para ahorrar espacio */
+    }
+
+    /* Dashboard Grid adaptativo */
+    .dashboard-content {
+        padding: 15px;
+    }
+
+    .dashboard-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px;
+    }
+
+    .ticket-list {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tickets apilados a 1 columna */
+
+    /* Submenú de gestión adaptable */
+    .gestion-sub-nav {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .sub-nav-btn {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 400px) {
+
+    /* Ajustes específicos para 320px (iPhone SE, Galaxy Fold) */
+    .tech-navbar {
+        height: 60px;
+    }
+
+    .action-btn {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+}
