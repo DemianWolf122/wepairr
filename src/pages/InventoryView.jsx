@@ -100,11 +100,17 @@ function InventoryView() {
                         <div className={`stock-indicator ${item.cantidad <= 3 ? 'critical' : (item.cantidad <= 10 ? 'low' : 'good')}`}></div>
                         {editandoId === item.id ? (
                             <div className="inv-edit-mode animate-fade-in">
-                                <input type="text" value={datosEdicion.nombre} onChange={e => setDatosEdicion({ ...datosEdicion, nombre: e.target.value })} className="inv-edit-input" placeholder="Nombre" />
-                                <input type="text" value={datosEdicion.categoria} onChange={e => setDatosEdicion({ ...datosEdicion, categoria: e.target.value })} className="inv-edit-input" placeholder="Categoría" />
+                                <div className="inv-form-group">
+                                    <label>Nombre del Repuesto</label>
+                                    <input type="text" value={datosEdicion.nombre} onChange={e => setDatosEdicion({ ...datosEdicion, nombre: e.target.value })} className="inv-edit-input" />
+                                </div>
+                                <div className="inv-form-group">
+                                    <label>Categoría</label>
+                                    <input type="text" value={datosEdicion.categoria} onChange={e => setDatosEdicion({ ...datosEdicion, categoria: e.target.value })} className="inv-edit-input" />
+                                </div>
                                 <div className="inv-edit-row">
-                                    <input type="number" value={datosEdicion.precioCompra} onChange={e => setDatosEdicion({ ...datosEdicion, precioCompra: Number(e.target.value) })} className="inv-edit-input" placeholder="Costo" />
-                                    <input type="number" value={datosEdicion.precioVenta} onChange={e => setDatosEdicion({ ...datosEdicion, precioVenta: Number(e.target.value) })} className="inv-edit-input" placeholder="Venta" />
+                                    <div className="inv-form-group"><label>Costo ($)</label><input type="number" value={datosEdicion.precioCompra} onChange={e => setDatosEdicion({ ...datosEdicion, precioCompra: Number(e.target.value) })} className="inv-edit-input" /></div>
+                                    <div className="inv-form-group"><label>Venta ($)</label><input type="number" value={datosEdicion.precioVenta} onChange={e => setDatosEdicion({ ...datosEdicion, precioVenta: Number(e.target.value) })} className="inv-edit-input" /></div>
                                 </div>
                                 <div className="inv-edit-actions">
                                     <button onClick={guardarEdicion} className="btn-save-inv"><SvgSave /> Guardar</button>
@@ -133,20 +139,26 @@ function InventoryView() {
 
             {modalNuevo && (
                 <div className="inv-modal-overlay animate-fade-in" onClick={() => setModalNuevo(false)}>
-                    <form className="inv-modal-container glass-effect" onClick={e => e.stopPropagation()} onSubmit={crearArticulo}>
+                    <form className="inv-modal-container glass-effect animate-scale-in" onClick={e => e.stopPropagation()} onSubmit={crearArticulo}>
                         <div className="inv-modal-header"><h3>Añadir al Inventario</h3><button type="button" className="btn-close-modal" onClick={() => setModalNuevo(false)}><SvgX /></button></div>
                         <div className="inv-modal-body">
-                            <input type="text" placeholder="Nombre del Repuesto *" value={nuevoItem.nombre} onChange={e => setNuevoItem({ ...nuevoItem, nombre: e.target.value })} required className="inv-form-input" />
-                            <div className="inv-form-row">
-                                <input type="number" placeholder="Cantidad *" value={nuevoItem.cantidad} onChange={e => setNuevoItem({ ...nuevoItem, cantidad: e.target.value })} required className="inv-form-input" min="0" />
-                                <input type="text" placeholder="Categoría" value={nuevoItem.categoria} onChange={e => setNuevoItem({ ...nuevoItem, categoria: e.target.value })} className="inv-form-input" />
+                            <div className="inv-form-group">
+                                <label>Nombre del Repuesto *</label>
+                                <input type="text" placeholder="Ej. Batería iPhone 11" value={nuevoItem.nombre} onChange={e => setNuevoItem({ ...nuevoItem, nombre: e.target.value })} required className="inv-form-input" />
                             </div>
                             <div className="inv-form-row">
-                                <input type="number" placeholder="Precio Costo ($)" value={nuevoItem.precioCompra} onChange={e => setNuevoItem({ ...nuevoItem, precioCompra: e.target.value })} className="inv-form-input" />
-                                <input type="number" placeholder="Precio Venta ($)" value={nuevoItem.precioVenta} onChange={e => setNuevoItem({ ...nuevoItem, precioVenta: e.target.value })} className="inv-form-input" />
+                                <div className="inv-form-group"><label>Stock Inicial *</label><input type="number" placeholder="0" value={nuevoItem.cantidad} onChange={e => setNuevoItem({ ...nuevoItem, cantidad: e.target.value })} required className="inv-form-input" min="0" /></div>
+                                <div className="inv-form-group"><label>Categoría</label><input type="text" placeholder="Ej. Baterías" value={nuevoItem.categoria} onChange={e => setNuevoItem({ ...nuevoItem, categoria: e.target.value })} className="inv-form-input" /></div>
                             </div>
-                            <input type="text" placeholder="Etiquetas (separadas por coma)" value={nuevoItem.tags} onChange={e => setNuevoItem({ ...nuevoItem, tags: e.target.value })} className="inv-form-input" />
-                            <button type="submit" className="btn-add-item" style={{ width: '100%', marginTop: '10px' }}>Guardar Artículo</button>
+                            <div className="inv-form-row">
+                                <div className="inv-form-group"><label>Precio de Costo ($)</label><input type="number" placeholder="0" value={nuevoItem.precioCompra} onChange={e => setNuevoItem({ ...nuevoItem, precioCompra: e.target.value })} className="inv-form-input" /></div>
+                                <div className="inv-form-group"><label>Precio de Venta ($)</label><input type="number" placeholder="0" value={nuevoItem.precioVenta} onChange={e => setNuevoItem({ ...nuevoItem, precioVenta: e.target.value })} className="inv-form-input" /></div>
+                            </div>
+                            <div className="inv-form-group">
+                                <label>Etiquetas (Separadas por comas)</label>
+                                <input type="text" placeholder="Ej. Apple, Original, Premium" value={nuevoItem.tags} onChange={e => setNuevoItem({ ...nuevoItem, tags: e.target.value })} className="inv-form-input" />
+                            </div>
+                            <button type="submit" className="btn-add-item" style={{ width: '100%', marginTop: '10px', padding: '15px' }}>Guardar Artículo</button>
                         </div>
                     </form>
                 </div>

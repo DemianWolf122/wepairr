@@ -123,7 +123,6 @@
     font-size: 0.9rem;
 }
 
-/* FIX: SELECTOR PERSONALIZADO PREMIUM */
 .sort-select-inventory {
     background-color: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
@@ -352,6 +351,20 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.inv-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+}
+
+.inv-form-group label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--text-secondary);
+    margin-left: 5px;
 }
 
 .inv-edit-input {

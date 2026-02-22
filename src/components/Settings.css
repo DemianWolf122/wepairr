@@ -142,7 +142,6 @@
     margin: auto;
 }
 
-/* FIX: CONTENEDOR RELATIVO PARA ATRAPAR EL WHATSAPP Y EL SCROLL */
 .shop-screen-container {
     flex: 1;
     position: relative;
@@ -160,7 +159,6 @@
     border-bottom-right-radius: 14px;
 }
 
-/* FIX: WHATSAPP ATRAPADO AL CONTENEDOR (YA NO SE SALE) */
 .floating-wa-btn-preview {
     position: absolute;
     bottom: 25px;
@@ -268,7 +266,6 @@
     text-align: center;
 }
 
-/* --- PANTALLA RENDERIZADA BASE --- */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -337,7 +334,6 @@
     align-items: center;
 }
 
-/* FIX RESPONSIVE TEXT: word-break */
 .shop-title {
     font-weight: 900;
     line-height: 1.1;
@@ -523,7 +519,6 @@
     border-radius: 12px;
 }
 
-/* MOBILE / DESKTOP SIZING PREVIEW */
 .phone-mockup-final .shop-avatar-placeholder {
     width: 70px;
     height: 70px;
@@ -561,10 +556,6 @@
 
 .phone-mockup-final .shop-service-card {
     padding: 20px;
-}
-
-.desktop-mockup-final .shop-logo {
-    font-size: 1.8rem;
 }
 
 .desktop-mockup-final .shop-avatar-placeholder {
@@ -608,7 +599,6 @@
     padding: 35px;
 }
 
-/* --- ESTILOS DEL SIDEBAR DE EDICIÓN --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -697,7 +687,15 @@
     padding: 0 22px 25px 22px;
 }
 
-/* FIX: DISTANCIA Y SEPARACIÓN ENTRE LABELS E INPUTS */
+.chevron-icon {
+    transition: transform 0.3s var(--ease-premium);
+}
+
+.accordion-item.active .chevron-icon {
+    transform: rotate(180deg);
+    color: var(--accent-color);
+}
+
 .settings-form-group {
     display: flex;
     flex-direction: column;
@@ -728,10 +726,8 @@
     user-select: auto;
     -webkit-user-select: auto;
     margin-top: 10px;
-    /* AQUÍ ESTÁ EL AIRE QUE FALTABA */
 }
 
-/* FIX DESPLEGABLES: DISEÑO PREMIUM */
 .select-input {
     width: 100%;
     padding: 14px 40px 14px 14px;
@@ -932,6 +928,15 @@ input:checked+.slider:before {
     transition: background 0.2s;
 }
 
+.input-prefix-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
 .premium-gate-wrapper {
     position: relative;
     border-radius: 16px;
@@ -1006,7 +1011,6 @@ input:checked+.slider:before {
     transform: scale(1.05);
 }
 
-/* INSTAGRAM FEED SIMULACIÓN */
 .btn-connect-ig {
     width: 100%;
     padding: 15px;

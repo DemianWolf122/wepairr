@@ -1,6 +1,5 @@
 .wiki-wrapper {
     padding: 20px;
-    animation: fadeIn 0.4s ease;
     position: relative;
 }
 
@@ -33,7 +32,7 @@
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
-/* Búsqueda */
+/* Búsqueda y Ordenamiento */
 .wiki-tools-bar {
     display: flex;
     justify-content: space-between;
@@ -75,7 +74,7 @@
     gap: 10px;
 }
 
-/* FIX: DESPLEGABLE PREMIUM */
+/* SELECTOR PREMIUM */
 .sort-select {
     background-color: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
@@ -102,7 +101,6 @@
     background-color: #ffffff;
 }
 
-/* Tarjetas */
 .wiki-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -302,7 +300,7 @@
     font-weight: bold;
 }
 
-/* FIX DE IMAGEN: Object-fit contain y no se recorta */
+/* FIX IMÁGENES: object-fit contain asegura que jamás se corten */
 .wiki-modal-image-container {
     border-radius: 12px;
     overflow: hidden;
@@ -347,23 +345,6 @@
 
 .wiki-modal-image-container:hover .image-hover-overlay {
     opacity: 1;
-}
-
-.secondary-images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-    margin-top: 30px;
-}
-
-.secondary-image {
-    height: 150px;
-    margin-bottom: 0;
-}
-
-.secondary-image img {
-    height: 100%;
-    object-fit: contain;
 }
 
 .lightbox-overlay {
@@ -465,21 +446,6 @@
 .upload-preview {
     max-height: 200px;
     border-radius: 8px;
-}
-
-.secondary-previews {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-}
-
-.mini-preview {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid var(--border-glass);
 }
 
 @media (max-width: 768px) {

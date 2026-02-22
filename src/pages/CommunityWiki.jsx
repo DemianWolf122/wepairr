@@ -9,8 +9,8 @@ const SvgImage = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="c
 const SvgSearch = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 
 const POSTS_INICIALES = [
-    { id: 1, titulo: "Falla de carga iPhone 12 Pro", autor: "TecnoMar", contenido: "Si el equipo consume 0.01A, revisen el IC de carga U2...", imagenPrincipal: null, imagenesSecundarias: [], likes: 24, categoria: "Microelectrónica", likedByMe: false, fecha: Date.now() - 100000 },
-    { id: 2, titulo: "Cómo despegar tapas de Samsung S23", autor: "ElectroFix", contenido: "Usar plancha a 80 grados por 5 minutos exactos...", imagenPrincipal: null, imagenesSecundarias: [], likes: 15, categoria: "Hardware", likedByMe: false, fecha: Date.now() }
+    { id: 1, titulo: "Falla de carga iPhone 12 Pro", autor: "TecnoMar", contenido: "Si el equipo consume 0.01A, revisen el IC de carga U2. Reemplazando el IC se solucionó el problema.", imagenPrincipal: null, imagenesSecundarias: [], likes: 24, categoria: "Microelectrónica", likedByMe: false, fecha: Date.now() - 100000 },
+    { id: 2, titulo: "Cómo despegar tapas de Samsung S23", autor: "ElectroFix", contenido: "Usar plancha a 80 grados por 5 minutos exactos para no dañar el flex de antena.", imagenPrincipal: null, imagenesSecundarias: [], likes: 15, categoria: "Hardware", likedByMe: false, fecha: Date.now() }
 ];
 
 function CommunityWiki() {
@@ -25,11 +25,10 @@ function CommunityWiki() {
     const [orden, setOrdenarPor] = useState('recientes');
     const [nuevoPost, setNuevoPost] = useState({ titulo: '', categoria: 'General', contenido: '', imagenPrincipal: null, imagenesSecundarias: [] });
 
-    // LIGHTBOX PARA IMÁGENES
+    // LIGHTBOX
     const [imagenLightbox, setImagenLightbox] = useState(null);
 
     const fileInputPrincipalRef = useRef(null);
-    const fileInputSecundarioRef = useRef(null);
 
     useEffect(() => { localStorage.setItem('wepairr_wiki_posts', JSON.stringify(posts)); }, [posts]);
 
@@ -38,18 +37,13 @@ function CommunityWiki() {
         setPosts(prev => prev.map(post => post.id === id ? { ...post, likes: post.likedByMe ? post.likes - 1 : post.likes + 1, likedByMe: !post.likedByMe } : post));
     };
 
-    const handleFileChange = (e, tipo) => {
-        const files = Array.from(e.target.files);
-        files.forEach(file => {
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    if (tipo === 'principal') setNuevoPost(prev => ({ ...prev, imagenPrincipal: reader.result }));
-                    else setNuevoPost(prev => ({ ...prev, imagenesSecundarias: [...prev.imagenesSecundarias, reader.result] }));
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onloadend = () => { setNuevoPost(prev => ({ ...prev, imagenPrincipal: reader.result })); };
+            reader.readAsDataURL(file);
+        }
     };
 
     const crearPost = (e) => {
@@ -111,7 +105,7 @@ function CommunityWiki() {
                 ))}
             </div>
 
-            {/* MODAL DETALLE (Evita crashes con optional chaining) */}
+            {/* MODAL DETALLE CON LIGHTBOX */}
             {postSeleccionado && (
                 <div className="wiki-modal-overlay" onClick={() => setPostSeleccionado(null)}>
                     <div className="wiki-modal-container animate-scale-in" onClick={e => e.stopPropagation()}>
@@ -133,22 +127,12 @@ function CommunityWiki() {
                             <div className="wiki-modal-text">
                                 {(postSeleccionado.contenido || '').split('\n').map((parrafo, i) => <p key={i}>{parrafo}</p>)}
                             </div>
-
-                            {(postSeleccionado.imagenesSecundarias || []).length > 0 && (
-                                <div className="secondary-images-grid">
-                                    {postSeleccionado.imagenesSecundarias.map((img, idx) => (
-                                        <div key={idx} className="wiki-modal-image-container secondary-image" onClick={() => setImagenLightbox(img)}>
-                                            <img src={img} alt={`Secundaria ${idx}`} />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* LIGHTBOX A PANTALLA COMPLETA */}
+            {/* VISOR A PANTALLA COMPLETA */}
             {imagenLightbox && (
                 <div className="lightbox-overlay animate-fade-in" onClick={() => setImagenLightbox(null)}>
                     <button className="btn-close-lightbox"><SvgX /></button>
@@ -167,42 +151,25 @@ function CommunityWiki() {
                         <form onSubmit={crearPost} className="wiki-modal-body-scroll form-body">
                             <div className="form-group">
                                 <label>Título del Aporte *</label>
-                                <input type="text" value={nuevoPost.titulo} onChange={e => setNuevoPost({ ...nuevoPost, titulo: e.target.value })} placeholder="Ej. Solución IC de carga iPhone X" required className="wiki-input" maxLength={80} />
+                                <input type="text" value={nuevoPost.titulo} onChange={e => setNuevoPost({ ...nuevoPost, titulo: e.target.value })} placeholder="Ej. Solución IC..." required className="wiki-input" maxLength={80} />
                             </div>
-
                             <div className="form-group">
                                 <label>Categoría</label>
                                 <select value={nuevoPost.categoria} onChange={e => setNuevoPost({ ...nuevoPost, categoria: e.target.value })} className="wiki-input sort-select">
                                     <option>General</option><option>Microelectrónica</option><option>Software</option><option>Hardware</option>
                                 </select>
                             </div>
-
                             <div className="form-group">
                                 <label>Descripción Detallada *</label>
-                                <textarea value={nuevoPost.contenido} onChange={e => setNuevoPost({ ...nuevoPost, contenido: e.target.value })} placeholder="Explica los pasos de la solución..." required className="wiki-input" rows={6} />
+                                <textarea value={nuevoPost.contenido} onChange={e => setNuevoPost({ ...nuevoPost, contenido: e.target.value })} placeholder="Explica los pasos..." required className="wiki-input" rows={6} />
                             </div>
-
                             <div className="form-group upload-section">
-                                <label>Imagen Principal</label>
+                                <label>Imagen Adjunta (Opcional)</label>
                                 <div className="upload-box" onClick={() => fileInputPrincipalRef.current.click()}>
-                                    {nuevoPost.imagenPrincipal ? <img src={nuevoPost.imagenPrincipal} alt="Preview" className="upload-preview" /> : <><SvgImage /> <span>Subir foto de la placa o esquema</span></>}
+                                    {nuevoPost.imagenPrincipal ? <img src={nuevoPost.imagenPrincipal} alt="Preview" className="upload-preview" /> : <><SvgImage /> <span>Subir foto</span></>}
                                 </div>
-                                <input type="file" ref={fileInputPrincipalRef} onChange={e => handleFileChange(e, 'principal')} accept="image/*" style={{ display: 'none' }} />
+                                <input type="file" ref={fileInputPrincipalRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
                             </div>
-
-                            <div className="form-group upload-section">
-                                <label>Imágenes Adicionales</label>
-                                <div className="upload-box" style={{ padding: '15px' }} onClick={() => fileInputSecundarioRef.current.click()}>
-                                    <SvgPlus /> <span>Añadir más fotos</span>
-                                </div>
-                                <input type="file" ref={fileInputSecundarioRef} onChange={e => handleFileChange(e, 'secundaria')} accept="image/*" multiple style={{ display: 'none' }} />
-                                <div className="secondary-previews">
-                                    {nuevoPost.imagenesSecundarias.map((img, idx) => (
-                                        <img key={idx} src={img} alt="Preview secondary" className="mini-preview" />
-                                    ))}
-                                </div>
-                            </div>
-
                             <button type="submit" className="btn-new-post" style={{ width: '100%', justifyContent: 'center', padding: '16px', fontSize: '1.1rem' }}>Publicar Aporte</button>
                         </form>
                     </div>

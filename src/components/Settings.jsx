@@ -7,7 +7,10 @@ const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke
 const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
 const SvgMedia = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>;
 const SvgZap = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-const SvgShare = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="18" cy="5" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line></svg>;
+
+// NUEVO ICONO PARA REDES SOCIALES
+const SvgGlobe = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
+
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
 const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>;
@@ -18,6 +21,7 @@ const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" s
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
+const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 const SvgVideo = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>;
 
 const PremiumGate = ({ children, isPremium }) => {
@@ -37,7 +41,7 @@ const TEXT_COLORS = [{ hex: '#000000' }, { hex: '#0f172a' }, { hex: '#334155' },
 const FONTS = [{ label: 'Inter (Corporativa)', value: '"Inter", system-ui, sans-serif' }, { label: 'Helvetica (Premium)', value: '"Helvetica Neue", Helvetica, sans-serif' }, { label: 'Montserrat (Tech)', value: '"Montserrat", sans-serif' }];
 
 const getLuminance = (hex) => {
-    if (!hex || typeof hex !== 'string') return 0;
+    if (!hex) return 0;
     let c = hex.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join(''); let rgb = parseInt(c, 16); if (isNaN(rgb)) return 0;
     let r = (rgb >> 16) & 0xff, g = (rgb >> 8) & 0xff, b = (rgb >> 0) & 0xff;
     let a = [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
@@ -85,6 +89,7 @@ function Settings({ config, onUpdate }) {
             reader.readAsDataURL(file);
         }
     };
+
     const triggerFileInput = () => fileInputRef.current?.click();
     const toggleSeccion = (seccion) => setSeccionAbierta(prev => prev === seccion ? null : seccion);
 
@@ -198,7 +203,7 @@ function Settings({ config, onUpdate }) {
                                     <label className="settings-label">Descripción Corta (Máx 120):
                                         <AutoResizeTextarea name="descripcion" value={config.descripcion} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} />
                                     </label>
-                                    <label className="settings-label">Horarios de Atención (Opcional):
+                                    <label className="settings-label">Horarios de Atención:
                                         <input type="text" name="horariosAtencion" value={config.horariosAtencion || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Lun a Vie 9 a 18hs" maxLength={50} />
                                     </label>
                                 </div>
@@ -269,9 +274,10 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* REDES (RESTAURADO EL ICONO Y LA FUNCIÓN) */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
-                            <span className="accordion-title"><SvgShare /> Contacto & Redes</span>
+                            <span className="accordion-title"><SvgGlobe /> Contacto & Redes</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'redes' && (
@@ -289,7 +295,7 @@ function Settings({ config, onUpdate }) {
                                             </button>
                                         ) : (
                                             <div className="ig-connected-box animate-fade-in">
-                                                <div className="ig-status"><SvgInstagram /> Conectado</div>
+                                                <div className="ig-status"><SvgInstagram /> Conectado como @tu_taller</div>
                                                 <button type="button" onClick={() => onUpdate({ ...config, instagramConnected: false })} className="btn-disconnect">Desvincular</button>
                                                 <div className="ig-preview-grid">
                                                     <div className="ig-preview-item"></div><div className="ig-preview-item"></div><div className="ig-preview-item"></div>
@@ -440,6 +446,7 @@ function Settings({ config, onUpdate }) {
                                 )}
                             </div>
 
+                            {/* WHATSAPP ANCLADO: Nunca saldrá del contenedor .shop-screen-container */}
                             {config.whatsapp && (
                                 <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                             )}
