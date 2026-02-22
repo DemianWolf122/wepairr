@@ -33,10 +33,13 @@
     background: var(--bg-panel);
     overflow-y: auto;
     box-sizing: border-box;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-glass) transparent;
     z-index: 10;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.05);
+}
+
+/* EL FONDO DEL EDITOR SIEMPRE ES CLARO/OSCURO SEGÚN LA APP, NO LA TIENDA */
+.app-root.dark .settings-controls-panel {
+    background: var(--bg-panel);
 }
 
 .settings-preview-canvas {
@@ -45,6 +48,7 @@
     flex-direction: column;
     background: var(--bg-main-gradient);
     overflow: hidden;
+    position: relative;
 }
 
 .canvas-header {
@@ -64,7 +68,7 @@
     overflow: auto;
 }
 
-/* RESPONSIVE: SI LA PANTALLA ES PEQUEÑA, APILAMOS TODO */
+/* RESPONSIVE EDITOR */
 @media (max-width: 900px) {
     .settings-editor-layout {
         flex-direction: column;
@@ -86,6 +90,7 @@
         width: 100%;
         overflow: visible;
         padding-bottom: 50px;
+        min-height: 800px;
     }
 
     .preview-stage {
@@ -95,11 +100,9 @@
     .desktop-mockup-final {
         display: none;
     }
-
-    /* Ocultar monitor en móvil */
 }
 
-/* --- MOCKUPS --- */
+/* --- MOCKUPS FÍSICOS Y CONTENEDOR DE PANTALLA --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -135,6 +138,22 @@
     margin: auto;
 }
 
+/* NUEVO: Contenedor relativo para la pantalla y elementos flotantes */
+.shop-screen-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-bottom-left-radius: 38px;
+    border-bottom-right-radius: 38px;
+    background: var(--shop-bg);
+}
+
+.desktop-mockup-final .shop-screen-container {
+    border-radius: 0;
+}
+
 .phone-header-bar {
     height: 40px;
     background: var(--shop-bg);
@@ -147,6 +166,7 @@
     color: var(--shop-text);
     position: relative;
     z-index: 10;
+    transition: background 0.3s, color 0.3s;
 }
 
 .phone-notch {
@@ -166,53 +186,9 @@
     background: #0f172a;
 }
 
-.desktop-header-bar {
-    height: 45px;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    gap: 10px;
-    backdrop-filter: blur(10px);
-}
-
-.app-root.light .desktop-header-bar {
-    background: rgba(255, 255, 255, 0.7);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.mac-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
-.mac-red {
-    background: #ff5f56;
-}
-
-.mac-yellow {
-    background: #ffbd2e;
-}
-
-.mac-green {
-    background: #27c93f;
-}
-
-.desktop-url-bar {
-    margin-left: 20px;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 6px 20px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    color: var(--text-primary);
-    font-family: monospace;
-    opacity: 0.8;
-    flex: 1;
-    text-align: center;
-}
 
 /* --- PANTALLA RENDERIZADA BASE --- */
+/* .shop-screen ya no necesita overflow-x hidden porque su contenedor lo tiene */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -220,12 +196,44 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    overflow-x: hidden;
     position: relative;
     font-family: var(--shop-font);
+    transition: background-color 0.3s ease, color 0.3s ease;
     scrollbar-width: none;
 }
 
+/* FIX WHATSAPP: Posición Absoluta dentro del .shop-screen-container */
+.floating-wa-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    z-index: 100;
+    cursor: pointer;
+    transition: transform 0.2s var(--ease-bounce);
+}
+
+.floating-wa-btn:hover {
+    transform: scale(1.1);
+}
+
+.desktop-mockup-final .floating-wa-btn {
+    bottom: 40px;
+    right: 40px;
+    width: 70px;
+    height: 70px;
+}
+
+
+/* --- ESTILOS INTERNOS DE LA TIENDA (Mantenidos y Ajustados) --- */
 .shop-nav {
     display: flex;
     justify-content: space-between;
@@ -235,6 +243,7 @@
     top: 0;
     z-index: 50;
     border-bottom: 1px solid var(--shop-border);
+    transition: background 0.3s, border-color 0.3s;
 }
 
 .shop-logo {
@@ -248,6 +257,7 @@
     background-size: cover;
     background-position: center;
     background-color: var(--shop-bg-secondary);
+    transition: background-color 0.3s;
 }
 
 .shop-hero-overlay {
@@ -268,7 +278,6 @@
     align-items: center;
 }
 
-/* FIX RESPONSIVE: Evita que el texto salga del contenedor */
 .shop-title {
     font-weight: 900;
     line-height: 1.1;
@@ -276,6 +285,7 @@
     overflow-wrap: break-word;
     max-width: 100%;
     padding: 0 10px;
+    transition: color 0.3s;
 }
 
 .shop-desc {
@@ -284,6 +294,7 @@
     overflow-wrap: break-word;
     max-width: 100%;
     padding: 0 15px;
+    transition: color 0.3s;
 }
 
 .shop-cta-btn {
@@ -294,6 +305,7 @@
     font-weight: 800;
     cursor: pointer;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, color 0.3s;
 }
 
 .shop-trust-badge-hero {
@@ -314,6 +326,7 @@
 
 .shop-section {
     border-top: 1px solid var(--shop-border);
+    transition: border-color 0.3s, background-color 0.3s;
 }
 
 .shop-section-tracking {
@@ -333,12 +346,15 @@
     text-align: left;
     max-width: 90%;
     margin: 0 auto;
+    transition: background-color 0.3s, border-color 0.3s;
+    box-sizing: border-box;
 }
 
 .shop-section-title {
     font-weight: 900;
     text-align: center;
     margin-bottom: 20px;
+    transition: color 0.3s;
 }
 
 .shop-services-grid {
@@ -355,47 +371,32 @@
     text-align: center;
     gap: 10px;
     border: 1px solid var(--shop-border);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
-/* CONTENEDOR GOOGLE MAPS */
-.shop-map-wrapper {
-    width: 100%;
-    height: 300px;
+/* VISTA PREVIA MAPA */
+.shop-map-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    background: var(--shop-bg);
     border-radius: var(--shop-radius);
-    overflow: hidden;
     border: 1px solid var(--shop-border);
-    margin: 0 auto;
+    text-align: center;
 }
 
-.shop-map-wrapper iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-/* FIX WHATSAPP: Posición Absoluta dentro del celular */
-.floating-wa-btn {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background: #25D366;
-    color: white;
-    border-radius: 50%;
+.shop-secondary-btn {
+    background: var(--shop-bg);
+    border: 2px solid var(--shop-border);
+    color: var(--shop-text);
+    border-radius: var(--shop-radius);
+    font-weight: 700;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-    z-index: 100;
-    cursor: pointer;
-}
-
-.desktop-mockup-final .floating-wa-btn {
-    bottom: 40px;
-    right: 40px;
-    width: 70px;
-    height: 70px;
+    gap: 8px;
+    transition: all 0.2s var(--ease-premium);
 }
 
 /* --- MOBILE SIZING PARA VISTA PREVIA --- */
@@ -416,13 +417,6 @@
     border-bottom: 1px solid var(--shop-border);
     display: flex;
     flex-direction: column;
-}
-
-.phone-mockup-final .mobile-nav-dropdown span {
-    padding: 15px 25px;
-    font-weight: 700;
-    color: var(--shop-text-secondary);
-    border-bottom: 1px solid var(--shop-border);
 }
 
 .phone-mockup-final .shop-hero {
@@ -524,7 +518,7 @@
     padding: 35px;
 }
 
-/* --- ESTILOS DEL SIDEBAR --- */
+/* --- ESTILOS DEL SIDEBAR (Acordeones arreglados) --- */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -593,190 +587,4 @@
 
 .accordion-content {
     padding: 0 22px 25px 22px;
-}
-
-.settings-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.settings-label {
-    display: block;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-/* CONTRASTE DE BORDES MEJORADO EN MODO CLARO PARA LOS INPUTS */
-.settings-input {
-    width: 100%;
-    padding: 14px;
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    border-radius: 12px;
-    outline: none;
-    font-size: 1rem;
-    transition: all 0.2s;
-    box-sizing: border-box;
-    font-family: inherit;
-    user-select: auto;
-    -webkit-user-select: auto;
-}
-
-.app-root.light .settings-input {
-    border-color: rgba(0, 0, 0, 0.2);
-    background: #ffffff;
-}
-
-.settings-input:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-
-/* TEXTAREA INTELIGENTE AUTO */
-.textarea-container {
-    position: relative;
-}
-
-.settings-textarea {
-    line-height: 1.5;
-    user-select: auto;
-    -webkit-user-select: auto;
-    padding-bottom: 25px;
-}
-
-.no-resize-handle {
-    resize: none;
-    overflow-y: hidden;
-}
-
-.char-count {
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    font-weight: bold;
-    pointer-events: none;
-}
-
-.color-presets-grid {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-}
-
-.color-preset-btn {
-    width: 100%;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.app-root.light .color-preset-btn {
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-.toggle-box {
-    padding: 18px;
-    border-radius: 16px;
-    border: 1px solid var(--border-glass);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.app-root.light .toggle-box {
-    border-color: rgba(0, 0, 0, 0.15);
-    background: #ffffff;
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 28px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    transition: 0.3s;
-}
-
-.app-root.light .slider {
-    border-color: rgba(0, 0, 0, 0.2);
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.3s;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-input:checked+.slider {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-}
-
-input:checked+.slider:before {
-    transform: translateX(22px);
-}
-
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
-}
-
-.file-upload-container {
-    display: flex;
-    gap: 10px;
-}
-
-.file-url-input {
-    flex: 1;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.btn-upload-file {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 20px;
-    background: var(--accent-color);
-    color: white;
-    border: none;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
 }

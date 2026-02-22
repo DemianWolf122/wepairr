@@ -18,6 +18,7 @@ const SvgMobileDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" st
 const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
+const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
 
 
 const PremiumGate = ({ children, isPremium }) => {
@@ -54,12 +55,6 @@ const FONTS = [
     { label: 'Montserrat (Tech)', value: '"Montserrat", sans-serif' }
 ];
 
-const BORDER_STYLES = [
-    { label: 'Suaves (16px)', value: '16px' },
-    { label: 'Píldora (30px)', value: '30px' },
-    { label: 'Cuadrados (4px)', value: '4px' }
-];
-
 const getLuminance = (hex) => {
     if (!hex || typeof hex !== 'string') return 0;
     let cleanHex = hex.replace('#', '');
@@ -77,7 +72,6 @@ const getContrastRatio = (hex1, hex2) => {
     return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 };
 
-// TEXTAREA INTELIGENTE QUE CRECE SOLO
 const AutoResizeTextarea = ({ name, value, onChange, placeholder, maxLength, className }) => {
     const textareaRef = useRef(null);
     useEffect(() => {
@@ -141,8 +135,10 @@ function Settings({ config, onUpdate }) {
         const autoBtnText = accentLuminance > 0.179 ? '#000000' : '#ffffff';
 
         let safeIconColor = accent;
-        const bgLuminance = getLuminance(isDarkMode ? '#090e17' : '#ffffff');
-        if (getContrastRatio(safeIconColor, isDarkMode ? '#090e17' : '#ffffff') < 3.0) {
+        // Usamos el color de fondo de la TIENDA, no del editor
+        const shopBgColor = isDarkMode ? '#090e17' : '#ffffff';
+
+        if (getContrastRatio(safeIconColor, shopBgColor) < 3.0) {
             let amt = isDarkMode ? 60 : -60;
             let c = accent.replace('#', '');
             if (c.length === 3) c = c.split('').map(x => x + x).join('');
@@ -156,10 +152,9 @@ function Settings({ config, onUpdate }) {
         const userTitleColor = config.colorTitulo || (isDarkMode ? '#ffffff' : '#0f172a');
         const userSubtitleColor = config.colorSubtitulo || (isDarkMode ? '#94a3b8' : '#64748b');
 
-        // LÓGICA DE CONTRASTE DEL HERO (Arreglo si no hay imagen, gradiente sutil)
         const heroOverlayStyle = hasBanner
             ? 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))'
-            : 'linear-gradient(to bottom, transparent, transparent)'; // Sin overlay invasivo si no hay foto
+            : 'linear-gradient(to bottom, transparent, transparent)';
 
         const heroTextColor = hasBanner ? '#ffffff' : userTitleColor;
         const heroSubtextColor = hasBanner ? 'rgba(255,255,255,0.85)' : userSubtitleColor;
@@ -168,7 +163,7 @@ function Settings({ config, onUpdate }) {
             '--shop-accent': accent,
             '--shop-accent-icon': safeIconColor,
             '--shop-btn-text': autoBtnText,
-            '--shop-bg': isDarkMode ? '#090e17' : '#ffffff',
+            '--shop-bg': shopBgColor,
             '--shop-bg-secondary': isDarkMode ? '#141c2f' : '#f8fafc',
             '--shop-text': userTitleColor,
             '--shop-text-secondary': userSubtitleColor,
@@ -204,6 +199,7 @@ function Settings({ config, onUpdate }) {
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Identidad del Negocio</span>
+                            {/* USO DEL NUEVO ESTILO GLOBAL PARA LA FLECHA */}
                             <span className="accordion-chevron">▼</span>
                         </div>
                         {seccionAbierta === 'identidad' && (
@@ -232,7 +228,7 @@ function Settings({ config, onUpdate }) {
                         {seccionAbierta === 'apariencia' && (
                             <div className="accordion-content">
                                 <div className="toggle-box glass-input-effect" style={{ marginBottom: '20px' }}>
-                                    <div><strong className="toggle-title">Modo Oscuro</strong></div>
+                                    <div><strong className="toggle-title">Modo Oscuro (Vidriera)</strong></div>
                                     <label className="switch"><input type="checkbox" name="shopDarkMode" checked={config.shopDarkMode || false} onChange={handleChange} /><span className="slider round"></span></label>
                                 </div>
 
@@ -263,7 +259,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* MULTIMEDIA (Carga Local) */}
+                    {/* MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
@@ -285,7 +281,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* FUNCIONALIDADES MARKETING (Garantía y Mapa) */}
+                    {/* FUNCIONALIDADES MARKETING */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Visibilidad de Módulos</span>
@@ -309,27 +305,23 @@ function Settings({ config, onUpdate }) {
                                             <div><strong className="toggle-title">Sello de Confianza</strong></div>
                                             <label className="switch"><input type="checkbox" name="mostrarGarantia" checked={config.mostrarGarantia || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
-                                        {/* NUEVO: Selección de tiempo de garantía */}
+
+                                        {/* CAMBIO: Input de texto libre para la garantía */}
                                         {config.mostrarGarantia && (
                                             <div style={{ padding: '0 10px' }}>
-                                                <label className="settings-label" style={{ fontSize: '0.8rem' }}>Duración de la Garantía:</label>
-                                                <select name="tiempoGarantia" value={config.tiempoGarantia || '90 Días'} onChange={handleChange} className="settings-input" style={{ padding: '8px', fontSize: '0.9rem' }}>
-                                                    <option value="30 Días">30 Días</option>
-                                                    <option value="90 Días">90 Días</option>
-                                                    <option value="6 Meses">6 Meses</option>
-                                                    <option value="1 Año">1 Año</option>
-                                                </select>
+                                                <label className="settings-label" style={{ fontSize: '0.8rem' }}>Texto de Garantía (Ej. "6 Meses"):</label>
+                                                <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 90 Días Escritos" maxLength={30} style={{ padding: '10px', fontSize: '0.9rem' }} />
                                             </div>
                                         )}
 
                                         <div className="toggle-box glass-input-effect" style={{ marginTop: '10px' }}>
-                                            <div><strong className="toggle-title">Google Maps</strong></div>
+                                            <div><strong className="toggle-title">Ubicación (Google Maps)</strong></div>
                                             <label className="switch"><input type="checkbox" name="mostrarMapa" checked={config.mostrarMapa || false} onChange={handleChange} /><span className="slider round"></span></label>
                                         </div>
-                                        {/* NUEVO: Input para iframe del mapa */}
+                                        {/* CAMBIO: Input simple para Enlace de Maps */}
                                         {config.mostrarMapa && (
                                             <div style={{ padding: '0 10px' }}>
-                                                <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder='Pega el HTML "Embed" de Google Maps' style={{ padding: '8px', fontSize: '0.85rem' }} />
+                                                <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega el enlace de tu ubicación en Google Maps" style={{ padding: '10px', fontSize: '0.9rem' }} />
                                             </div>
                                         )}
                                     </PremiumGate>
@@ -343,6 +335,7 @@ function Settings({ config, onUpdate }) {
             {/* === COLUMNA DERECHA: LIENZO DE VISTA PREVIA === */}
             <div className="settings-preview-canvas">
                 <div className="canvas-header">
+                    {/* SELECTOR DE DISPOSITIVO ARREGLADO */}
                     <div className="device-toggles glass-effect">
                         <button type="button" className={`device-btn ${previewMode === 'mobile' ? 'active' : ''}`} onClick={() => setPreviewMode('mobile')}><SvgMobileDevice /> Celular</button>
                         <button type="button" className={`device-btn ${previewMode === 'desktop' ? 'active' : ''}`} onClick={() => setPreviewMode('desktop')}><SvgMonitorDevice /> Monitor</button>
@@ -358,71 +351,82 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
 
-                        <div className="shop-screen" style={shopStyles}>
-                            <div className="shop-nav">
-                                <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
-                                {previewMode === 'mobile' ? (
-                                    <div className="shop-menu-icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}><SvgMenu /></div>
-                                ) : (
-                                    <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
-                                )}
-                                {previewMode === 'mobile' && mobileMenuOpen && (
-                                    <div className="mobile-nav-dropdown glass-effect">
-                                        <span>Inicio</span><span>Servicios</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
-                                <div className="shop-hero-overlay" style={{ background: 'var(--hero-overlay)' }}></div>
-                                <div className="shop-hero-content">
-                                    <div className="shop-avatar-placeholder"><SvgBuilding /></div>
-                                    <h1 className="shop-title" style={{ color: 'var(--hero-text-color)' }}>{config.titulo || 'Tu Título Principal'}</h1>
-                                    <p className="shop-desc" style={{ color: 'var(--hero-subtext-color)' }}>{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
-
-                                    <div className="shop-hero-actions">
-                                        <button className="shop-cta-btn">Solicitar Reparación</button>
-                                    </div>
-
-                                    {config.mostrarGarantia && isPremium && (
-                                        <div className="shop-trust-badge-hero">
-                                            <SvgCheckShield />
-                                            <span>Taller Verificado · Garantía de {config.tiempoGarantia || '90 Días'}</span>
+                        {/* CONTENEDOR DE PANTALLA CON POSICION RELATIVA PARA EL WA BUTTON */}
+                        <div className="shop-screen-container">
+                            <div className="shop-screen" style={shopStyles}>
+                                <div className="shop-nav">
+                                    <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
+                                    {previewMode === 'mobile' ? (
+                                        <div className="shop-menu-icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}><SvgMenu /></div>
+                                    ) : (
+                                        <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
+                                    )}
+                                    {previewMode === 'mobile' && mobileMenuOpen && (
+                                        <div className="mobile-nav-dropdown glass-effect">
+                                            <span>Inicio</span><span>Servicios</span>
                                         </div>
                                     )}
                                 </div>
-                            </div>
 
-                            {config.mostrarTracking && (
-                                <div className="shop-section shop-section-tracking">
-                                    <div className="tracking-inner glass-effect">
-                                        <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>Seguimiento de Equipo</h3>
-                                        <div style={{ display: 'flex', gap: '10px' }}>
-                                            <input type="text" placeholder="#12345" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--shop-border)' }} disabled />
-                                            <button className="shop-cta-btn" style={{ padding: '10px 20px', fontSize: '0.9rem' }}>Buscar</button>
+                                <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
+                                    <div className="shop-hero-overlay" style={{ background: 'var(--hero-overlay)' }}></div>
+                                    <div className="shop-hero-content">
+                                        <div className="shop-avatar-placeholder"><SvgBuilding /></div>
+                                        <h1 className="shop-title" style={{ color: 'var(--hero-text-color)' }}>{config.titulo || 'Tu Título Principal'}</h1>
+                                        <p className="shop-desc" style={{ color: 'var(--hero-subtext-color)' }}>{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
+
+                                        <div className="shop-hero-actions">
+                                            <button className="shop-cta-btn">Solicitar Reparación</button>
+                                        </div>
+
+                                        {config.mostrarGarantia && isPremium && config.tiempoGarantia && (
+                                            <div className="shop-trust-badge-hero">
+                                                <SvgCheckShield />
+                                                <span>Garantía: {config.tiempoGarantia}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {config.mostrarTracking && (
+                                    <div className="shop-section shop-section-tracking">
+                                        <div className="tracking-inner glass-effect">
+                                            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>Seguimiento de Equipo</h3>
+                                            {/* ARREGLO DEL BOTÓN BUSCAR QUE SE SALÍA */}
+                                            <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+                                                <input type="text" placeholder="#12345" style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid var(--shop-border)', minWidth: 0 }} disabled />
+                                                <button className="shop-cta-btn" style={{ padding: '10px 20px', fontSize: '0.9rem', flexShrink: 0 }}>Buscar</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {config.mostrarPresupuestador !== false && (
-                                <div className="shop-section">
-                                    <h2 className="shop-section-title">Nuestros Servicios</h2>
-                                    <div className="shop-services-grid">
-                                        <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span>Pantallas</span></div>
-                                        <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span>Baterías</span></div>
+                                {config.mostrarPresupuestador !== false && (
+                                    <div className="shop-section">
+                                        {/* CAMBIO DE TÍTULO EN VISTA PREVIA */}
+                                        <h2 className="shop-section-title">Cotizar Reparación</h2>
+                                        <div className="shop-services-grid">
+                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span>Pantallas</span></div>
+                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span>Baterías</span></div>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {config.mostrarMapa && isPremium && config.mapaUrl && (
-                                <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
-                                    <h2 className="shop-section-title">Nuestra Ubicación</h2>
-                                    <div className="shop-map-wrapper" dangerouslySetInnerHTML={{ __html: config.mapaUrl }}></div>
-                                </div>
-                            )}
-
-                            {/* EL BOTÓN DE WHATSAPP AHORA ES ABSOLUTO DENTRO DEL CONTENEDOR DE LA PANTALLA */}
+                                {/* VISTA PREVIA SIMPLIFICADA DE MAPS */}
+                                {config.mostrarMapa && isPremium && config.mapaUrl && (
+                                    <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
+                                        <h2 className="shop-section-title">Nuestra Ubicación</h2>
+                                        <div className="shop-map-preview">
+                                            <SvgMapPin style={{ color: 'var(--shop-accent)' }} />
+                                            <p style={{ margin: '10px 0', fontSize: '0.9rem', color: 'var(--shop-text-secondary)' }}>Vista previa del mapa</p>
+                                            <a href={config.mapaUrl} target="_blank" rel="noopener noreferrer" className="shop-secondary-btn" style={{ fontSize: '0.85rem', padding: '8px 15px', textDecoration: 'none' }}>
+                                                Ver en Google Maps
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            {/* BOTÓN WHATSAPP DENTRO DEL CONTENEDOR RELATIVO */}
                             <div className="floating-wa-btn"><SvgWhatsApp /></div>
                         </div>
                     </div>

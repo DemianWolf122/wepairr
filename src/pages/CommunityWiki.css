@@ -1,4 +1,4 @@
-/* ... (MANTÉN TODO EL CSS ORIGINAL HASTA .wiki-card:hover) ... */
+/* ... (MANTÉN TODO EL CSS PREVIO) ... */
 .wiki-wrapper {
     padding: 20px;
     animation: fadeIn 0.4s ease;
@@ -64,7 +64,6 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* --- NUEVOS ESTILOS PARA THUMBNAILS EN GRID --- */
 .wiki-thumbnail {
     height: 180px;
     margin: -30px -30px 20px -30px;
@@ -73,7 +72,6 @@
     border-bottom: 1px solid var(--border-glass);
 }
 
-/* ... (MANTÉN EL RESTO DEL CSS HASTA .btn-like.liked) ... */
 .wiki-tag {
     background: rgba(37, 99, 235, 0.1);
     padding: 6px 14px;
@@ -157,8 +155,7 @@
     background: rgba(37, 99, 235, 0.1);
 }
 
-
-/* --- ESTILOS DEL MODAL (ARREGLO IMÁGENES Y NUEVO FORMULARIO) --- */
+/* --- ESTILOS DEL MODAL ARREGLADOS --- */
 .wiki-modal-overlay {
     position: fixed;
     top: 0;
@@ -176,10 +173,6 @@
     animation: fadeIn 0.4s var(--ease-premium);
 }
 
-.app-root.light .wiki-modal-overlay {
-    background-color: rgba(255, 255, 255, 0.5);
-}
-
 .wiki-modal-container {
     background: var(--bg-panel-glass);
     backdrop-filter: blur(30px);
@@ -194,12 +187,6 @@
     overflow: hidden;
 }
 
-.app-root.light .wiki-modal-container {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
-    border: none;
-}
-
 .wiki-modal-header-fixed {
     display: flex;
     justify-content: space-between;
@@ -212,13 +199,6 @@
 
 .app-root.light .wiki-modal-header-fixed {
     background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.wiki-modal-header-fixed h3 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 1.5rem;
 }
 
 .btn-close-modal {
@@ -235,13 +215,6 @@
     transition: all 0.3s var(--ease-bounce);
 }
 
-.app-root.light .btn-close-modal {
-    background: #fff;
-    border-color: #cbd5e1;
-    color: var(--text-primary);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
 .btn-close-modal:hover {
     color: #fff;
     background: var(--danger);
@@ -253,7 +226,6 @@
     padding: 40px;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--border-glass) transparent;
 }
 
 .modal-title {
@@ -284,39 +256,66 @@
     opacity: 0.9;
 }
 
-/* ESTILOS IMÁGENES EN MODAL DETALLE */
+/* ARREGLO DE IMÁGENES EN MODAL */
 .wiki-modal-image-container {
     border-radius: 16px;
     overflow: hidden;
     margin-bottom: 25px;
     border: 1px solid var(--border-glass);
     box-shadow: var(--shadow-glass);
+    position: relative;
+    cursor: zoom-in;
 }
 
+/* FIX: Usar object-fit contain y limitar altura */
 .wiki-modal-image-container img {
     width: 100%;
     height: auto;
+    max-height: 400px;
+    object-fit: contain;
     display: block;
+    background: rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+}
+
+.wiki-modal-image-container:hover img {
+    transform: scale(1.02);
+}
+
+.image-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s;
+    gap: 10px;
+}
+
+.wiki-modal-image-container:hover .image-hover-overlay {
+    opacity: 1;
 }
 
 .main-image {
-    max-height: 500px;
-}
-
-.main-image img {
-    object-fit: cover;
-    height: 100%;
+    max-height: 400px;
 }
 
 .secondary-images-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 15px;
     margin-top: 30px;
 }
 
 .secondary-image {
-    height: 200px;
+    height: 150px;
     margin-bottom: 0;
 }
 
@@ -325,8 +324,107 @@
     object-fit: cover;
 }
 
+/* ESTILOS LIGHTBOX (VISOR A PANTALLA COMPLETA) */
+.lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
 
-/* ESTILOS FORMULARIO NUEVO POST */
+.lightbox-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.btn-close-lightbox {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.btn-close-lightbox:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* ... (MANTÉN EL RESTO DEL CSS DEL FORMULARIO) ... */
+.wiki-tools-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--bg-panel-glass);
+    border: 1px solid var(--border-glass);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 250px;
+    background: var(--bg-input-glass);
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+}
+
+.search-box svg {
+    color: var(--text-secondary);
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.sort-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sort-select {
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+}
+
 .new-post-form {
     max-width: 700px;
 }
@@ -393,80 +491,6 @@
     border: 1px solid var(--border-glass);
 }
 
-.animate-scale-in {
-    animation: scaleIn 0.3s var(--ease-premium);
-}
-
-@keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* NUEVOS ESTILOS PARA BÚSQUEDA Y FILTROS */
-.wiki-tools-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    border-radius: 16px;
-    margin-bottom: 30px;
-    gap: 20px;
-    flex-wrap: wrap;
-    background: var(--bg-panel-glass);
-    border: 1px solid var(--border-glass);
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 250px;
-    background: var(--bg-input-glass);
-    padding: 10px 15px;
-    border-radius: 12px;
-    border: 1px solid var(--border-glass);
-}
-
-.search-box svg {
-    color: var(--text-secondary);
-}
-
-.search-box input {
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    outline: none;
-    width: 100%;
-    font-size: 1rem;
-    font-family: inherit;
-}
-
-.sort-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.sort-select {
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-weight: bold;
-    outline: none;
-    cursor: pointer;
-}
-
-/* RESPONSIVE WIKI */
 @media (max-width: 768px) {
     .wiki-header {
         flex-direction: column;
@@ -491,5 +515,10 @@
         height: 100vh;
         max-height: 100vh;
         border-radius: 0;
+    }
+
+    .btn-close-lightbox {
+        top: 10px;
+        right: 10px;
     }
 }

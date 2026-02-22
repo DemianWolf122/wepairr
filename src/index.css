@@ -1,107 +1,127 @@
-/* =========================================
-   FÍSICA DE ANIMACIÓN PREMIUM (GLOBAL)
-========================================= */
 :root {
-    --ease-premium: cubic-bezier(0.23, 1, 0.32, 1);
-    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --speed-fast: 0.3s;
-    --speed-normal: 0.5s;
-    --speed-slow: 0.8s;
-}
-
-/* =========================================
-   VARIABLES DE TEMA (GAMA ALTA GLASS)
-========================================= */
-:root,
-.app-root.light {
-    --bg-main-gradient: linear-gradient(135deg, #f6f7ff 0%, #eef1f5 100%);
-    --bg-panel-glass: rgba(255, 255, 255, 0.65);
-    --bg-input-glass: rgba(255, 255, 255, 0.9);
-    --bg-hover-glass: rgba(241, 245, 249, 0.8);
-    --border-glass: rgba(255, 255, 255, 0.5);
-    --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-
     --bg-main: #f8fafc;
+    --bg-main-gradient: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
     --bg-panel: #ffffff;
-    --bg-input: #f1f5f9;
-    --bg-hover: #e2e8f0;
-    --border-color: #cbd5e1;
-
-    --text-primary: #1e293b;
+    --bg-panel-glass: rgba(255, 255, 255, 0.9);
+    --bg-input-glass: rgba(241, 245, 249, 0.8);
+    --bg-hover-glass: rgba(241, 245, 249, 1);
+    --border-glass: rgba(226, 232, 240, 0.8);
+    --text-primary: #0f172a;
     --text-secondary: #64748b;
     --accent-color: #2563eb;
     --accent-hover: #1d4ed8;
-    --success: #10b981;
     --danger: #ef4444;
+    --success: #10b981;
     --warning: #f59e0b;
+    --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    --ease-premium: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --sidebar-width: 280px;
 }
 
-html[data-theme="dark"],
 .app-root.dark {
-    --bg-main-gradient: linear-gradient(135deg, #0f172a 0%, #000000 100%);
-    --bg-panel-glass: rgba(17, 25, 40, 0.75);
-    --bg-input-glass: rgba(30, 41, 59, 0.8);
-    --bg-hover-glass: rgba(51, 65, 85, 0.6);
-    --border-glass: rgba(255, 255, 255, 0.125);
-    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-
-    --bg-main: #0B0F19;
-    --bg-panel: #131B2F;
-    --bg-input: #1C2640;
-    --bg-hover: #27344D;
-    --border-color: #27344D;
-
+    --bg-main: #090e17;
+    --bg-main-gradient: linear-gradient(135deg, #090e17 0%, #0f172a 100%);
+    --bg-panel: #141c2f;
+    --bg-panel-glass: rgba(20, 28, 47, 0.9);
+    --bg-input-glass: rgba(30, 41, 59, 0.6);
+    --bg-hover-glass: rgba(30, 41, 59, 0.8);
+    --border-glass: rgba(255, 255, 255, 0.08);
     --text-primary: #ffffff;
     --text-secondary: #94a3b8;
     --accent-color: #3b82f6;
     --accent-hover: #60a5fa;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #fbbf24;
+    --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 body {
     margin: 0;
-    padding: 0;
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #0B0F19;
-}
-
-.app-root {
-    min-height: 100vh;
-    width: 100vw;
-    overflow-x: hidden;
-    background: var(--bg-main-gradient);
-    background-attachment: fixed;
+    font-family: var(--font-main);
+    background: var(--bg-main);
     color: var(--text-primary);
-    transition: background 0.3s ease, color 0.3s ease;
+    overflow: hidden;
+    /* Evita doble scrollbar en el body */
 }
 
-.glass-effect {
-    background: var(--bg-panel-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-glass);
-    box-shadow: var(--shadow-glass);
-    /* Purgado el !important */
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+/* --- BARRAS DE DESPLAZAMIENTO PERSONALIZADAS (SCROLLBARS) --- */
+::-webkit-scrollbar {
+    width: 8px;
+    /* Más finas */
+    height: 8px;
 }
 
-.glass-input-effect {
-    background: var(--bg-input-glass);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--border-glass);
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--border-glass);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    /* Crea un margen visual */
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-secondary);
+}
+
+/* --- ESTILO GLOBAL PARA FLECHAS DE ACORDEÓN --- */
+.accordion-chevron,
+.chevron-icon {
+    display: inline-block;
+    transition: transform 0.3s var(--ease-premium);
+    font-size: 0.8rem;
+    /* Tamaño consistente */
+}
+
+/* Clase genérica para cuando un elemento padre está activo */
+.active>.accordion-header .accordion-chevron,
+.nav-group-active .chevron-icon {
+    transform: rotate(180deg);
+}
+
+
+.animate-fade-in {
+    animation: fadeIn 0.4s var(--ease-premium);
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
     }
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.3s var(--ease-premium);
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.glass-effect {
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+}
+
+.glass-input-effect {
+    background: var(--bg-input-glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-glass);
 }

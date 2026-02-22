@@ -23,12 +23,13 @@ function CommunityWiki() {
 
     const [postSeleccionado, setPostSeleccionado] = useState(null);
     const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
-
-    // SISTEMA DE BÚSQUEDA Y FILTRO
     const [busqueda, setBusqueda] = useState('');
     const [orden, setOrdenarPor] = useState('recientes');
-
     const [nuevoPost, setNuevoPost] = useState({ titulo: '', categoria: 'General', contenido: '', imagenPrincipal: null, imagenesSecundarias: [] });
+
+    // NUEVO: Estado para el Lightbox de imágenes
+    const [imagenLightbox, setImagenLightbox] = useState(null);
+
     const fileInputPrincipalRef = useRef(null);
     const fileInputSecundarioRef = useRef(null);
 
@@ -65,7 +66,6 @@ function CommunityWiki() {
         setMostrandoFormulario(false);
     };
 
-    // Aplicar Filtros y Orden
     const postsFiltrados = posts
         .filter(p => p.titulo.toLowerCase().includes(busqueda.toLowerCase()) || p.contenido.toLowerCase().includes(busqueda.toLowerCase()))
         .sort((a, b) => orden === 'likes' ? b.likes - a.likes : b.fecha - a.fecha);
@@ -80,7 +80,6 @@ function CommunityWiki() {
                 <button className="btn-new-post" onClick={() => setMostrandoFormulario(true)}><SvgPlus /> Nuevo Aporte</button>
             </header>
 
-            {/* BARRA DE BÚSQUEDA Y HERRAMIENTAS */}
             <div className="wiki-tools-bar glass-effect">
                 <div className="search-box">
                     <SvgSearch />
@@ -97,7 +96,6 @@ function CommunityWiki() {
 
             <div className="wiki-grid">
                 {postsFiltrados.length === 0 && <p style={{ color: 'var(--text-secondary)', gridColumn: '1/-1', textAlign: 'center' }}>No se encontraron resultados.</p>}
-
                 {postsFiltrados.map(post => (
                     <div key={post.id} className="wiki-card" onClick={() => setPostSeleccionado(post)}>
                         {post.imagenPrincipal && (
@@ -119,7 +117,7 @@ function CommunityWiki() {
                 ))}
             </div>
 
-            {/* MODAL DETALLE ANTI-CRASH */}
+            {/* MODAL DETALLE */}
             {postSeleccionado && (
                 <div className="wiki-modal-overlay" onClick={() => setPostSeleccionado(null)}>
                     <div className="wiki-modal-container animate-scale-in" onClick={e => e.stopPropagation()}>
@@ -131,9 +129,11 @@ function CommunityWiki() {
                             <h2 className="modal-title">{postSeleccionado.titulo}</h2>
                             <span className="modal-author">Aportado por: {postSeleccionado.autor}</span>
 
+                            {/* ARREGLO IMAGEN: Click para Lightbox */}
                             {postSeleccionado.imagenPrincipal && (
-                                <div className="wiki-modal-image-container main-image">
+                                <div className="wiki-modal-image-container main-image" onClick={() => setImagenLightbox(postSeleccionado.imagenPrincipal)}>
                                     <img src={postSeleccionado.imagenPrincipal} alt="Principal" />
+                                    <div className="image-hover-overlay"><SvgSearch /> Ver completa</div>
                                 </div>
                             )}
 
@@ -141,11 +141,10 @@ function CommunityWiki() {
                                 {(postSeleccionado.contenido || '').split('\n').map((parrafo, i) => <p key={i}>{parrafo}</p>)}
                             </div>
 
-                            {/* SEGURO CONTRA CRASH: Optional Chaining (?.) */}
                             {(postSeleccionado.imagenesSecundarias || []).length > 0 && (
                                 <div className="secondary-images-grid">
                                     {postSeleccionado.imagenesSecundarias.map((img, idx) => (
-                                        <div key={idx} className="wiki-modal-image-container secondary-image">
+                                        <div key={idx} className="wiki-modal-image-container secondary-image" onClick={() => setImagenLightbox(img)}>
                                             <img src={img} alt={`Secundaria ${idx}`} />
                                         </div>
                                     ))}
@@ -153,6 +152,14 @@ function CommunityWiki() {
                             )}
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* NUEVO: LIGHTBOX DE IMAGEN */}
+            {imagenLightbox && (
+                <div className="lightbox-overlay animate-fade-in" onClick={() => setImagenLightbox(null)}>
+                    <button className="btn-close-lightbox"><SvgX /></button>
+                    <img src={imagenLightbox} alt="Full screen" className="lightbox-image animate-scale-in" onClick={e => e.stopPropagation()} />
                 </div>
             )}
 

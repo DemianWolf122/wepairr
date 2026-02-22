@@ -1,122 +1,123 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './InventoryView.css';
 
+// SVGs
+const SvgBox = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
+const SvgPlus = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+const SvgSearch = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
+const SvgSort = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>;
+
+
+const INVENTARIO_INICIAL = [
+    { id: 1, nombre: "Módulo iPhone X - Calidad OLED", cantidad: 5, precioCompra: 45000, precioVenta: 85000, categoria: "Pantallas", tags: ["Apple", "OLED"] },
+    { id: 2, nombre: "Batería Samsung S20 FE", cantidad: 12, precioCompra: 15000, precioVenta: 35000, categoria: "Baterías", tags: ["Samsung", "Original"] },
+    { id: 3, nombre: "Pin de Carga Motorola G52", cantidad: 2, precioCompra: 2500, precioVenta: 12000, categoria: "Flex de Carga", tags: ["Motorola", "Crítico"] },
+    { id: 4, nombre: "Vidrio Templado Universal 6.5\"", cantidad: 50, precioCompra: 800, precioVenta: 4000, categoria: "Accesorios", tags: ["Genérico"] }
+];
+
 function InventoryView() {
-    // Inicializamos el inventario desde localStorage para persistencia
-    const [inventario, setInventario] = useState(() => {
-        const guardado = localStorage.getItem('wepairr_inventario');
-        return guardado ? JSON.parse(guardado) : [
-            { id: 1, nombre: 'Módulo Pantalla iPhone 11', categoria: 'Pantallas', cantidad: 3, costo: 35000 },
-            { id: 2, nombre: 'Batería Samsung S23 Ultra', categoria: 'Baterías', cantidad: 1, costo: 25000 },
-            { id: 3, nombre: 'Pin de Carga Tipo C genérico', categoria: 'Conectores', cantidad: 0, costo: 1500 }
-        ];
-    });
+    const [inventario] = useState(INVENTARIO_INICIAL);
+    const [busqueda, setBusqueda] = useState('');
+    const [orden, setOrden] = useState('nombre');
+    const [ordenarPorStockCritico, setOrdenarPorStockCritico] = useState(false);
 
-    const [nuevoArticulo, setNuevoArticulo] = useState({ nombre: '', categoria: '', cantidad: '', costo: '' });
-
-    // Guardado automático
-    useEffect(() => {
-        localStorage.setItem('wepairr_inventario', JSON.stringify(inventario));
-    }, [inventario]);
-
-    const agregarArticulo = (e) => {
-        e.preventDefault();
-        if (!nuevoArticulo.nombre.trim() || !nuevoArticulo.cantidad) return;
-
-        const articulo = {
-            id: Date.now(),
-            nombre: nuevoArticulo.nombre,
-            categoria: nuevoArticulo.categoria || 'General',
-            cantidad: parseInt(nuevoArticulo.cantidad, 10),
-            costo: parseFloat(nuevoArticulo.costo) || 0
-        };
-
-        setInventario(prev => [...prev, articulo]);
-        setNuevoArticulo({ nombre: '', categoria: '', cantidad: '', costo: '' });
-    };
-
-    const actualizarCantidad = (id, delta) => {
-        setInventario(prev => prev.map(art => {
-            if (art.id === id) {
-                const nuevaCant = Math.max(0, art.cantidad + delta);
-                return { ...art, cantidad: nuevaCant };
+    // LÓGICA DE FILTRADO Y ORDENAMIENTO
+    const inventarioFiltrado = inventario
+        .filter(item => {
+            const termino = busqueda.toLowerCase();
+            return item.nombre.toLowerCase().includes(termino) || item.tags.some(tag => tag.toLowerCase().includes(termino));
+        })
+        .sort((a, b) => {
+            // Prioridad 1: Ordenar por stock crítico si el toggle está activo
+            if (ordenarPorStockCritico) {
+                return a.cantidad - b.cantidad;
             }
-            return art;
-        }));
-    };
+            // Prioridad 2: Ordenar por el selector
+            if (orden === 'nombre') return a.nombre.localeCompare(b.nombre);
+            if (orden === 'categoria') return a.categoria.localeCompare(b.categoria);
+            if (orden === 'mayorPrecio') return b.precioVenta - a.precioVenta;
+            return 0;
+        });
 
-    const eliminarArticulo = (id) => {
-        if (window.confirm('¿Eliminar este repuesto del inventario?')) {
-            setInventario(prev => prev.filter(art => art.id !== id));
-        }
+    const calcularValorTotal = () => {
+        return inventario.reduce((total, item) => total + (item.cantidad * item.precioCompra), 0);
     };
-
-    // Cálculos de valorización de stock
-    const valorTotalStock = inventario.reduce((acc, curr) => acc + (curr.cantidad * curr.costo), 0);
-    const repuestosAgotados = inventario.filter(art => art.cantidad === 0).length;
 
     return (
-        <div className="inventory-wrapper">
+        <div className="inventory-wrapper animate-fade-in">
             <header className="inventory-header">
-                <h2>Control de Stock y Repuestos</h2>
-                <div className="inventory-stats">
-                    <div className="stat-box">
-                        <span className="stat-label">Capital Invertido</span>
-                        <span className="stat-value text-green">${valorTotalStock.toLocaleString('es-AR')}</span>
-                    </div>
-                    <div className="stat-box border-red">
-                        <span className="stat-label">Repuestos Agotados</span>
-                        <span className="stat-value text-red">{repuestosAgotados}</span>
-                    </div>
+                <div className="header-title">
+                    <SvgBox />
+                    <h2>Control de Stock</h2>
                 </div>
+                <button className="btn-add-item">
+                    <SvgPlus /> Nuevo Artículo
+                </button>
             </header>
 
-            <section className="inventory-add-section">
-                <h3>Ingresar Nuevo Repuesto</h3>
-                <form onSubmit={agregarArticulo} className="inventory-form">
-                    <input type="text" placeholder="Nombre del repuesto..." value={nuevoArticulo.nombre} onChange={e => setNuevoArticulo({ ...nuevoArticulo, nombre: e.target.value })} required className="inv-input flex-2" />
-                    <input type="text" placeholder="Categoría (Ej. Pantallas)" value={nuevoArticulo.categoria} onChange={e => setNuevoArticulo({ ...nuevoArticulo, categoria: e.target.value })} className="inv-input flex-1" />
-                    <input type="number" placeholder="Cant." value={nuevoArticulo.cantidad} onChange={e => setNuevoArticulo({ ...nuevoArticulo, cantidad: e.target.value })} required className="inv-input flex-small" />
-                    <input type="number" placeholder="Costo Unitario $" value={nuevoArticulo.costo} onChange={e => setNuevoArticulo({ ...nuevoArticulo, costo: e.target.value })} className="inv-input flex-1" />
-                    <button type="submit" className="inv-btn-add">Agregar al Stock</button>
-                </form>
-            </section>
+            <div className="inventory-summary glass-effect">
+                <div className="summary-card">
+                    <h3>Artículos Totales</h3>
+                    <p className="summary-value">{inventario.reduce((acc, item) => acc + item.cantidad, 0)}</p>
+                </div>
+                <div className="summary-card">
+                    <h3>Valor del Inventario (Costo)</h3>
+                    <p className="summary-value">${calcularValorTotal().toLocaleString()}</p>
+                </div>
+                <div className="summary-card warning">
+                    <h3>Stock Crítico (Bajo)</h3>
+                    <p className="summary-value">{inventario.filter(i => i.cantidad <= 3).length}</p>
+                </div>
+            </div>
 
-            <section className="inventory-list-section">
-                <table className="inventory-table">
-                    <thead>
-                        <tr>
-                            <th>Repuesto</th>
-                            <th>Categoría</th>
-                            <th>Costo Unit.</th>
-                            <th>Stock Disponible</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {inventario.length === 0 && (
-                            <tr><td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>No hay repuestos en el inventario.</td></tr>
-                        )}
-                        {inventario.map(art => (
-                            <tr key={art.id} className={art.cantidad === 0 ? 'row-empty' : ''}>
-                                <td style={{ fontWeight: '500' }}>{art.nombre}</td>
-                                <td><span className="inv-badge">{art.categoria}</span></td>
-                                <td>${art.costo.toLocaleString('es-AR')}</td>
-                                <td>
-                                    <div className="stock-controls">
-                                        <button onClick={() => actualizarCantidad(art.id, -1)} className="btn-qty">-</button>
-                                        <span className={`stock-number ${art.cantidad <= 1 ? 'text-red' : ''}`}>{art.cantidad}</span>
-                                        <button onClick={() => actualizarCantidad(art.id, 1)} className="btn-qty">+</button>
-                                    </div>
-                                </td>
-                                <td>
-                                    <button onClick={() => eliminarArticulo(art.id)} className="btn-inv-delete">🗑️</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </section>
+            {/* BARRA DE HERRAMIENTAS DE INVENTARIO */}
+            <div className="inventory-tools-bar glass-effect">
+                <div className="search-box-inventory">
+                    <SvgSearch />
+                    <input type="text" placeholder="Buscar por nombre o etiqueta..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
+                </div>
+
+                <div className="tools-actions">
+                    <div className="sort-box-inventory">
+                        <span>Ordenar por:</span>
+                        <select value={orden} onChange={e => setOrden(e.target.value)} className="sort-select-inventory" disabled={ordenarPorStockCritico}>
+                            <option value="nombre">Nombre (A-Z)</option>
+                            <option value="categoria">Categoría</option>
+                            <option value="mayorPrecio">Mayor Precio Venta</option>
+                        </select>
+                    </div>
+
+                    <button className={`btn-toggle-stock ${ordenarPorStockCritico ? 'active' : ''}`} onClick={() => setOrdenarPorStockCritico(!ordenarPorStockCritico)}>
+                        <SvgSort /> Priorizar Stock Bajo
+                    </button>
+                </div>
+            </div>
+
+            <div className="inventory-grid">
+                {inventarioFiltrado.map(item => (
+                    <div key={item.id} className="inventory-card glass-effect">
+                        <div className={`stock-indicator ${item.cantidad <= 3 ? 'critical' : (item.cantidad <= 10 ? 'low' : 'good')}`}></div>
+                        <div className="card-header">
+                            <span className="item-category">{item.categoria}</span>
+                            <span className="item-qty">Stock: {item.cantidad}</span>
+                        </div>
+                        <h3 className="item-name">{item.nombre}</h3>
+                        <div className="item-tags">
+                            {item.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}
+                        </div>
+                        <div className="item-pricing">
+                            <div>
+                                <span className="price-label">Costo:</span>
+                                <span className="price-value cost">${item.precioCompra.toLocaleString()}</span>
+                            </div>
+                            <div>
+                                <span className="price-label">Venta:</span>
+                                <span className="price-value sale">${item.precioVenta.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
