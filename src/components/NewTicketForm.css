@@ -1,0 +1,160 @@
+.new-ticket-form-wrapper {
+    padding: 30px;
+    background: var(--bg-panel-glass);
+    border-radius: 20px;
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-glass);
+    max-width: 800px;
+    margin: 0 auto;
+    backdrop-filter: blur(20px);
+}
+
+.form-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form-header h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--text-primary);
+}
+
+.form-header p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.ticket-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-section {
+    background: rgba(0, 0, 0, 0.03);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
+}
+
+.app-root.light .form-section {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.section-title {
+    margin: 0 0 20px 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title svg {
+    color: var(--accent-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+/* Inputs y Textareas Inteligentes */
+.new-ticket-form-wrapper input[type="text"],
+.new-ticket-form-wrapper input[type="tel"],
+.new-ticket-form-wrapper textarea,
+.select-input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.app-root.light .new-ticket-form-wrapper input,
+.app-root.light .new-ticket-form-wrapper textarea,
+.app-root.light .select-input {
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.new-ticket-form-wrapper input:focus,
+.new-ticket-form-wrapper textarea:focus,
+.select-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.textarea-auto {
+    resize: none;
+    /* Quitamos el tirador manual */
+}
+
+.input-error {
+    border-color: var(--danger) !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.error-msg {
+    color: var(--danger);
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+    font-weight: bold;
+}
+
+.char-count {
+    position: absolute;
+    bottom: -18px;
+    right: 5px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.btn-save-ticket {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btn-save-ticket:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}

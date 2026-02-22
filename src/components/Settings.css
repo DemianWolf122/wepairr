@@ -1,3 +1,4 @@
+/* ... (MANTÉN TODO EL CSS ANTERIOR HASTA .shop-nav) ... */
 .settings-editor-layout {
     display: flex;
     height: 100%;
@@ -72,7 +73,6 @@
     transform: scale(0.96);
 }
 
-/* --- MOCKUPS FÍSICOS --- */
 .phone-mockup-final {
     width: 380px;
     height: 760px;
@@ -218,7 +218,6 @@
     transform: scale(1.05);
 }
 
-/* --- PANTALLA RENDERIZADA BASE --- */
 .shop-screen {
     flex: 1;
     background: var(--shop-bg);
@@ -239,6 +238,7 @@
     width: 0;
 }
 
+/* --- NAV RESPONSIVE --- */
 .shop-nav {
     display: flex;
     justify-content: space-between;
@@ -246,8 +246,9 @@
     background: var(--shop-bg);
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: 50;
     border-bottom: 1px solid var(--shop-border);
+    position: relative;
 }
 
 .shop-logo {
@@ -255,7 +256,6 @@
     letter-spacing: -0.5px;
 }
 
-/* ARREGLO RESPONSIVE NAV: Oculto por defecto (móvil) */
 .shop-nav-links {
     display: none;
     font-weight: 700;
@@ -265,8 +265,34 @@
 .shop-menu-icon {
     display: flex;
     align-items: center;
+    cursor: pointer;
+    padding: 5px;
 }
 
+/* DROPDOWN MENÚ MÓVIL */
+.mobile-nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--shop-bg);
+    border-bottom: 1px solid var(--shop-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-nav-dropdown span {
+    padding: 15px 25px;
+    font-weight: 700;
+    color: var(--shop-text-secondary);
+    border-bottom: 1px solid var(--shop-border);
+}
+
+.mobile-nav-dropdown span:last-child {
+    border-bottom: none;
+}
+
+/* ... (MANTÉN EL RESTO DEL CSS DESDE .shop-hero HASTA .floating-wa-btn) ... */
 .shop-hero {
     text-align: center;
     position: relative;
@@ -275,7 +301,6 @@
     background-color: var(--shop-bg-secondary);
 }
 
-/* El overlay ahora se controla inline desde el JSX */
 .shop-hero-overlay {
     position: absolute;
     top: 0;
@@ -351,7 +376,6 @@
     transition: all 0.2s var(--ease-premium);
 }
 
-/* ARREGLO GARANTÍA: Ahora dentro del hero, con margen positivo */
 .shop-trust-badge-hero {
     background: rgba(16, 185, 129, 0.1);
     border: 1px solid rgba(16, 185, 129, 0.3);
@@ -435,7 +459,6 @@
     border: 1px solid var(--shop-border);
 }
 
-/* ARREGLO DESBORDAMIENTO ICONO SERVICIO */
 .service-icon {
     display: flex;
     justify-content: center;
@@ -479,15 +502,22 @@
     cursor: pointer;
 }
 
-/* --- MOBILE SIZING --- */
+
+/* --- MOBILE SIZING (MODIFICADO) --- */
 .phone-mockup-final .shop-nav {
-    padding: 15px 25px;
+    padding: 15px 20px;
 }
 
+/* Padding ajustado */
 .phone-mockup-final .shop-logo {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
 }
 
+.phone-mockup-final .mobile-nav-dropdown {
+    top: 55px;
+}
+
+/* Ajuste posición dropdown */
 .phone-mockup-final .shop-hero {
     padding: 60px 20px;
 }
@@ -566,12 +596,11 @@
     font-size: 1.5rem;
 }
 
-/* --- DESKTOP SIZING --- */
+/* --- DESKTOP SIZING (MODIFICADO) --- */
 .desktop-mockup-final .shop-nav {
     padding: 20px 50px;
 }
 
-/* ARREGLO RESPONSIVE NAV: Visible solo en desktop */
 .desktop-mockup-final .shop-nav-links {
     display: flex;
     gap: 35px;
@@ -582,7 +611,7 @@
     display: none;
 }
 
-/* Oculta hamburguesa en desktop */
+/* Oculta menú en desktop */
 .desktop-mockup-final .shop-logo {
     font-size: 1.8rem;
 }
@@ -684,7 +713,8 @@
     }
 }
 
-/* --- ESTILOS DEL SIDEBAR (BORDES MODO CLARO ARREGLADOS) --- */
+/* --- ESTILOS DEL SIDEBAR --- */
+/* ... (MANTÉN EL CSS DEL SIDEBAR DESDE .settings-header-row HASTA .premium-label) ... */
 .settings-header-row {
     display: flex;
     justify-content: space-between;
@@ -737,7 +767,6 @@
     border-color: rgba(0, 0, 0, 0.15);
 }
 
-/* Borde más oscuro en light mode */
 .accordion-item.active {
     background: transparent;
     border-color: var(--accent-color);
@@ -841,7 +870,6 @@
     border-color: rgba(0, 0, 0, 0.15);
 }
 
-/* Borde input más oscuro en light mode */
 .settings-input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
@@ -849,7 +877,6 @@
 
 .settings-textarea {
     min-height: 90px;
-    resize: vertical;
     line-height: 1.5;
     user-select: auto;
     -webkit-user-select: auto;
@@ -954,7 +981,6 @@
     border-color: rgba(0, 0, 0, 0.15);
 }
 
-/* Borde toggle más oscuro en light mode */
 .toggle-title {
     display: block;
     margin-bottom: 4px;
@@ -1069,4 +1095,53 @@ input:checked+.slider:before {
     font-weight: 800;
     font-size: 1.1rem;
     color: var(--text-primary);
+}
+
+/* --- NUEVOS ESTILOS PARA TEXTAREA AUTO Y SUBIDA DE ARCHIVOS --- */
+.textarea-container {
+    position: relative;
+}
+
+.no-resize-handle {
+    resize: none;
+    overflow-y: hidden;
+}
+
+.char-count {
+    position: absolute;
+    bottom: -20px;
+    right: 5px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+}
+
+.file-upload-container {
+    display: flex;
+    gap: 10px;
+}
+
+.file-url-input {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.btn-upload-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-upload-file:hover {
+    background: var(--accent-hover);
 }
