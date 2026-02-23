@@ -145,11 +145,22 @@
     overflow: hidden;
 }
 
-/* --- SUB-NAVEGACIÓN --- */
+
+/* --- NUEVA CABECERA DE GESTIÓN (SUB-NAV + BÚSQUEDA) --- */
+.gestion-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 15px;
+    flex-wrap: wrap;
+    /* Para que baje fluido en pantallas chicas */
+}
+
+/* SUB-NAVEGACIÓN */
 .gestion-sub-nav {
     display: flex;
     gap: 10px;
-    margin-bottom: 25px;
     padding: 5px;
     background: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
@@ -188,40 +199,22 @@
     border: 1px solid var(--border-glass);
 }
 
-/* --- PESTAÑAS, BÚSQUEDA Y GRUPOS DE FILTROS --- */
-.dashboard-tabs {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    border-bottom: 1px solid var(--border-glass);
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-    user-select: none;
-    -webkit-user-select: none;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.tabs-left {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-/* BÚSQUEDA EN TICKETS */
+/* BÚSQUEDA GLOBAL EN TICKETS */
 .search-box-tickets {
     display: flex;
     align-items: center;
     gap: 10px;
     flex: 1;
-    /* Permite que ocupe todo el espacio libre entre pestañas y filtros */
-    min-width: 200px;
+    max-width: 400px;
+    /* Evita que sea exageradamente larga en monitores ultra-wide */
+    min-width: 250px;
     background: var(--bg-input-glass);
     padding: 10px 16px;
     border-radius: 14px;
     border: 1px solid var(--border-glass);
-    margin: 0 15px;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-left: auto;
+    /* Empuja a la derecha si hay espacio de sobra */
 }
 
 .search-box-tickets:focus-within {
@@ -246,6 +239,27 @@
 
 .search-box-tickets svg {
     color: var(--text-secondary);
+}
+
+
+/* --- PESTAÑAS Y GRUPOS DE FILTROS --- */
+.dashboard-tabs {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    user-select: none;
+    -webkit-user-select: none;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.tabs-left {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .filters-group {
@@ -586,6 +600,13 @@
         padding: 15px;
     }
 
+    /* Adaptaciones de la nueva cabecera en móvil */
+    .gestion-header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
     .gestion-sub-nav {
         width: 100%;
         flex-direction: column;
@@ -594,6 +615,12 @@
     .sub-nav-btn {
         justify-content: center;
         width: 100%;
+    }
+
+    .search-box-tickets {
+        max-width: 100%;
+        margin-left: 0;
+        margin-top: 5px;
     }
 
     .dashboard-tabs {
@@ -608,17 +635,12 @@
         padding-bottom: 15px;
     }
 
-    .search-box-tickets {
-        margin: 10px 0;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
     .filters-group {
         margin-left: 0;
         width: 100%;
         flex-direction: column;
         align-items: stretch;
+        margin-top: 10px;
     }
 
     .custom-sort-wrapper {

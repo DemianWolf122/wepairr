@@ -190,13 +190,29 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
                 {seccionPrincipal === 'gestion' && (
                     <>
-                        <div className="gestion-sub-nav">
-                            <button className={`sub-nav-btn ${subSeccionGestion === 'tickets' ? 'active' : ''}`} onClick={() => setSubSeccionGestion('tickets')}>
-                                <SvgSubTickets /> Tickets y Consultas
-                            </button>
-                            <button className={`sub-nav-btn ${subSeccionGestion === 'features' ? 'active' : ''}`} onClick={() => setSubSeccionGestion('features')}>
-                                <SvgSubFeatures /> Funcionalidades de Vidriera
-                            </button>
+                        {/* --- NUEVA FILA DE CABECERA: SubNavegación + Búsqueda Global --- */}
+                        <div className="gestion-header-row">
+                            <div className="gestion-sub-nav">
+                                <button className={`sub-nav-btn ${subSeccionGestion === 'tickets' ? 'active' : ''}`} onClick={() => setSubSeccionGestion('tickets')}>
+                                    <SvgSubTickets /> Tickets y Consultas
+                                </button>
+                                <button className={`sub-nav-btn ${subSeccionGestion === 'features' ? 'active' : ''}`} onClick={() => setSubSeccionGestion('features')}>
+                                    <SvgSubFeatures /> Funcionalidades de Vidriera
+                                </button>
+                            </div>
+
+                            {/* La barra de búsqueda se movió aquí, al lado derecho */}
+                            {subSeccionGestion === 'tickets' && (
+                                <div className="search-box-tickets">
+                                    <SvgSearch />
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar cliente, equipo o #ID..."
+                                        value={busqueda}
+                                        onChange={e => setBusqueda(e.target.value)}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {subSeccionGestion === 'tickets' && (
@@ -206,17 +222,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                         <button onClick={() => setVistaActual('inbox')} className={`tab-btn ${vistaActual === 'inbox' ? 'tab-active' : 'tab-inactive'}`}><SvgInbox /> Inbox</button>
                                         <button onClick={() => setVistaActual('activos')} className={`tab-btn ${vistaActual === 'activos' ? 'tab-active' : 'tab-inactive'}`}><SvgWrench /> Activos</button>
                                         <button onClick={() => setVistaActual('papelera')} className={`tab-btn ${vistaActual === 'papelera' ? 'tab-active' : 'tab-inactive'}`}><SvgTrash /> Papelera</button>
-                                    </div>
-
-                                    {/* --- NUEVA BARRA DE BÚSQUEDA --- */}
-                                    <div className="search-box-tickets">
-                                        <SvgSearch />
-                                        <input
-                                            type="text"
-                                            placeholder="Buscar cliente, equipo o #ID..."
-                                            value={busqueda}
-                                            onChange={e => setBusqueda(e.target.value)}
-                                        />
                                     </div>
 
                                     {/* --- 3 DROPDOWNS PREMIUM AGRUPADOS --- */}
