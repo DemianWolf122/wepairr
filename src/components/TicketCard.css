@@ -6,14 +6,11 @@
     flex-direction: column;
     gap: 18px;
     transition: all 0.3s ease;
-    /* Transición súper relajada para el Hover */
     position: relative;
     border: 1px solid rgba(226, 232, 240, 0.5);
     background: var(--bg-panel-glass);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    cursor: grab;
     overflow: hidden;
-    /* Recorta la barra lateral para seguir la curva */
 }
 
 .app-root.dark .ticket-card-soft {
@@ -21,26 +18,62 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.ticket-card-soft:active {
-    cursor: grabbing;
-}
-
 .ticket-card-soft.is-editing {
-    cursor: default;
     border-color: var(--accent-color);
     box-shadow: 0 8px 30px rgba(37, 99, 235, 0.1);
 }
 
-/* FIX: Escala ultra suave (Fatigue-Free) */
-.ticket-card-soft:hover:not(.is-editing) {
+.ticket-card-soft:hover:not(.is-editing):not(.delete-mode-active) {
     transform: scale(1.01);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
     border-color: var(--border-glass);
 }
 
-.app-root.dark .ticket-card-soft:hover:not(.is-editing) {
+.app-root.dark .ticket-card-soft:hover:not(.is-editing):not(.delete-mode-active) {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
+
+/* --- OVERLAY MODO ELIMINAR --- */
+.ticket-delete-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(239, 68, 68, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 800;
+    font-size: 1.2rem;
+    gap: 10px;
+    z-index: 100;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeInOverlay 0.2s ease forwards;
+}
+
+.ticket-delete-overlay:hover {
+    background: rgba(220, 38, 38, 0.95);
+}
+
+.ticket-card-soft.delete-mode-active {
+    transform: scale(0.98);
+    border-color: var(--danger);
+    box-shadow: 0 0 0 2px var(--danger);
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 
 /* --- SISTEMA DE PRIORIDADES (SOFT GLOW) --- */
 .priority-urgente {
@@ -71,8 +104,7 @@
     box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
 }
 
-
-/* --- NUEVA BARRA LATERAL DE COLOR --- */
+/* --- BARRA LATERAL DE COLOR --- */
 .ticket-status-bar {
     position: absolute;
     top: 0;
@@ -114,7 +146,6 @@
     background-color: #9ca3af;
 }
 
-
 /* --- CABECERA --- */
 .tc-header-soft {
     display: flex;
@@ -139,7 +170,7 @@
     gap: 10px;
 }
 
-/* SOFT BADGES (Etiquetas de estado) */
+/* SOFT BADGES */
 .tc-badge-soft {
     display: flex;
     align-items: center;
@@ -163,10 +194,9 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    box-shadow: 0 0 8px currentColor;
+    box-shadow: 0 0 4px currentColor;
 }
 
-/* Colores para Badges */
 .st-badge-yellow {
     background: rgba(245, 158, 11, 0.15);
     color: #d97706;
@@ -303,7 +333,6 @@
     font-weight: 600;
 }
 
-/* Botones de Acción Rápidos */
 .tc-comms {
     display: flex;
     gap: 8px;
@@ -355,7 +384,6 @@
     z-index: 2;
 }
 
-/* CONTENEDOR PARA EL TÍTULO DEL CAMPO */
 .tc-edit-field {
     display: flex;
     flex-direction: column;
@@ -363,7 +391,6 @@
     width: 100%;
 }
 
-/* ESTILO DEL TÍTULO DEL CAMPO (LABEL) */
 .tc-edit-label {
     font-size: 0.75rem;
     font-weight: 800;
@@ -499,7 +526,7 @@
     color: var(--text-primary);
     font-family: inherit;
     text-align: right;
-    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .budget-input::-webkit-outer-spin-button,

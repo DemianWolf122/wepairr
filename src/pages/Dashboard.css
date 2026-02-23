@@ -135,6 +135,7 @@
     transition: all var(--speed-normal) var(--ease-premium);
     scrollbar-width: thin;
     scrollbar-color: var(--border-glass) transparent;
+    position: relative;
 }
 
 .dashboard-content.modo-editor-activo {
@@ -145,8 +146,58 @@
     overflow: hidden;
 }
 
+/* --- BOTÓN FLOTANTE DE ELIMINACIÓN (FAB) --- */
+.floating-delete-btn {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background: var(--bg-panel-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    transition: all 0.3s var(--ease-bounce);
+}
 
-/* --- NUEVA CABECERA DE GESTIÓN (SUB-NAV + BÚSQUEDA) --- */
+.floating-delete-btn:hover {
+    background: var(--bg-hover-glass);
+    color: var(--danger);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2);
+}
+
+.floating-delete-btn.active {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+    box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);
+    animation: pulseRed 2s infinite;
+}
+
+@keyframes pulseRed {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+/* --- CABECERA DE GESTIÓN --- */
 .gestion-header-row {
     display: flex;
     justify-content: space-between;
@@ -154,10 +205,8 @@
     margin-bottom: 25px;
     gap: 15px;
     flex-wrap: wrap;
-    /* Para que baje fluido en pantallas chicas */
 }
 
-/* SUB-NAVEGACIÓN */
 .gestion-sub-nav {
     display: flex;
     gap: 10px;
@@ -199,14 +248,12 @@
     border: 1px solid var(--border-glass);
 }
 
-/* BÚSQUEDA GLOBAL EN TICKETS */
 .search-box-tickets {
     display: flex;
     align-items: center;
     gap: 10px;
     flex: 1;
     max-width: 400px;
-    /* Evita que sea exageradamente larga en monitores ultra-wide */
     min-width: 250px;
     background: var(--bg-input-glass);
     padding: 10px 16px;
@@ -214,7 +261,6 @@
     border: 1px solid var(--border-glass);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     margin-left: auto;
-    /* Empuja a la derecha si hay espacio de sobra */
 }
 
 .search-box-tickets:focus-within {
@@ -240,7 +286,6 @@
 .search-box-tickets svg {
     color: var(--text-secondary);
 }
-
 
 /* --- PESTAÑAS Y GRUPOS DE FILTROS --- */
 .dashboard-tabs {
@@ -404,7 +449,6 @@
     align-items: center;
 }
 
-/* --- BOTÓN INGRESO MANUAL DESTACADO --- */
 .tab-btn-action {
     margin-left: 10px;
     border: none;
@@ -438,6 +482,8 @@
     padding-bottom: 20px;
     user-select: auto;
     -webkit-user-select: auto;
+    padding-left: 60px;
+    /* Para que las tarjetas no tapen el botón */
 }
 
 .ticket-list-empty {
@@ -504,39 +550,6 @@
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* --- DROPZONE PARA ELIMINAR --- */
-.dropzone {
-    border-radius: 16px;
-    padding: 25px;
-    text-align: center;
-    transition: all 0.3s var(--ease-premium);
-    margin-top: auto;
-    user-select: none;
-    -webkit-user-select: none;
-    border: 2px dashed var(--border-glass);
-    background-color: var(--bg-input-glass);
-    color: var(--text-secondary);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    font-weight: 600;
-}
-
-.dropzone-active {
-    border-color: var(--danger);
-    background-color: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-    transform: scale(1.02);
-}
-
-.dropzone svg {
-    width: 32px;
-    height: 32px;
-    opacity: 0.7;
-}
-
-/* ANIMACIONES */
 @keyframes popIn {
     0% {
         opacity: 0;
@@ -600,7 +613,19 @@
         padding: 15px;
     }
 
-    /* Adaptaciones de la nueva cabecera en móvil */
+    .floating-delete-btn {
+        top: auto;
+        bottom: 20px;
+        left: auto;
+        right: 20px;
+        transform: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .floating-delete-btn:hover {
+        transform: scale(1.1);
+    }
+
     .gestion-header-row {
         flex-direction: column;
         align-items: stretch;
@@ -665,6 +690,8 @@
 
     .ticket-list {
         grid-template-columns: 1fr;
+        padding-left: 0;
+        padding-bottom: 80px;
     }
 }
 
