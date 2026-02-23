@@ -287,12 +287,12 @@
     border-radius: 14px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     padding: 8px;
-    min-width: 240px;
     display: flex;
     flex-direction: column;
     gap: 4px;
     animation: popIn 0.2s ease-out forwards;
     transform-origin: top right;
+    min-width: 215px;
 }
 
 .app-root.dark .custom-sort-menu {
@@ -306,11 +306,11 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 15px 10px;
     border-radius: 10px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     transition: all 0.2s ease;
 }
