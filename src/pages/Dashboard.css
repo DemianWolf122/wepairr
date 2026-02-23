@@ -188,7 +188,7 @@
     border: 1px solid var(--border-glass);
 }
 
-/* --- PESTAÑAS Y GRUPOS DE FILTROS --- */
+/* --- PESTAÑAS, BÚSQUEDA Y GRUPOS DE FILTROS --- */
 .dashboard-tabs {
     display: flex;
     justify-content: space-between;
@@ -206,6 +206,46 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+/* BÚSQUEDA EN TICKETS */
+.search-box-tickets {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    /* Permite que ocupe todo el espacio libre entre pestañas y filtros */
+    min-width: 200px;
+    background: var(--bg-input-glass);
+    padding: 10px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border-glass);
+    margin: 0 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-box-tickets:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
+}
+
+.search-box-tickets input {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    outline: none;
+    width: 100%;
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+
+.search-box-tickets input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.search-box-tickets svg {
+    color: var(--text-secondary);
 }
 
 .filters-group {
@@ -341,6 +381,13 @@
 .custom-sort-item.active {
     background: rgba(37, 99, 235, 0.1);
     color: var(--accent-color);
+}
+
+.sort-item-icon {
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* --- BOTÓN INGRESO MANUAL DESTACADO --- */
@@ -559,6 +606,12 @@
         justify-content: space-between;
         border-bottom: 1px solid var(--border-glass);
         padding-bottom: 15px;
+    }
+
+    .search-box-tickets {
+        margin: 10px 0;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .filters-group {
