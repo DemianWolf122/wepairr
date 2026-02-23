@@ -34,7 +34,6 @@
     transition: all 0.3s ease;
 }
 
-/* FIX: Escala suave en tarjeta */
 .tool-card:hover {
     transform: scale(1.01);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
@@ -85,7 +84,6 @@
     flex: 1;
 }
 
-/* FIX: Escala suave */
 .btn-tool-action:hover {
     transform: scale(1.02);
 }
@@ -102,7 +100,6 @@
     flex: 1;
 }
 
-/* FIX: Escala suave */
 .btn-tool-ghost:hover {
     transform: scale(1.02);
     background: var(--bg-hover-glass);
@@ -145,6 +142,26 @@
 
 .ohm-input-group input:focus {
     border-color: var(--accent-color);
+}
+
+.tool-result-box {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 12px;
+    background: var(--bg-panel);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tool-result-box span {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: var(--text-primary);
 }
 
 .ohm-actions {

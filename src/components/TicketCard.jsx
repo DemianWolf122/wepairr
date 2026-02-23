@@ -30,12 +30,12 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         }
     });
 
-    // --- DETECCIÓN INTELIGENTE DE ICONOS ---
+    // DETECCIÓN INTELIGENTE DE ICONOS
     const getDeviceIcon = (dispositivo = "") => {
         const name = dispositivo.toLowerCase();
-        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa de video') || name.includes('grafica') || name.includes('gpu')) return <IconGPU />;
-        if (name.includes('pc') || name.includes('notebook') || name.includes('escritorio') || name.includes('mother')) return <IconPC />;
-        if (name.includes('ps4') || name.includes('ps5') || name.includes('xbox') || name.includes('consola')) return <IconConsole />;
+        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa') || name.includes('grafica') || name.includes('gpu') || name.includes('rx ')) return <IconGPU />;
+        if (name.includes('pc') || name.includes('notebook') || name.includes('escritorio') || name.includes('mother') || name.includes('laptop') || name.includes('mac')) return <IconPC />;
+        if (name.includes('ps4') || name.includes('ps5') || name.includes('xbox') || name.includes('consola') || name.includes('nintendo')) return <IconConsole />;
         return <IconPhone />;
     };
 

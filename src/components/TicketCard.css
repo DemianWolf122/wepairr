@@ -13,7 +13,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
     cursor: grab;
     overflow: hidden;
-    /* Esto recorta la barra lateral para que siga la curva de la tarjeta */
+    /* Recorta la barra lateral para seguir la curva */
 }
 
 .app-root.dark .ticket-card-soft {
@@ -31,7 +31,7 @@
     box-shadow: 0 8px 30px rgba(37, 99, 235, 0.1);
 }
 
-/* FIX: Escala ultra suave (Fatigue-Free) en lugar de saltar para arriba */
+/* FIX: Escala ultra suave (Fatigue-Free) */
 .ticket-card-soft:hover:not(.is-editing) {
     transform: scale(1.01);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
@@ -70,6 +70,7 @@
 .app-root.dark .priority-alta {
     box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
 }
+
 
 /* --- NUEVA BARRA LATERAL DE COLOR --- */
 .ticket-status-bar {
@@ -121,7 +122,6 @@
     align-items: center;
     position: relative;
     z-index: 2;
-    /* Para que quede sobre la barra si hace falta */
 }
 
 .tc-id-soft {
@@ -355,20 +355,20 @@
     z-index: 2;
 }
 
-/* NUEVO: Contenedor para Label + Input */
+/* CONTENEDOR PARA EL TÍTULO DEL CAMPO */
 .tc-edit-field {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     width: 100%;
 }
 
-/* NUEVO: Estilo para los títulos (labels) de los campos */
+/* ESTILO DEL TÍTULO DEL CAMPO (LABEL) */
 .tc-edit-label {
     font-size: 0.75rem;
     font-weight: 800;
     color: var(--text-secondary);
-    margin-left: 5px;
+    margin-left: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -499,7 +499,7 @@
     color: var(--text-primary);
     font-family: inherit;
     text-align: right;
-    appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 .budget-input::-webkit-outer-spin-button,
