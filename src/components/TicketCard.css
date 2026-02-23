@@ -6,12 +6,11 @@
     flex-direction: column;
     gap: 18px;
     transition: all 0.3s ease;
-    /* Transición súper relajada */
+    /* Transición súper relajada para el Hover */
     position: relative;
     border: 1px solid rgba(226, 232, 240, 0.5);
     background: var(--bg-panel-glass);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    /* Sombra súper sutil */
     cursor: grab;
     overflow: hidden;
     /* Esto recorta la barra lateral para que siga la curva de la tarjeta */
@@ -41,6 +40,35 @@
 
 .app-root.dark .ticket-card-soft:hover:not(.is-editing) {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* --- SISTEMA DE PRIORIDADES (SOFT GLOW) --- */
+.priority-urgente {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.priority-urgente:hover:not(.is-editing) {
+    box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.app-root.dark .priority-urgente {
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+}
+
+.priority-alta {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.priority-alta:hover:not(.is-editing) {
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.25);
+    border-color: rgba(245, 158, 11, 0.5);
+}
+
+.app-root.dark .priority-alta {
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
 }
 
 /* --- NUEVA BARRA LATERAL DE COLOR --- */
@@ -295,7 +323,6 @@
     color: var(--text-secondary);
 }
 
-/* FIX: Escala suave */
 .tc-btn-icon:hover {
     transform: scale(1.05);
 }
@@ -319,13 +346,31 @@
 .tc-body-edit {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     background: var(--bg-main);
     padding: 15px;
     border-radius: 16px;
     border: 1px solid var(--border-glass);
     position: relative;
     z-index: 2;
+}
+
+/* NUEVO: Contenedor para Label + Input */
+.tc-edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+/* NUEVO: Estilo para los títulos (labels) de los campos */
+.tc-edit-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    margin-left: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .tc-input-soft {
@@ -454,7 +499,7 @@
     color: var(--text-primary);
     font-family: inherit;
     text-align: right;
-    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 .budget-input::-webkit-outer-spin-button,

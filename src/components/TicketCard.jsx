@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import generarPDF from '../utils/generarPDF';
 import './TicketCard.css';
 
-// --- SVGs Premium ---
-const SvgPhone = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
+// --- SVGs Premium & Multirubro ---
+const IconPhone = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
+const IconPC = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" /><line x1="8" y1="6" x2="16" y2="6" /><line x1="8" y1="10" x2="16" y2="10" /></svg>;
+const IconConsole = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M6 12h4m-2-2v4m7-2h.01M18 10h.01M3 7l2 10h14l2-10H3z" /></svg>;
+const IconGPU = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 18v2m4-2v2m4-2v2m4-2v2M2 10h20M7 10l2 4m3-4l2 4" /></svg>;
+
 const SvgUser = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 const SvgCalendar = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
@@ -26,7 +30,16 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         }
     });
 
-    // Función que mapea el estado a un color
+    // --- DETECCIÓN INTELIGENTE DE ICONOS ---
+    const getDeviceIcon = (dispositivo = "") => {
+        const name = dispositivo.toLowerCase();
+        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa de video') || name.includes('grafica') || name.includes('gpu')) return <IconGPU />;
+        if (name.includes('pc') || name.includes('notebook') || name.includes('escritorio') || name.includes('mother')) return <IconPC />;
+        if (name.includes('ps4') || name.includes('ps5') || name.includes('xbox') || name.includes('consola')) return <IconConsole />;
+        return <IconPhone />;
+    };
+
+    // Función que mapea el estado a un color para la barra lateral y badges
     const getStatusTheme = (estado) => {
         switch (estado) {
             case 'Ingresado': return 'yellow';
@@ -71,16 +84,17 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     };
 
     const statusColorTheme = getStatusTheme(ticket.estado);
+    const prioridad = ticket.prioridad ? ticket.prioridad.toLowerCase() : 'normal';
 
     return (
         <div
-            className={`ticket-card-soft glass-effect priority-${ticket.prioridad?.toLowerCase()} ${isEditing ? 'is-editing' : ''}`}
+            className={`ticket-card-soft priority-${prioridad} glass-effect ${isEditing ? 'is-editing' : ''}`}
             draggable={!isEditing}
             onDragStart={(e) => {
                 if (!isEditing) e.dataTransfer.setData('ticketId', ticket.id);
             }}
         >
-            {/* NUEVO: BARRA LATERAL DE COLOR DINÁMICO */}
+            {/* BARRA LATERAL DE COLOR DINÁMICO */}
             <div className={`ticket-status-bar st-bar-${statusColorTheme}`}></div>
 
             {/* CABECERA */}
@@ -108,24 +122,39 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
             {/* CUERPO DEL TICKET (VISTA VS EDICIÓN) */}
             {isEditing ? (
                 <div className="tc-body-edit animate-fade-in">
-                    <input
-                        type="text" className="tc-input-soft" placeholder="Dispositivo"
-                        value={editData.dispositivo} onChange={e => setEditData({ ...editData, dispositivo: e.target.value })}
-                    />
-                    <textarea
-                        className="tc-input-soft" rows="2" placeholder="Falla reportada"
-                        value={editData.problema} onChange={e => setEditData({ ...editData, problema: e.target.value })}
-                    />
-                    <div className="tc-edit-row">
+                    <div className="tc-edit-field">
+                        <label className="tc-edit-label">Equipo / Dispositivo</label>
                         <input
-                            type="text" className="tc-input-soft" placeholder="Nombre"
-                            value={editData.cliente.nombre} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, nombre: e.target.value } })}
-                        />
-                        <input
-                            type="text" className="tc-input-soft" placeholder="Teléfono"
-                            value={editData.cliente.telefono} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, telefono: e.target.value } })}
+                            type="text" className="tc-input-soft" placeholder="Ej: iPhone 13 Pro"
+                            value={editData.dispositivo} onChange={e => setEditData({ ...editData, dispositivo: e.target.value })}
                         />
                     </div>
+
+                    <div className="tc-edit-field">
+                        <label className="tc-edit-label">Falla o problema reportado</label>
+                        <textarea
+                            className="tc-input-soft" rows="2" placeholder="Describa el problema..."
+                            value={editData.problema} onChange={e => setEditData({ ...editData, problema: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="tc-edit-row">
+                        <div className="tc-edit-field" style={{ flex: 1 }}>
+                            <label className="tc-edit-label">Nombre Cliente</label>
+                            <input
+                                type="text" className="tc-input-soft" placeholder="Ej: Juan Pérez"
+                                value={editData.cliente.nombre} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, nombre: e.target.value } })}
+                            />
+                        </div>
+                        <div className="tc-edit-field" style={{ flex: 1 }}>
+                            <label className="tc-edit-label">Teléfono / WhatsApp</label>
+                            <input
+                                type="text" className="tc-input-soft" placeholder="Ej: 1123456789"
+                                value={editData.cliente.telefono} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, telefono: e.target.value } })}
+                            />
+                        </div>
+                    </div>
+
                     <div className="tc-edit-actions">
                         <button className="tc-btn-soft btn-save" onClick={handleSaveEdit}><SvgSave /> Guardar</button>
                         <button className="tc-btn-soft btn-cancel" onClick={handleCancelEdit}><SvgX /> Cancelar</button>
@@ -133,7 +162,7 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                 </div>
             ) : (
                 <div className="tc-body-soft">
-                    <h3 className="tc-device-soft"><SvgPhone /> {ticket.dispositivo || 'Dispositivo N/A'}</h3>
+                    <h3 className="tc-device-soft">{getDeviceIcon(ticket.dispositivo)} {ticket.dispositivo || 'Dispositivo N/A'}</h3>
                     <p className="tc-problem-soft">"{ticket.problema}"</p>
 
                     <div className="tc-client-row">
