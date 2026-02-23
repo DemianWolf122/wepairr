@@ -188,9 +188,10 @@
     border: 1px solid var(--border-glass);
 }
 
-/* --- PESTAÑAS Y CONTROLES --- */
+/* --- PESTAÑAS Y GRUPOS DE FILTROS --- */
 .dashboard-tabs {
     display: flex;
+    justify-content: space-between;
     gap: 15px;
     border-bottom: 1px solid var(--border-glass);
     padding-bottom: 15px;
@@ -199,6 +200,20 @@
     -webkit-user-select: none;
     flex-wrap: wrap;
     align-items: center;
+}
+
+.tabs-left {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filters-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: auto;
 }
 
 .tab-btn {
@@ -232,24 +247,23 @@
     color: var(--text-primary);
 }
 
-/* --- CUSTOM DROPDOWN PREMIUM UI --- */
+/* --- LOS 3 DROPDOWNS CUSTOM PREMIUM --- */
 .custom-sort-wrapper {
     position: relative;
-    margin-left: auto;
     z-index: 50;
 }
 
 .custom-sort-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     background: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
-    padding: 12px 20px;
+    padding: 12px 16px;
     border-radius: 14px;
     cursor: pointer;
-    font-weight: 800;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 0.9rem;
     color: var(--text-primary);
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
@@ -264,13 +278,16 @@
 
 .sort-icon {
     color: var(--text-secondary);
+    width: 16px;
+    height: 16px;
 }
 
 .sort-chevron {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     transition: transform 0.3s ease;
     color: var(--text-secondary);
+    margin-left: 5px;
 }
 
 .sort-chevron.open {
@@ -287,12 +304,12 @@
     border-radius: 14px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     padding: 8px;
+    min-width: 200px;
     display: flex;
     flex-direction: column;
     gap: 4px;
     animation: popIn 0.2s ease-out forwards;
     transform-origin: top right;
-    min-width: 215px;
 }
 
 .app-root.dark .custom-sort-menu {
@@ -305,12 +322,12 @@
 .custom-sort-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 15px 10px;
+    gap: 10px;
+    padding: 12px 14px;
     border-radius: 10px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     transition: all 0.2s ease;
 }
@@ -326,16 +343,9 @@
     color: var(--accent-color);
 }
 
-.sort-item-icon {
-    font-size: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 /* --- BOTÓN INGRESO MANUAL DESTACADO --- */
 .tab-btn-action {
-    margin-left: 15px;
+    margin-left: 10px;
     border: none;
     color: white;
     background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
@@ -540,13 +550,25 @@
     }
 
     .dashboard-tabs {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding-bottom: 10px;
+        flex-direction: column;
+        align-items: stretch;
+        border-bottom: none;
+    }
+
+    .tabs-left {
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border-glass);
+        padding-bottom: 15px;
+    }
+
+    .filters-group {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .custom-sort-wrapper {
-        margin-left: 0;
         width: 100%;
     }
 
@@ -563,6 +585,7 @@
         margin-left: 0;
         width: 100%;
         justify-content: center;
+        margin-top: 10px;
     }
 
     .ticket-list {
