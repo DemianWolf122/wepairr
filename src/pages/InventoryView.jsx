@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 import './InventoryView.css';
 
 const SvgBox = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
@@ -11,20 +12,8 @@ const SvgSave = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="cu
 const SvgX = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const SvgTrash = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
 
-const INVENTARIO_INICIAL = [
-    { id: 1, nombre: "Módulo iPhone X - Calidad OLED", cantidad: 5, precioCompra: 45000, precioVenta: 85000, categoria: "Pantallas", tags: ["Apple", "OLED"] },
-    { id: 2, nombre: "Batería Samsung S20 FE", cantidad: 12, precioCompra: 15000, precioVenta: 35000, categoria: "Baterías", tags: ["Samsung", "Original"] },
-    { id: 3, nombre: "Pin de Carga Motorola G52", cantidad: 2, precioCompra: 2500, precioVenta: 12000, categoria: "Flex de Carga", tags: ["Motorola", "Crítico"] }
-];
-
 function InventoryView() {
-    const [inventario, setInventario] = useState(() => {
-        const saved = localStorage.getItem('wepairr_inv');
-        return saved ? JSON.parse(saved) : INVENTARIO_INICIAL;
-    });
-
-    useEffect(() => { localStorage.setItem('wepairr_inv', JSON.stringify(inventario)); }, [inventario]);
-
+    const [inventario, setInventario] = useState([]);
     const [busqueda, setBusqueda] = useState('');
     const [orden, setOrden] = useState('nombre');
     const [ordenarPorStockCritico, setOrdenarPorStockCritico] = useState(false);
@@ -34,20 +23,58 @@ function InventoryView() {
     const [modalNuevo, setModalNuevo] = useState(false);
     const [nuevoItem, setNuevoItem] = useState({ nombre: '', cantidad: 1, precioCompra: '', precioVenta: '', categoria: 'General', tags: '' });
 
-    const actualizarStock = (id, delta) => { setInventario(prev => prev.map(item => item.id === id ? { ...item, cantidad: Math.max(0, item.cantidad + delta) } : item)); };
-    const iniciarEdicion = (item) => { setEditandoId(item.id); setDatosEdicion(item); };
-    const guardarEdicion = () => { setInventario(prev => prev.map(i => i.id === editandoId ? datosEdicion : i)); setEditandoId(null); };
-    const eliminarItem = (id) => { if (window.confirm('¿Seguro que deseas eliminar este artículo?')) { setInventario(prev => prev.filter(i => i.id !== id)); setEditandoId(null); } };
+    // Cargar inventario desde Supabase
+    useEffect(() => {
+        const fetchInventory = async () => {
+            const { data, error } = await supabase.from('inventario').select('*').order('id', { ascending: false });
+            if (data) setInventario(data);
+            if (error) console.error("Error cargando inventario:", error);
+        };
+        fetchInventory();
+    }, []);
 
-    const crearArticulo = (e) => {
+    const actualizarStock = async (id, delta) => {
+        const itemActual = inventario.find(i => i.id === id);
+        if (!itemActual) return;
+        const nuevaCantidad = Math.max(0, itemActual.cantidad + delta);
+
+        setInventario(prev => prev.map(item => item.id === id ? { ...item, cantidad: nuevaCantidad } : item));
+        await supabase.from('inventario').update({ cantidad: nuevaCantidad }).eq('id', id);
+    };
+
+    const iniciarEdicion = (item) => { setEditandoId(item.id); setDatosEdicion(item); };
+
+    const guardarEdicion = async () => {
+        setInventario(prev => prev.map(i => i.id === editandoId ? datosEdicion : i));
+        const idAEditar = editandoId;
+        setEditandoId(null);
+        await supabase.from('inventario').update(datosEdicion).eq('id', idAEditar);
+    };
+
+    const eliminarItem = async (id) => {
+        if (window.confirm('¿Seguro que deseas eliminar este artículo?')) {
+            setInventario(prev => prev.filter(i => i.id !== id));
+            await supabase.from('inventario').delete().eq('id', id);
+        }
+    };
+
+    const crearArticulo = async (e) => {
         e.preventDefault();
         const item = {
-            id: Date.now(), nombre: nuevoItem.nombre, cantidad: Number(nuevoItem.cantidad),
-            precioCompra: Number(nuevoItem.precioCompra) || 0, precioVenta: Number(nuevoItem.precioVenta) || 0,
-            categoria: nuevoItem.categoria, tags: nuevoItem.tags.split(',').map(t => t.trim()).filter(t => t)
+            id: Date.now(),
+            nombre: nuevoItem.nombre,
+            cantidad: Number(nuevoItem.cantidad),
+            precioCompra: Number(nuevoItem.precioCompra) || 0,
+            precioVenta: Number(nuevoItem.precioVenta) || 0,
+            categoria: nuevoItem.categoria,
+            tags: nuevoItem.tags.split(',').map(t => t.trim()).filter(t => t)
         };
-        setInventario([item, ...inventario]); setModalNuevo(false);
+
+        setInventario([item, ...inventario]);
+        setModalNuevo(false);
         setNuevoItem({ nombre: '', cantidad: 1, precioCompra: '', precioVenta: '', categoria: 'General', tags: '' });
+
+        await supabase.from('inventario').insert([item]);
     };
 
     const calcularValorTotal = () => inventario.reduce((total, item) => total + (item.cantidad * item.precioCompra), 0);
@@ -55,7 +82,7 @@ function InventoryView() {
     const inventarioFiltrado = inventario
         .filter(item => {
             const termino = busqueda.toLowerCase();
-            return item.nombre.toLowerCase().includes(termino) || item.tags.some(tag => tag.toLowerCase().includes(termino));
+            return item.nombre.toLowerCase().includes(termino) || (item.tags && item.tags.some(tag => tag.toLowerCase().includes(termino)));
         })
         .sort((a, b) => {
             if (ordenarPorStockCritico) return a.cantidad - b.cantidad;
@@ -121,7 +148,7 @@ function InventoryView() {
                             <>
                                 <div className="card-header"><span className="item-category">{item.categoria}</span><button className="btn-edit-icon" onClick={() => iniciarEdicion(item)}><SvgEdit /></button></div>
                                 <h3 className="item-name">{item.nombre}</h3>
-                                <div className="item-tags">{item.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}</div>
+                                <div className="item-tags">{item.tags && item.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}</div>
                                 <div className="item-pricing">
                                     <div><span className="price-label">Costo</span><span className="price-value cost">${item.precioCompra.toLocaleString()}</span></div>
                                     <div><span className="price-label">Venta</span><span className="price-value sale">${item.precioVenta.toLocaleString()}</span></div>

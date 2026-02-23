@@ -1,55 +1,70 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { supabase } from '../supabaseClient';
 
 export const TicketContext = createContext();
 
-const TICKETS_INICIALES = [
-    { id: 101, tipo: 'ticket', cliente: { nombre: 'Julián Rossi', telefono: '112345678' }, dispositivo: 'Nvidia RTX 3080 Ti', problema: 'Artefactos en pantalla y sobrecalentamiento.', fechaIngreso: '2024-05-20T10:30:00Z', estado: 'Ingresado', prioridad: 'Alta', presupuesto: '85000', borrado: false },
-    { id: 102, tipo: 'ticket', cliente: { nombre: 'Martín Gómez', telefono: '119876543' }, dispositivo: 'iPhone 13 Pro', problema: 'Cambio de módulo original.', fechaIngreso: '2024-05-19T15:45:00Z', estado: 'En Proceso', prioridad: 'Normal', presupuesto: '120000', borrado: false }
-];
-
 export const TicketProvider = ({ children }) => {
-    const [tickets, setTickets] = useState(() => {
-        try {
-            const datosGuardados = localStorage.getItem('wepairr_tickets');
-            if (datosGuardados) {
-                const parsed = JSON.parse(datosGuardados);
-                if (Array.isArray(parsed)) return parsed;
-            }
-        } catch (e) {
-            console.error("Error leyendo tickets, restaurando base de prueba.");
-        }
-        return TICKETS_INICIALES;
-    });
+    const [tickets, setTickets] = useState([]);
 
+    // Cargar tickets desde Supabase al iniciar
     useEffect(() => {
-        localStorage.setItem('wepairr_tickets', JSON.stringify(tickets));
-    }, [tickets]);
+        const fetchTickets = async () => {
+            const { data, error } = await supabase
+                .from('tickets')
+                .select('*')
+                .order('id', { ascending: false });
 
-    const actualizarEstadoTicket = (id, nuevoEstado) => {
+            if (data) setTickets(data);
+            if (error) console.error("Error cargando tickets:", error);
+        };
+
+        fetchTickets();
+    }, []);
+
+    const actualizarEstadoTicket = async (id, nuevoEstado) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, estado: nuevoEstado } : t));
+        await supabase.from('tickets').update({ estado: nuevoEstado }).eq('id', id);
     };
 
-    const actualizarPresupuesto = (id, nuevoPresupuesto) => {
-        setTickets(prev => prev.map(t => t.id === id ? { ...t, presupuesto: nuevoPresupuesto, estado: t.estado === 'Ingresado' ? 'Presupuestado' : t.estado } : t));
+    const actualizarPresupuesto = async (id, nuevoPresupuesto) => {
+        setTickets(prev => prev.map(t => {
+            if (t.id === id) {
+                const nuevoEst = t.estado === 'Ingresado' ? 'Presupuestado' : t.estado;
+                return { ...t, presupuesto: nuevoPresupuesto, estado: nuevoEst };
+            }
+            return t;
+        }));
+
+        const ticketActual = tickets.find(t => t.id === id);
+        const estadoFinal = ticketActual?.estado === 'Ingresado' ? 'Presupuestado' : ticketActual?.estado;
+
+        await supabase.from('tickets').update({
+            presupuesto: nuevoPresupuesto,
+            estado: estadoFinal
+        }).eq('id', id);
     };
 
-    const moverAPapelera = (id) => {
+    const moverAPapelera = async (id) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, borrado: true } : t));
+        await supabase.from('tickets').update({ borrado: true }).eq('id', id);
     };
 
-    const restaurarTicket = (id) => {
+    const restaurarTicket = async (id) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, borrado: false } : t));
+        await supabase.from('tickets').update({ borrado: false }).eq('id', id);
     };
 
-    const eliminarDefinitivamente = (id) => {
+    const eliminarDefinitivamente = async (id) => {
         setTickets(prev => prev.filter(t => t.id !== id));
+        await supabase.from('tickets').delete().eq('id', id);
     };
 
-    const convertirATicket = (id) => {
+    const convertirATicket = async (id) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, tipo: 'ticket', estado: 'Ingresado' } : t));
+        await supabase.from('tickets').update({ tipo: 'ticket', estado: 'Ingresado' }).eq('id', id);
     };
 
-    const agregarTicketManual = (datosTicket) => {
+    const agregarTicketManual = async (datosTicket) => {
         const nuevoId = tickets.length > 0 ? Math.max(...tickets.map(t => t.id)) + 1 : 101;
         const ahora = new Date();
         const nuevoTicket = {
@@ -62,11 +77,14 @@ export const TicketProvider = ({ children }) => {
             borrado: false,
             ...datosTicket
         };
+
         setTickets(prev => [nuevoTicket, ...prev]);
+        await supabase.from('tickets').insert([nuevoTicket]);
     };
 
-    const editarTicket = (id, datosActualizados) => {
+    const editarTicket = async (id, datosActualizados) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, ...datosActualizados } : t));
+        await supabase.from('tickets').update(datosActualizados).eq('id', id);
     };
 
     return (
