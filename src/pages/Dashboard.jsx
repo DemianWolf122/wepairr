@@ -48,7 +48,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [filtroEstado, setFiltroEstado] = useState('todos');
     const [isDeleteMode, setIsDeleteMode] = useState(false);
 
-    // --- NUEVO ESTADO: Menú Móvil ---
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
@@ -137,7 +136,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         else moverAPapelera(id);
     };
 
-    // Función auxiliar para cambiar sección y cerrar menú en móvil automáticamente
+    // Función auxiliar para cambiar sección y cerrar menú en móvil
     const cambiarSeccion = (seccion) => {
         setSeccionPrincipal(seccion);
         setMobileMenuOpen(false);
@@ -145,7 +144,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
     return (
         <div className="dashboard-wrapper">
-            {/* NAVBAR RESPONSIVE CON MENÚ HAMBURGUESA */}
             <nav className="tech-navbar">
                 <div className="tech-brand">
                     <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -154,7 +152,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Wepairr <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
 
-                {/* Dropdown de Navegación (Solo visible al tocar la hamburguesa en móvil) */}
                 <div className={`nav-menu ${mobileMenuOpen ? 'mobile-open' : ''}`}>
                     <button onClick={() => cambiarSeccion('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
                     <button onClick={() => cambiarSeccion('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
@@ -176,7 +173,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
 
-                {/* BOTÓN FLOTANTE (FAB) AHORA POSICIONADO A LA IZQUIERDA EN MÓVILES */}
+                {/* BOTÓN FLOTANTE (FAB) DE ELIMINAR */}
                 {seccionPrincipal === 'gestion' && subSeccionGestion === 'tickets' && vistaActual !== 'nuevo' && (
                     <button
                         className={`floating-delete-btn ${isDeleteMode ? 'active' : ''}`}
