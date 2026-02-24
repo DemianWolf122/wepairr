@@ -16,7 +16,7 @@
     border: none;
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
 
-    /* NUEVA ANIMACIÓN PREMIUM: Levitación Suave */
+    /* ANIMACIÓN PREMIUM: Levitación Suave Continua */
     animation: floatAI 4s ease-in-out infinite;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -31,7 +31,7 @@
     transform: scale(0.95);
 }
 
-/* Keyframes de Levitación */
+/* Efecto visual tipo Apple/High-End */
 @keyframes floatAI {
     0% {
         transform: translateY(0px);
@@ -39,7 +39,7 @@
     }
 
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
         box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
     }
 
@@ -55,7 +55,11 @@
     bottom: 100px;
     right: 25px;
     width: 350px;
+    max-width: calc(100vw - 40px);
+    /* Previene desbordes en móviles chicos */
     height: 500px;
+    max-height: 80vh;
+    /* Nunca tapará la barra de arriba */
     background: var(--bg-panel-glass);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -67,10 +71,13 @@
     z-index: 1000;
     overflow: hidden;
     animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    box-sizing: border-box;
 }
 
 .app-root.dark .ai-chat-window {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    background: rgba(15, 23, 42, 0.95);
+    /* Más sólido en dark mode para lectura */
 }
 
 @keyframes slideUpFade {
@@ -93,6 +100,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .ai-header-info {
@@ -162,6 +170,7 @@
     padding: 15px;
     border-top: 1px solid var(--border-glass);
     background: var(--bg-panel);
+    flex-shrink: 0;
 }
 
 .ai-input-form {
@@ -171,6 +180,8 @@
 
 .ai-input-form input {
     flex: 1;
+    min-width: 0;
+    /* Vital para que flexbox no lo desborde en 320px */
     padding: 12px 15px;
     border-radius: 12px;
     border: 1px solid var(--border-glass);
@@ -198,6 +209,7 @@
     align-items: center;
     cursor: pointer;
     transition: transform 0.2s var(--ease-bounce);
+    flex-shrink: 0;
 }
 
 .ai-submit-btn:hover:not(:disabled) {
@@ -209,20 +221,70 @@
     cursor: not-allowed;
 }
 
-/* --- RESPONSIVE IA --- */
-@media (max-width: 480px) {
+/* --- RESPONSIVE IA (HASTA 320PX) --- */
+@media (max-width: 768px) {
     .ai-fab {
         bottom: 20px;
         right: 20px;
-        width: 55px;
-        height: 55px;
+        width: 60px;
+        height: 60px;
     }
 
     .ai-chat-window {
-        bottom: 85px;
+        bottom: 90px;
         right: 15px;
-        left: 15px;
-        width: auto;
-        height: 450px;
+        left: auto;
+        width: calc(100vw - 30px);
+        /* 100% menos los márgenes */
+    }
+}
+
+@media (max-width: 400px) {
+    .ai-fab {
+        bottom: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .ai-chat-window {
+        bottom: 75px;
+        right: 10px;
+        width: calc(100vw - 20px);
+        height: 85vh;
+        /* Ocupa casi toda la pantalla para chatear cómodamente */
+    }
+
+    .ai-chat-header {
+        padding: 12px 15px;
+    }
+
+    .ai-header-info {
+        font-size: 0.9rem;
+    }
+
+    .ai-chat-body {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .ai-message {
+        font-size: 0.85rem;
+        padding: 10px 14px;
+    }
+
+    .ai-chat-footer {
+        padding: 10px;
+    }
+
+    .ai-input-form input {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .ai-submit-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
     }
 }
