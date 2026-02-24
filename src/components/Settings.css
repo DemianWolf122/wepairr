@@ -1,3 +1,4 @@
+/* --- LAYOUT DEL EDITOR DE SETTINGS --- */
 .settings-editor-layout {
     display: flex;
     height: 100%;
@@ -5,11 +6,10 @@
     overflow: hidden;
     background: var(--bg-main);
     user-select: none;
-    -webkit-user-select: none;
     position: relative;
 }
 
-/* FIX: Selector de Plan en línea para móviles */
+/* Selector de plan integrado en el panel para no superponerse en móviles */
 .dev-plan-selector-inline {
     padding: 10px 15px;
     border-radius: 12px;
@@ -22,6 +22,18 @@
     margin-bottom: 20px;
 }
 
+.plan-select {
+    background-color: var(--bg-input-glass);
+    border: none;
+    color: var(--accent-color);
+    font-weight: 800;
+    outline: none;
+    font-size: 0.9rem;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* PANEL IZQUIERDO DE CONTROLES */
 .settings-controls-panel {
     width: 420px;
     flex-shrink: 0;
@@ -40,6 +52,357 @@
     color: #ffffff;
 }
 
+.settings-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.settings-main-title {
+    margin: 0 0 5px 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.settings-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* ACORDEONES (PESTAÑAS) */
+.accordions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.accordion-item {
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.app-root.light .accordion-item {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+.accordion-item.active {
+    background: transparent;
+    border-color: var(--accent-color);
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 18px;
+    cursor: pointer;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.accordion-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.accordion-content {
+    padding: 0 18px 20px 18px;
+}
+
+.chevron-icon {
+    transition: transform 0.3s var(--ease-premium);
+}
+
+.accordion-item.active .chevron-icon {
+    transform: rotate(180deg);
+    color: var(--accent-color);
+}
+
+/* CONTROLES E INPUTS DENTRO DEL PANEL */
+.settings-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.settings-label {
+    display: block;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.settings-input {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    border-radius: 12px;
+    outline: none;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    font-family: inherit;
+    margin-top: 8px;
+}
+
+/* FIX: Fondo sólido para el Select en móviles (iOS) */
+.select-input {
+    background-color: var(--bg-input-glass);
+    padding-right: 40px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg...");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px auto;
+}
+
+.app-root.light .settings-input {
+    border-color: rgba(0, 0, 0, 0.25);
+    background: #ffffff;
+}
+
+.settings-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.textarea-container {
+    position: relative;
+    margin-top: 8px;
+}
+
+.settings-textarea {
+    line-height: 1.5;
+    padding-bottom: 25px;
+    margin-top: 0;
+    resize: none;
+    overflow-y: hidden;
+}
+
+.char-count {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.color-presets-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+}
+
+.color-preset-btn {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.color-preset-btn.active {
+    border-color: var(--text-primary);
+    transform: scale(1.15);
+    box-shadow: 0 0 10px currentColor;
+}
+
+/* TOGGLES Y EXTRAS */
+.toggle-box {
+    padding: 15px;
+    border-radius: 14px;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toggle-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    transition: 0.3s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+.file-upload-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.file-url-input {
+    flex: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-top: 0;
+    min-width: 0;
+}
+
+.btn-upload-file {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 15px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* INSTAGRAM FEED EN PANEL IZQUIERDO */
+.btn-connect-ig {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: white;
+    border: none;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(220, 39, 67, 0.3);
+    transition: transform 0.2s;
+}
+
+.btn-connect-ig:hover {
+    transform: scale(1.02);
+}
+
+.ig-connected-box {
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ig-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.btn-disconnect {
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    color: var(--danger);
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* BLOQUEO PREMIUM */
+.premium-gate-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.premium-content-blurred {
+    filter: blur(5px);
+    opacity: 0.6;
+    pointer-events: none;
+    padding-bottom: 10px;
+}
+
+.premium-lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 2;
+    gap: 10px;
+    backdrop-filter: blur(3px);
+}
+
+.premium-label {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+/* --- SECCIÓN DERECHA: LIENZO Y MOCKUP --- */
 .settings-preview-canvas {
     flex: 1;
     display: flex;
@@ -55,18 +418,47 @@
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
+    z-index: 10;
 }
 
+.device-toggles {
+    display: flex;
+    gap: 5px;
+    padding: 6px;
+    border-radius: 99px;
+}
+
+.device-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 20px;
+    border-radius: 99px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.device-btn.active {
+    background: var(--text-primary);
+    color: var(--bg-main);
+}
+
+/* ENVOLTORIO PROTECTOR DEL MOCKUP (Crucial para celulares de 320px) */
 .preview-stage {
     flex: 1;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    overflow: auto;
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
     transform: scale(1);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .preview-stage.animating-stage {
@@ -74,12 +466,19 @@
     transform: scale(0.96);
 }
 
-/* MOCKUP DINÁMICO: Ya no tiene ancho fijo absoluto */
+.mockup-protector {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .phone-mockup-final {
     width: 100%;
-    max-width: 380px;
-    height: 760px;
-    max-height: 85vh;
+    max-width: 360px;
+    height: 90%;
+    max-height: 800px;
     border-radius: 40px;
     border: 12px solid #1a1a1a;
     background: #000;
@@ -88,7 +487,8 @@
     display: flex;
     flex-direction: column;
     margin: auto;
-    flex-shrink: 0;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .app-root.light .phone-mockup-final {
@@ -108,8 +508,10 @@
     display: flex;
     flex-direction: column;
     margin: auto;
+    overflow: hidden;
 }
 
+/* EL INTERIOR DEL MOCKUP */
 .shop-screen-container {
     flex: 1;
     position: relative;
@@ -168,6 +570,7 @@
     color: var(--shop-text);
     position: relative;
     z-index: 10;
+    flex-shrink: 0;
 }
 
 .phone-notch {
@@ -250,6 +653,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .shop-title {
@@ -396,6 +801,31 @@
     border: 1px solid var(--shop-border);
 }
 
+/* FIX: ESTILOS PARA LA GRILLA DE INSTAGRAM EN EL MOCKUP */
+.ig-preview-mockup-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.desktop-mockup-final .ig-preview-mockup-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.ig-mockup-item {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: var(--shop-border);
+    border-radius: 8px;
+    background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.05) 75%, rgba(0, 0, 0, 0.05)), linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.05) 75%, rgba(0, 0, 0, 0.05));
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+}
+
 .phone-mockup-final .shop-avatar-placeholder {
     width: 60px;
     height: 60px;
@@ -430,343 +860,9 @@
     font-size: 1.2rem;
 }
 
-.settings-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-
-.settings-main-title {
-    margin: 0 0 5px 0;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--text-primary);
-}
-
-.settings-subtitle {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-.plan-select {
-    background: transparent;
-    border: none;
-    color: var(--accent-color);
-    font-weight: 800;
-    outline: none;
-    font-size: 0.9rem;
-    padding: 5px;
-}
-
-.accordions-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.accordion-item {
-    border: 1px solid var(--border-glass);
-    border-radius: 16px;
-    background: rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-.app-root.light .accordion-item {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: rgba(0, 0, 0, 0.15);
-}
-
-.accordion-item.active {
-    background: transparent;
-    border-color: var(--accent-color);
-}
-
-.accordion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 18px;
-    cursor: pointer;
-    font-weight: 800;
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-
-.accordion-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.accordion-content {
-    padding: 0 18px 20px 18px;
-}
-
-.chevron-icon {
-    transition: transform 0.3s var(--ease-premium);
-}
-
-.accordion-item.active .chevron-icon {
-    transform: rotate(180deg);
-    color: var(--accent-color);
-}
-
-.settings-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.settings-label {
-    display: block;
-    color: var(--text-primary);
-    font-size: 0.85rem;
-    font-weight: 700;
-    margin-bottom: 0;
-}
-
-.settings-input {
-    width: 100%;
-    padding: 12px;
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    border-radius: 12px;
-    outline: none;
-    font-size: 0.95rem;
-    box-sizing: border-box;
-    font-family: inherit;
-    margin-top: 8px;
-}
-
-.select-input {
-    padding-right: 40px;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 16px auto;
-}
-
-.app-root.light .settings-input {
-    border-color: rgba(0, 0, 0, 0.25);
-    background: #ffffff;
-}
-
-.settings-input:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-
-.textarea-container {
-    position: relative;
-    margin-top: 8px;
-}
-
-.settings-textarea {
-    line-height: 1.5;
-    padding-bottom: 25px;
-    margin-top: 0;
-    resize: none;
-    overflow-y: hidden;
-}
-
-.char-count {
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    font-weight: bold;
-    pointer-events: none;
-}
-
-.color-presets-grid {
-    display: grid;
-    gap: 10px;
-    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
-}
-
-.color-preset-btn {
-    width: 100%;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.color-preset-btn.active {
-    border-color: var(--text-primary);
-    transform: scale(1.15);
-    box-shadow: 0 0 10px currentColor;
-}
-
-.toggle-box {
-    padding: 15px;
-    border-radius: 14px;
-    border: 1px solid var(--border-glass);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.toggle-title {
-    font-size: 0.95rem;
-    font-weight: 800;
-    color: var(--text-primary);
-}
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 26px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    transition: 0.3s;
-    border-radius: 34px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.3s;
-    border-radius: 50%;
-}
-
-input:checked+.slider {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-}
-
-input:checked+.slider:before {
-    transform: translateX(20px);
-}
-
-.file-upload-container {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.file-url-input {
-    flex: 1;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-top: 0;
-}
-
-.btn-upload-file {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0 15px;
-    background: var(--accent-color);
-    color: white;
-    border: none;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.input-prefix-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    pointer-events: none;
-}
-
-.premium-gate-wrapper {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-top: 15px;
-}
-
-.premium-content-blurred {
-    filter: blur(5px);
-    opacity: 0.6;
-    pointer-events: none;
-    padding-bottom: 10px;
-}
-
-.premium-lock-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.15);
-    z-index: 2;
-    gap: 10px;
-    backdrop-filter: blur(3px);
-}
-
-.premium-label {
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: var(--text-primary);
-}
-
-.device-toggles {
-    display: flex;
-    gap: 5px;
-    padding: 6px;
-    border-radius: 99px;
-}
-
-.device-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    padding: 8px 20px;
-    border-radius: 99px;
-    font-weight: 800;
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.device-btn.active {
-    background: var(--text-primary);
-    color: var(--bg-main);
-}
-
-/* RESPONSIVE ULTRA-EXTREMO PARA 320PX */
+/* =======================================================
+   RESPONSIVE EXTREMO Y FIX DEL MONITOR EN MÓVILES
+======================================================= */
 @media (max-width: 900px) {
     .settings-editor-layout {
         flex-direction: column;
@@ -782,12 +878,22 @@ input:checked+.slider:before {
     }
 
     .settings-preview-canvas {
-        min-height: 700px;
+        min-height: 800px;
         padding-bottom: 30px;
     }
 
+    /* FIX: Permite ver la versión de Escritorio en pantallas móviles */
     .desktop-mockup-final {
-        display: none;
+        display: flex;
+        /* Deja de estar oculto */
+        width: 1000px;
+        /* Ancho fijo para que no se rompa su diseño interno */
+        height: 600px;
+        transform: scale(0.4);
+        /* Lo encoge al 40% para que quepa en el celular */
+        transform-origin: top center;
+        margin-bottom: -350px;
+        /* Evita que deje un espacio en blanco gigante abajo */
     }
 }
 
@@ -814,14 +920,43 @@ input:checked+.slider:before {
         font-size: 0.9rem;
     }
 
-    /* FIX: El celular simulado ahora se achica para no romper la pantalla */
-    .phone-mockup-final {
+    .file-upload-container {
+        flex-direction: column;
+    }
+
+    .btn-upload-file {
+        padding: 12px;
+        border-radius: 12px;
+        justify-content: center;
         width: 100%;
-        max-width: 280px;
-        height: 550px;
+        box-sizing: border-box;
+    }
+
+    .file-url-input {
+        border-radius: 12px;
+        width: 100%;
+    }
+
+    /* FIX: El celular ahora no rompe el ancho de 320px */
+    .preview-stage {
+        padding: 10px;
+    }
+
+    .phone-mockup-final {
         border-width: 8px;
         border-radius: 25px;
-        margin-top: 10px;
+        height: 600px;
+    }
+
+    /* FIX: El monitor se achica todavía más en pantallas ultra estrechas */
+    .desktop-mockup-final {
+        transform: scale(0.3);
+        margin-bottom: -400px;
+    }
+
+    .shop-screen-container {
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
     }
 
     .phone-notch {
@@ -838,19 +973,5 @@ input:checked+.slider:before {
     .device-btn {
         padding: 8px 15px;
         font-size: 0.85rem;
-    }
-
-    .file-upload-container {
-        flex-direction: column;
-    }
-
-    .btn-upload-file {
-        padding: 12px;
-        border-radius: 12px;
-        justify-content: center;
-    }
-
-    .file-url-input {
-        border-radius: 12px;
     }
 }

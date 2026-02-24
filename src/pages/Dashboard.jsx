@@ -23,11 +23,15 @@ const SvgSubTickets = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" h
 const SvgSubFeatures = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3V2" /><path d="M5 10v11a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10" /><path d="M18 21V9" /><path d="M6 21V9" /><path d="M2 10h20" /><path d="M12 21v-4" /><path d="M12 13V7" /><path d="M9 4h6a2 2 0 0 1 2 2v1H7V6a2 2 0 0 1 2-2Z" /></svg>;
 const SvgAddTicket = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>;
 const SvgX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>;
+const SvgMenu = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>;
+
+// --- SVGs DE FILTROS Y BÚSQUEDA ---
 const SvgChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>;
 const SvgSort = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="4" x2="14" y2="4" /><line x1="10" y1="4" x2="3" y2="4" /><line x1="21" y1="12" x2="12" y2="12" /><line x1="8" y1="12" x2="3" y2="12" /><line x1="21" y1="20" x2="16" y2="20" /><line x1="12" y1="20" x2="3" y2="20" /><line x1="14" y1="2" x2="14" y2="6" /><line x1="8" y1="10" x2="8" y2="14" /><line x1="16" y1="18" x2="16" y2="22" /></svg>;
 const SvgMonitor = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>;
 const SvgTag = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>;
 const SvgSearch = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>;
+
 const SvgRecent = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>;
 const SvgAlert = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>;
 const SvgPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" /></svg>;
@@ -37,13 +41,15 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
 
+    // --- ESTADOS ---
     const [busqueda, setBusqueda] = useState('');
     const [criterioOrden, setCriterioOrden] = useState('recientes');
     const [filtroTipo, setFiltroTipo] = useState('todos');
     const [filtroEstado, setFiltroEstado] = useState('todos');
-
-    // ESTADO PARA EL BOTÓN FLOTANTE (REEMPLAZA EL DRAG AND DROP)
     const [isDeleteMode, setIsDeleteMode] = useState(false);
+
+    // --- NUEVO ESTADO: Menú Móvil ---
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
     const [isTipoMenuOpen, setIsTipoMenuOpen] = useState(false);
@@ -67,34 +73,16 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const sortOptions = [
-        { id: 'recientes', label: 'Recientes Primero', icon: <SvgRecent /> },
-        { id: 'prioridad', label: 'Urgentes Primero', icon: <SvgAlert /> },
-        { id: 'estado', label: 'Ingresados Primero', icon: <SvgPin /> },
-        { id: 'antiguos', label: 'Más Antiguos', icon: <SvgHourglass /> }
-    ];
-
-    const tipoOptions = [
-        { id: 'todos', label: 'Todos los Equipos' },
-        { id: 'celular', label: 'Celulares / Tablets' },
-        { id: 'pc', label: 'PCs / Notebooks' },
-        { id: 'gpu', label: 'Placas de Video' },
-        { id: 'consola', label: 'Consolas' }
-    ];
-
-    const estadoOptions = [
-        { id: 'todos', label: 'Cualquier Estado' },
-        { id: 'Ingresado', label: 'Solo Ingresados' },
-        { id: 'En Proceso', label: 'Solo En Proceso' },
-        { id: 'Finalizado', label: 'Solo Finalizados' },
-        { id: 'Entregado', label: 'Solo Entregados' }
-    ];
+    // Opciones de filtrado
+    const sortOptions = [{ id: 'recientes', label: 'Recientes Primero', icon: <SvgRecent /> }, { id: 'prioridad', label: 'Urgentes Primero', icon: <SvgAlert /> }, { id: 'estado', label: 'Ingresados Primero', icon: <SvgPin /> }, { id: 'antiguos', label: 'Más Antiguos', icon: <SvgHourglass /> }];
+    const tipoOptions = [{ id: 'todos', label: 'Todos los Equipos' }, { id: 'celular', label: 'Celulares / Tablets' }, { id: 'pc', label: 'PCs / Notebooks' }, { id: 'gpu', label: 'Placas de Video' }, { id: 'consola', label: 'Consolas' }];
+    const estadoOptions = [{ id: 'todos', label: 'Cualquier Estado' }, { id: 'Ingresado', label: 'Solo Ingresados' }, { id: 'En Proceso', label: 'Solo En Proceso' }, { id: 'Finalizado', label: 'Solo Finalizados' }, { id: 'Entregado', label: 'Solo Entregados' }];
 
     const getDeviceType = (name = "") => {
         const n = name.toLowerCase();
-        if (n.includes('rtx') || n.includes('gtx') || n.includes('placa') || n.includes('grafica') || n.includes('rx ') || n.includes('gpu')) return 'gpu';
-        if (n.includes('pc') || n.includes('escritorio') || n.includes('mother') || n.includes('gabinete') || n.includes('notebook') || n.includes('laptop') || n.includes('mac')) return 'pc';
-        if (n.includes('ps4') || n.includes('ps5') || n.includes('xbox') || n.includes('nintendo') || n.includes('consola')) return 'consola';
+        if (n.includes('rtx') || n.includes('gtx') || n.includes('placa') || n.includes('gpu') || n.includes('rx ')) return 'gpu';
+        if (n.includes('pc') || n.includes('notebook') || n.includes('escritorio') || n.includes('laptop') || n.includes('mac')) return 'pc';
+        if (n.includes('ps4') || n.includes('ps5') || n.includes('xbox') || n.includes('consola')) return 'consola';
         return 'celular';
     };
 
@@ -117,7 +105,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 const matchEquipo = t.dispositivo?.toLowerCase().includes(term);
                 const matchProblema = t.problema?.toLowerCase().includes(term);
                 const matchId = t.id.toString().includes(term);
-
                 if (!matchCliente && !matchEquipo && !matchProblema && !matchId) return false;
             }
             return true;
@@ -145,30 +132,38 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         actualizarEstadoTicket(id, SECUENCIA_ESTADOS[siguienteIndice]);
     };
 
-    const handleTicketCreated = () => setVistaActual('activos');
-
     const handleDeleteAction = (id) => {
-        if (vistaActual === 'papelera') {
-            eliminarDefinitivamente(id);
-        } else {
-            moverAPapelera(id);
-        }
+        if (vistaActual === 'papelera') eliminarDefinitivamente(id);
+        else moverAPapelera(id);
+    };
+
+    // Función auxiliar para cambiar sección y cerrar menú en móvil
+    const cambiarSeccion = (seccion) => {
+        setSeccionPrincipal(seccion);
+        setMobileMenuOpen(false);
     };
 
     return (
         <div className="dashboard-wrapper">
+            {/* NAVBAR RESPONSIVE CON MENÚ HAMBURGUESA */}
             <nav className="tech-navbar">
                 <div className="tech-brand">
+                    <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        {mobileMenuOpen ? <SvgX /> : <SvgMenu />}
+                    </button>
                     <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Wepairr <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
-                <div className="nav-menu">
-                    <button onClick={() => setSeccionPrincipal('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
-                    <button onClick={() => setSeccionPrincipal('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
-                    <button onClick={() => setSeccionPrincipal('inventario')} className={`nav-link-btn ${seccionPrincipal === 'inventario' ? 'nav-link-active' : ''}`}>Inventario</button>
-                    <button onClick={() => setSeccionPrincipal('herramientas')} className={`nav-link-btn ${seccionPrincipal === 'herramientas' ? 'nav-link-active' : ''}`}>Herramientas</button>
-                    <button onClick={() => setSeccionPrincipal('comunidad')} className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`}>Comunidad</button>
-                    <button onClick={() => setSeccionPrincipal('configuracion')} className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`}>Ajustes</button>
+
+                {/* Este menú se convierte en dropdown en celulares (<768px) */}
+                <div className={`nav-menu ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+                    <button onClick={() => cambiarSeccion('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
+                    <button onClick={() => cambiarSeccion('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
+                    <button onClick={() => cambiarSeccion('inventario')} className={`nav-link-btn ${seccionPrincipal === 'inventario' ? 'nav-link-active' : ''}`}>Inventario</button>
+                    <button onClick={() => cambiarSeccion('herramientas')} className={`nav-link-btn ${seccionPrincipal === 'herramientas' ? 'nav-link-active' : ''}`}>Herramientas</button>
+                    <button onClick={() => cambiarSeccion('comunidad')} className={`nav-link-btn ${seccionPrincipal === 'comunidad' ? 'nav-link-active' : ''}`}>Comunidad</button>
+                    <button onClick={() => cambiarSeccion('configuracion')} className={`nav-link-btn ${seccionPrincipal === 'configuracion' ? 'nav-link-active' : ''}`}>Ajustes</button>
                 </div>
+
                 <div className="nav-actions">
                     <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
@@ -181,7 +176,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
 
-                {/* BOTÓN FLOTANTE (Solo visible en tickets y que no sea "nuevo") */}
+                {/* BOTÓN FLOTANTE (FAB) */}
                 {seccionPrincipal === 'gestion' && subSeccionGestion === 'tickets' && vistaActual !== 'nuevo' && (
                     <button
                         className={`floating-delete-btn ${isDeleteMode ? 'active' : ''}`}
@@ -286,7 +281,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 </header>
 
                                 {vistaActual === 'nuevo' ? (
-                                    <NewTicketForm onTicketCreated={handleTicketCreated} />
+                                    <NewTicketForm onTicketCreated={() => setVistaActual('activos')} />
                                 ) : (
                                     <div className="ticket-list">
                                         {ticketsMostrados.length === 0 && <p className="ticket-list-empty">No se encontraron tickets con estos filtros.</p>}

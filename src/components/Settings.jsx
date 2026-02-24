@@ -17,7 +17,6 @@ const SvgMobileDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" st
 const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>;
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
-const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
 const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 const SvgVideo = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>;
 
@@ -157,18 +156,10 @@ function Settings({ config, onUpdate }) {
         };
     }, [config, isPremium]);
 
-    const getEmbedUrl = (url) => {
-        if (!url) return null;
-        if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
-        if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
-        return url;
-    };
-
     return (
         <div className="settings-editor-layout">
 
             <div className="settings-controls-panel glass-effect">
-                {/* FIX: Selector de plan integrado en el panel para no superponerse en móviles */}
                 <div className="dev-plan-selector-inline glass-effect">
                     <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>DEV: PLAN</span>
                     <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select">
@@ -262,11 +253,6 @@ function Settings({ config, onUpdate }) {
                                             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
                                             <button type="button" className="btn-upload-file" onClick={triggerFileInput}><SvgUpload /> Subir</button>
                                         </div>
-                                        <label className="settings-label" style={{ marginTop: '15px' }}>Video (YouTube):</label>
-                                        <div className="file-upload-container">
-                                            <span className="input-prefix-icon"><SvgVideo /></span>
-                                            <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://youtube.com/watch?v=..." style={{ paddingLeft: '40px' }} />
-                                        </div>
                                     </div>
                                 </PremiumGate>
                             </div>
@@ -295,9 +281,6 @@ function Settings({ config, onUpdate }) {
                                             <div className="ig-connected-box animate-fade-in">
                                                 <div className="ig-status"><SvgInstagram /> Conectado como @tu_taller</div>
                                                 <button type="button" onClick={() => onUpdate({ ...config, instagramConnected: false })} className="btn-disconnect">Desvincular</button>
-                                                <div className="ig-preview-grid">
-                                                    <div className="ig-preview-item"></div><div className="ig-preview-item"></div><div className="ig-preview-item"></div>
-                                                </div>
                                             </div>
                                         )}
                                     </PremiumGate>
@@ -333,16 +316,6 @@ function Settings({ config, onUpdate }) {
                                                 <input type="text" name="tiempoGarantia" value={config.tiempoGarantia || ''} onChange={handleChange} className="settings-input" placeholder="Ej. 6 Meses / De por vida" maxLength={30} />
                                             </div>
                                         )}
-                                        <div className="toggle-box glass-input-effect" style={{ marginTop: '10px' }}>
-                                            <div><strong className="toggle-title">Google Maps</strong></div>
-                                            <label className="switch"><input type="checkbox" name="mostrarMapa" checked={config.mostrarMapa || false} onChange={handleChange} /><span className="slider round"></span></label>
-                                        </div>
-                                        {config.mostrarMapa && (
-                                            <div>
-                                                <label className="settings-label">URL del Mapa:</label>
-                                                <input type="text" name="mapaUrl" value={config.mapaUrl || ''} onChange={handleChange} className="settings-input" placeholder="Pega el link de Google Maps" />
-                                            </div>
-                                        )}
                                     </PremiumGate>
                                 </div>
                             </div>
@@ -360,72 +333,88 @@ function Settings({ config, onUpdate }) {
                 </div>
 
                 <div className={`preview-stage ${isAnimatingPreview ? 'animating-stage' : ''}`}>
-                    <div className={previewMode === 'mobile' ? 'phone-mockup-final' : 'desktop-mockup-final'}>
-                        {previewMode === 'mobile' && (
-                            <div className="phone-header-bar">
-                                <div className="phone-notch"></div>
-                                <div className="phone-status-bar" style={{ marginLeft: 'auto' }}><span>9:41</span></div>
-                            </div>
-                        )}
+                    <div className="mockup-protector">
+                        <div className={previewMode === 'mobile' ? 'phone-mockup-final' : 'desktop-mockup-final'}>
+                            {previewMode === 'mobile' && (
+                                <div className="phone-header-bar">
+                                    <div className="phone-notch"></div>
+                                    <div className="phone-status-bar" style={{ marginLeft: 'auto' }}><span>9:41</span></div>
+                                </div>
+                            )}
 
-                        <div className="shop-screen-container" style={{ position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            <div className="shop-screen" style={shopStyles}>
-                                <div className="shop-nav">
-                                    <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
-                                    {previewMode === 'mobile' ? (
-                                        <div className="shop-menu-icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}><SvgMenu /></div>
-                                    ) : (
-                                        <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
+                            <div className="shop-screen-container" style={{ position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                <div className="shop-screen" style={shopStyles}>
+                                    <div className="shop-nav">
+                                        <span className="shop-logo" style={{ color: 'var(--shop-text)' }}>{config.nombreNegocio || 'Tu Negocio'}</span>
+                                        {previewMode === 'mobile' ? (
+                                            <div className="shop-menu-icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}><SvgMenu /></div>
+                                        ) : (
+                                            <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
+                                        )}
+                                    </div>
+
+                                    <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
+                                        <div className="shop-hero-overlay" style={{ background: 'var(--hero-overlay)' }}></div>
+                                        <div className="shop-hero-content">
+                                            <div className="shop-avatar-placeholder"><SvgBuilding /></div>
+                                            <h1 className="shop-title" style={{ color: 'var(--hero-text-color)' }}>{config.titulo || 'Tu Título Principal'}</h1>
+                                            <p className="shop-desc" style={{ color: 'var(--hero-subtext-color)' }}>{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
+
+                                            {config.horariosAtencion && (
+                                                <div className="shop-hours-hero" style={{ color: 'var(--hero-subtext-color)' }}>
+                                                    <SvgClock /> {config.horariosAtencion}
+                                                </div>
+                                            )}
+
+                                            <div className="shop-hero-actions"><button className="shop-cta-btn">Solicitar Reparación</button></div>
+
+                                            {config.mostrarGarantia && isPremium && config.tiempoGarantia && (
+                                                <div className="shop-trust-badge-hero"><SvgCheckShield /><span>Garantía: {config.tiempoGarantia}</span></div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {config.mostrarTracking && (
+                                        <div className="shop-section shop-section-tracking">
+                                            <div className="tracking-inner glass-effect">
+                                                <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: 'var(--shop-text)' }}>Seguimiento</h3>
+                                                <div className="tracking-input-group">
+                                                    <input type="text" placeholder="#12345" disabled />
+                                                    <button className="shop-cta-btn">Buscar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {config.mostrarPresupuestador !== false && (
+                                        <div className="shop-section">
+                                            <h2 className="shop-section-title">Servicios</h2>
+                                            <div className="shop-services-grid">
+                                                <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span></div>
+                                                <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span></div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* FIX: AGREGADO FEED DE INSTAGRAM A LA VISTA PREVIA */}
+                                    {config.instagramConnected && isPremium && (
+                                        <div className="shop-section">
+                                            <h2 className="shop-section-title" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}><SvgInstagram /> Nuestro Instagram</h2>
+                                            <div className="ig-preview-mockup-grid">
+                                                <div className="ig-mockup-item"></div>
+                                                <div className="ig-mockup-item"></div>
+                                                <div className="ig-mockup-item"></div>
+                                                <div className="ig-mockup-item" style={{ display: previewMode === 'desktop' ? 'block' : 'none' }}></div>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
 
-                                <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>
-                                    <div className="shop-hero-overlay" style={{ background: 'var(--hero-overlay)' }}></div>
-                                    <div className="shop-hero-content">
-                                        <div className="shop-avatar-placeholder"><SvgBuilding /></div>
-                                        <h1 className="shop-title" style={{ color: 'var(--hero-text-color)' }}>{config.titulo || 'Tu Título Principal'}</h1>
-                                        <p className="shop-desc" style={{ color: 'var(--hero-subtext-color)' }}>{config.descripcion || 'Tu descripción corta aparecerá aquí...'}</p>
-
-                                        {config.horariosAtencion && (
-                                            <div className="shop-hours-hero" style={{ color: 'var(--hero-subtext-color)' }}>
-                                                <SvgClock /> {config.horariosAtencion}
-                                            </div>
-                                        )}
-
-                                        <div className="shop-hero-actions"><button className="shop-cta-btn">Solicitar Reparación</button></div>
-
-                                        {config.mostrarGarantia && isPremium && config.tiempoGarantia && (
-                                            <div className="shop-trust-badge-hero"><SvgCheckShield /><span>Garantía: {config.tiempoGarantia}</span></div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {config.mostrarTracking && (
-                                    <div className="shop-section shop-section-tracking">
-                                        <div className="tracking-inner glass-effect">
-                                            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: 'var(--shop-text)' }}>Seguimiento</h3>
-                                            <div className="tracking-input-group">
-                                                <input type="text" placeholder="#12345" disabled />
-                                                <button className="shop-cta-btn">Buscar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {config.mostrarPresupuestador !== false && (
-                                    <div className="shop-section">
-                                        <h2 className="shop-section-title">Servicios</h2>
-                                        <div className="shop-services-grid">
-                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span></div>
-                                            <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span></div>
-                                        </div>
-                                    </div>
+                                {/* FIX: BÓTON DE WHATSAPP EN LA VISTA PREVIA */}
+                                {config.whatsapp && config.whatsapp.length > 0 && (
+                                    <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                                 )}
                             </div>
-
-                            {config.whatsapp && (
-                                <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
-                            )}
                         </div>
                     </div>
                 </div>

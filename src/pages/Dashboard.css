@@ -19,9 +19,10 @@
     align-items: center;
     padding: 0 30px;
     height: 70px;
-    z-index: 10;
+    z-index: 9999;
+    /* FIX: Prioridad absoluta para que el menú tape a Settings */
     user-select: none;
-    -webkit-user-select: none;
+    position: relative;
 }
 
 .tech-brand {
@@ -29,7 +30,18 @@
     font-weight: 800;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-menu {
@@ -134,8 +146,8 @@
     overflow-y: auto;
     transition: all var(--speed-normal) var(--ease-premium);
     scrollbar-width: thin;
-    scrollbar-color: var(--border-glass) transparent;
     position: relative;
+    z-index: 1;
 }
 
 .dashboard-content.modo-editor-activo {
@@ -146,7 +158,7 @@
     overflow: hidden;
 }
 
-/* --- BOTÓN FLOTANTE DE ELIMINACIÓN (FAB) --- */
+/* --- BOTÓN FLOTANTE --- */
 .floating-delete-btn {
     position: fixed;
     left: 20px;
@@ -205,6 +217,7 @@
     margin-bottom: 25px;
     gap: 15px;
     flex-wrap: wrap;
+    width: 100%;
 }
 
 .gestion-sub-nav {
@@ -217,7 +230,6 @@
     width: fit-content;
     backdrop-filter: blur(10px);
     user-select: none;
-    -webkit-user-select: none;
 }
 
 .sub-nav-btn {
@@ -261,6 +273,7 @@
     border: 1px solid var(--border-glass);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     margin-left: auto;
+    box-sizing: border-box;
 }
 
 .search-box-tickets:focus-within {
@@ -285,6 +298,7 @@
 
 .search-box-tickets svg {
     color: var(--text-secondary);
+    flex-shrink: 0;
 }
 
 /* --- PESTAÑAS Y GRUPOS DE FILTROS --- */
@@ -296,15 +310,24 @@
     padding-bottom: 15px;
     margin-bottom: 25px;
     user-select: none;
-    -webkit-user-select: none;
     flex-wrap: wrap;
     align-items: center;
+    width: 100%;
 }
 
 .tabs-left {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    max-width: 100%;
+    padding-bottom: 5px;
+}
+
+.tabs-left::-webkit-scrollbar {
+    display: none;
 }
 
 .filters-group {
@@ -327,6 +350,8 @@
     border: 1px solid transparent;
     font-family: inherit;
     font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .tab-active {
@@ -346,7 +371,7 @@
     color: var(--text-primary);
 }
 
-/* --- LOS 3 DROPDOWNS CUSTOM PREMIUM --- */
+/* --- LOS DROPDOWNS CUSTOM --- */
 .custom-sort-wrapper {
     position: relative;
     z-index: 50;
@@ -401,7 +426,7 @@
     background: var(--bg-panel);
     border: 1px solid var(--border-glass);
     border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     padding: 8px;
     min-width: 200px;
     display: flex;
@@ -409,12 +434,11 @@
     gap: 4px;
     animation: popIn 0.2s ease-out forwards;
     transform-origin: top right;
+    z-index: 1000;
 }
 
 .app-root.dark .custom-sort-menu {
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    background: #0f172a;
     border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -481,9 +505,9 @@
     align-content: start;
     padding-bottom: 20px;
     user-select: auto;
-    -webkit-user-select: auto;
     padding-left: 60px;
-    /* Para que las tarjetas no tapen el botón */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .ticket-list-empty {
@@ -497,6 +521,7 @@
 
 .ticket-item-wrapper {
     position: relative;
+    width: 100%;
 }
 
 .ticket-actions-absolute {
@@ -563,11 +588,12 @@
 }
 
 /* =======================================================
-   RESPONSIVE GLOBAL
+   RESPONSIVE PARA 320PX Y MENÚ HAMBURGUESA
 ======================================================= */
 @media (max-width: 900px) {
     .ticket-list {
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        padding-left: 0;
     }
 }
 
@@ -580,20 +606,54 @@
         font-size: 1.1rem;
     }
 
-    .nav-menu {
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 5px;
+    .mobile-menu-toggle {
+        display: flex;
     }
 
-    .nav-menu::-webkit-scrollbar {
+    /* FIX: Fondo sólido e inquebrantable para el menú móvil */
+    .nav-menu {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: var(--bg-panel);
+        /* Fondo sólido */
+        flex-direction: column;
+        padding: 20px;
+        box-sizing: border-box;
+        border-bottom: 1px solid var(--border-glass);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         display: none;
+        z-index: 9999;
+    }
+
+    .app-root.dark .nav-menu {
+        background: #0f172a;
+    }
+
+    /* Gris muy oscuro sólido */
+
+    .nav-menu.mobile-open {
+        display: flex;
+        animation: popIn 0.2s ease forwards;
     }
 
     .nav-link-btn {
-        font-size: 0.95rem;
-        padding: 0 12px;
+        width: 100%;
+        text-align: left;
+        padding: 15px;
+        border-bottom: 1px solid var(--border-glass);
+        border-radius: 0;
+    }
+
+    .nav-link-active::after {
+        display: none;
+    }
+
+    .nav-link-active {
+        background: rgba(37, 99, 235, 0.1);
+        border-radius: 8px;
+        border-bottom: none;
     }
 
     .btn-view-site {
@@ -644,6 +704,7 @@
 
     .search-box-tickets {
         max-width: 100%;
+        min-width: 100%;
         margin-left: 0;
         margin-top: 5px;
     }
@@ -655,9 +716,11 @@
     }
 
     .tabs-left {
-        justify-content: space-between;
+        justify-content: flex-start;
         border-bottom: 1px solid var(--border-glass);
         padding-bottom: 15px;
+        width: 100%;
+        overflow-x: auto;
     }
 
     .filters-group {
@@ -698,14 +761,50 @@
 @media (max-width: 400px) {
     .tech-navbar {
         height: 60px;
+        padding: 0 10px;
     }
 
     .tech-brand {
         font-size: 1rem;
+        gap: 5px;
     }
 
     .action-btn {
         font-size: 0.75rem;
         padding: 6px 10px;
+    }
+
+    .dashboard-content {
+        padding: 10px;
+    }
+
+    .sub-nav-btn {
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+
+    .search-box-tickets {
+        padding: 8px 12px;
+    }
+
+    .tab-btn {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+
+    .custom-sort-header {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+
+    .filters-group {
+        gap: 8px;
+    }
+
+    .floating-delete-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
     }
 }
