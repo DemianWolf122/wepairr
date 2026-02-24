@@ -12,7 +12,6 @@ import AIChatAssistant from '../components/AIChatAssistant';
 import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
-// --- SVGs GENERALES ---
 const MoonIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>;
 const SunIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>;
 const SvgInbox = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></svg>;
@@ -25,7 +24,6 @@ const SvgAddTicket = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" he
 const SvgX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>;
 const SvgMenu = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>;
 
-// --- SVGs DE FILTROS Y BÚSQUEDA ---
 const SvgChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>;
 const SvgSort = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="4" x2="14" y2="4" /><line x1="10" y1="4" x2="3" y2="4" /><line x1="21" y1="12" x2="12" y2="12" /><line x1="8" y1="12" x2="3" y2="12" /><line x1="21" y1="20" x2="16" y2="20" /><line x1="12" y1="20" x2="3" y2="20" /><line x1="14" y1="2" x2="14" y2="6" /><line x1="8" y1="10" x2="8" y2="14" /><line x1="16" y1="18" x2="16" y2="22" /></svg>;
 const SvgMonitor = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>;
@@ -41,7 +39,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
 
-    // --- ESTADOS ---
     const [busqueda, setBusqueda] = useState('');
     const [criterioOrden, setCriterioOrden] = useState('recientes');
     const [filtroTipo, setFiltroTipo] = useState('todos');
@@ -49,7 +46,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [isDeleteMode, setIsDeleteMode] = useState(false);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
     const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
     const [isTipoMenuOpen, setIsTipoMenuOpen] = useState(false);
     const [isEstadoMenuOpen, setIsEstadoMenuOpen] = useState(false);
@@ -72,7 +68,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Opciones de filtrado
     const sortOptions = [{ id: 'recientes', label: 'Recientes Primero', icon: <SvgRecent /> }, { id: 'prioridad', label: 'Urgentes Primero', icon: <SvgAlert /> }, { id: 'estado', label: 'Ingresados Primero', icon: <SvgPin /> }, { id: 'antiguos', label: 'Más Antiguos', icon: <SvgHourglass /> }];
     const tipoOptions = [{ id: 'todos', label: 'Todos los Equipos' }, { id: 'celular', label: 'Celulares / Tablets' }, { id: 'pc', label: 'PCs / Notebooks' }, { id: 'gpu', label: 'Placas de Video' }, { id: 'consola', label: 'Consolas' }];
     const estadoOptions = [{ id: 'todos', label: 'Cualquier Estado' }, { id: 'Ingresado', label: 'Solo Ingresados' }, { id: 'En Proceso', label: 'Solo En Proceso' }, { id: 'Finalizado', label: 'Solo Finalizados' }, { id: 'Entregado', label: 'Solo Entregados' }];
@@ -136,7 +131,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         else moverAPapelera(id);
     };
 
-    // Función auxiliar para cambiar sección y cerrar menú en móvil
     const cambiarSeccion = (seccion) => {
         setSeccionPrincipal(seccion);
         setMobileMenuOpen(false);
@@ -171,9 +165,11 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 </div>
             </nav>
 
+            {/* OVERLAY FONDO OSCURO PARA EL MENÚ MÓVIL */}
+            <div className={`mobile-menu-backdrop ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
+
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
 
-                {/* BOTÓN FLOTANTE (FAB) DE ELIMINAR */}
                 {seccionPrincipal === 'gestion' && subSeccionGestion === 'tickets' && vistaActual !== 'nuevo' && (
                     <button
                         className={`floating-delete-btn ${isDeleteMode ? 'active' : ''}`}

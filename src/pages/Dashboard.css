@@ -19,7 +19,8 @@
     align-items: center;
     padding: 0 30px;
     height: 70px;
-    z-index: 9999;
+    z-index: 10000;
+    /* Prioridad altísima para estar arriba de todo */
     user-select: none;
     position: relative;
 }
@@ -586,20 +587,8 @@
     }
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* =======================================================
-   RESPONSIVE PARA 320PX Y MENÚ HAMBURGUESA
+   RESPONSIVE PARA 320PX Y MENÚ HAMBURGUESA MEJORADO
 ======================================================= */
 @media (max-width: 900px) {
     .ticket-list {
@@ -610,12 +599,20 @@
 
 @media (max-width: 768px) {
 
-    /* Ajuste para que el Navbar sea siempre 100% real */
+    /* Navbar Fijo Arriba para anclar el menú */
     .tech-navbar {
-        padding: 0 15px;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
         box-sizing: border-box;
     }
+
+    .dashboard-wrapper {
+        padding-top: 70px;
+    }
+
+    /* Compensa el navbar fijo */
 
     .tech-brand {
         font-size: 1.1rem;
@@ -626,33 +623,58 @@
         display: flex;
     }
 
-    /* FIX DE MENU HAMBURGUESA: Ancho Total y Fondo Sólido Absoluto */
+    /* BACKDROP OSCURO DEL MENÚ */
+    .mobile-menu-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 9998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .mobile-menu-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* EL MENÚ CORTINA PERFECTO */
     .nav-menu {
-        position: absolute;
-        top: 100%;
-        left: -15px;
-        /* Compensa exactamente el padding del navbar para tocar el borde izquierdo */
-        width: 100vw;
-        /* Asegura cubrir toda la pantalla a la derecha */
-        background-color: var(--bg-panel) !important;
-        /* FONDO 100% SÓLIDO, evita bugs de cristal */
+        position: fixed;
+        /* No absolute, Fixed al viewport */
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: var(--bg-panel);
+        /* FONDO SÓLIDO */
         flex-direction: column;
         align-items: stretch;
-        padding: 15px 20px;
+        padding: 20px;
         box-sizing: border-box;
-        border-bottom: 2px solid var(--accent-color);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-        display: none;
-        z-index: 99999;
+        border-bottom: 1px solid var(--border-glass);
+        border-bottom-left-radius: 24px;
+        border-bottom-right-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+
+        /* Oculto por defecto usando Transform en vez de Display None para que anime */
+        transform: translateY(-150%);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex !important;
     }
 
     .app-root.dark .nav-menu {
-        background-color: #0f172a !important;
+        background: #0f172a;
     }
 
     .nav-menu.mobile-open {
-        display: flex;
-        animation: slideDown 0.2s ease forwards;
+        transform: translateY(0);
     }
 
     .nav-link-btn {
@@ -690,7 +712,7 @@
         padding: 15px;
     }
 
-    /* FIX BOTON BORRAR: Posicionado a la IZQUIERDA para no chocar con el chat IA */
+    /* FIX BOTON BORRAR: Forzado a la IZQUIERDA con !important */
     .floating-delete-btn {
         top: auto !important;
         bottom: 20px !important;
@@ -698,10 +720,6 @@
         right: auto !important;
         transform: none !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .floating-delete-btn:hover {
-        transform: scale(1.1) !important;
     }
 
     .gestion-header-row {
@@ -782,9 +800,12 @@
         padding: 0 10px;
     }
 
-    /* Compensación exacta para el padding en resoluciones de 320px a 400px */
+    .dashboard-wrapper {
+        padding-top: 60px;
+    }
+
     .nav-menu {
-        left: -10px;
+        top: 60px;
     }
 
     .tech-brand {
@@ -824,11 +845,12 @@
         gap: 8px;
     }
 
-    /* FIX BOTON BORRAR 320PX: Esquina inferior izquierda absoluta */
+    /* FIX BOTON BORRAR 320PX: Izquierda absoluta */
     .floating-delete-btn {
         width: 50px !important;
         height: 50px !important;
         bottom: 15px !important;
         left: 15px !important;
+        right: auto !important;
     }
 }
