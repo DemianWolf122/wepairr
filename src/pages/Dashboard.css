@@ -20,7 +20,7 @@
     padding: 0 30px;
     height: 70px;
     z-index: 9999;
-    /* FIX: Prioridad absoluta para que el menú tape a Settings */
+    /* Prioridad absoluta para que el menú tape a todo el contenido */
     user-select: none;
     position: relative;
 }
@@ -587,6 +587,18 @@
     }
 }
 
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* =======================================================
    RESPONSIVE PARA 320PX Y MENÚ HAMBURGUESA
 ======================================================= */
@@ -604,46 +616,42 @@
 
     .tech-brand {
         font-size: 1.1rem;
+        gap: 10px;
     }
 
     .mobile-menu-toggle {
         display: flex;
     }
 
-    /* FIX: Fondo sólido e inquebrantable para el menú móvil */
+    /* FIX DE MENU HAMBURGUESA: Fondo Sólido Absoluto */
     .nav-menu {
         position: absolute;
-        top: 70px;
+        top: 100%;
         left: 0;
         width: 100%;
-        background: var(--bg-panel);
-        /* Fondo sólido */
+        background: var(--bg-main);
+        /* FONDO SOLIDO, NADA DE TRANSPARENCIAS */
         flex-direction: column;
-        padding: 20px;
+        padding: 15px 20px;
         box-sizing: border-box;
-        border-bottom: 1px solid var(--border-glass);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        border-bottom: 2px solid var(--accent-color);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         display: none;
-        z-index: 9999;
+        z-index: 99999;
     }
-
-    .app-root.dark .nav-menu {
-        background: #0f172a;
-    }
-
-    /* Gris muy oscuro sólido */
 
     .nav-menu.mobile-open {
         display: flex;
-        animation: popIn 0.2s ease forwards;
+        animation: slideDown 0.2s ease forwards;
     }
 
     .nav-link-btn {
         width: 100%;
         text-align: left;
-        padding: 15px;
+        padding: 15px 15px;
         border-bottom: 1px solid var(--border-glass);
-        border-radius: 0;
+        border-radius: 8px;
+        margin-bottom: 5px;
     }
 
     .nav-link-active::after {
@@ -652,8 +660,7 @@
 
     .nav-link-active {
         background: rgba(37, 99, 235, 0.1);
-        border-radius: 8px;
-        border-bottom: none;
+        border-bottom: 1px solid transparent;
     }
 
     .btn-view-site {
@@ -673,11 +680,12 @@
         padding: 15px;
     }
 
+    /* FIX BOTON BORRAR: Posicionado a la IZQUIERDA para no chocar con el chat IA */
     .floating-delete-btn {
         top: auto;
         bottom: 20px;
-        left: auto;
-        right: 20px;
+        left: 20px;
+        right: auto;
         transform: none;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
@@ -801,10 +809,12 @@
         gap: 8px;
     }
 
+    /* FIX BOTON BORRAR 320PX: Posicionado a la IZQUIERDA */
     .floating-delete-btn {
         width: 50px;
         height: 50px;
         bottom: 15px;
-        right: 15px;
+        left: 15px;
+        right: auto;
     }
 }

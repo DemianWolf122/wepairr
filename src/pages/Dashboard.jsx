@@ -137,7 +137,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         else moverAPapelera(id);
     };
 
-    // Función auxiliar para cambiar sección y cerrar menú en móvil
+    // Función auxiliar para cambiar sección y cerrar menú en móvil automáticamente
     const cambiarSeccion = (seccion) => {
         setSeccionPrincipal(seccion);
         setMobileMenuOpen(false);
@@ -154,7 +154,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none' }}>Wepairr <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Workspace</span></Link>
                 </div>
 
-                {/* Este menú se convierte en dropdown en celulares (<768px) */}
+                {/* Dropdown de Navegación (Solo visible al tocar la hamburguesa en móvil) */}
                 <div className={`nav-menu ${mobileMenuOpen ? 'mobile-open' : ''}`}>
                     <button onClick={() => cambiarSeccion('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
                     <button onClick={() => cambiarSeccion('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
@@ -176,7 +176,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
             <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
 
-                {/* BOTÓN FLOTANTE (FAB) */}
+                {/* BOTÓN FLOTANTE (FAB) AHORA POSICIONADO A LA IZQUIERDA EN MÓVILES */}
                 {seccionPrincipal === 'gestion' && subSeccionGestion === 'tickets' && vistaActual !== 'nuevo' && (
                     <button
                         className={`floating-delete-btn ${isDeleteMode ? 'active' : ''}`}
@@ -281,7 +281,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 </header>
 
                                 {vistaActual === 'nuevo' ? (
-                                    <NewTicketForm onTicketCreated={() => setVistaActual('activos')} />
+                                    <NewTicketForm onTicketCreated={handleTicketCreated} />
                                 ) : (
                                     <div className="ticket-list">
                                         {ticketsMostrados.length === 0 && <p className="ticket-list-empty">No se encontraron tickets con estos filtros.</p>}
