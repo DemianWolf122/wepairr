@@ -7,10 +7,7 @@ const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke
 const SvgPalette = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>;
 const SvgMedia = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>;
 const SvgZap = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-
-// NUEVO ICONO PARA REDES SOCIALES
 const SvgGlobe = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
-
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
 const SvgPhone = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>;
 const SvgBattery = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>;
@@ -38,7 +35,7 @@ const PremiumGate = ({ children, isPremium }) => {
 
 const ACCENT_COLORS = [{ hex: '#2563eb' }, { hex: '#10b981' }, { hex: '#8b5cf6' }, { hex: '#e11d48' }, { hex: '#f97316' }, { hex: '#334155' }, { hex: '#ec4899' }, { hex: '#06b6d4' }, { hex: '#eab308' }, { hex: '#4f46e5' }];
 const TEXT_COLORS = [{ hex: '#000000' }, { hex: '#0f172a' }, { hex: '#334155' }, { hex: '#1e3a8a' }, { hex: '#ffffff' }, { hex: '#f8fafc' }, { hex: '#cbd5e1' }, { hex: '#e0f2fe' }];
-const FONTS = [{ label: 'Inter (Corporativa)', value: '"Inter", system-ui, sans-serif' }, { label: 'Helvetica (Premium)', value: '"Helvetica Neue", Helvetica, sans-serif' }, { label: 'Montserrat (Tech)', value: '"Montserrat", sans-serif' }];
+const FONTS = [{ label: 'Inter (Corp)', value: '"Inter", system-ui, sans-serif' }, { label: 'Helvetica', value: '"Helvetica Neue", Helvetica, sans-serif' }, { label: 'Montserrat', value: '"Montserrat", sans-serif' }];
 
 const getLuminance = (hex) => {
     if (!hex) return 0;
@@ -169,15 +166,17 @@ function Settings({ config, onUpdate }) {
 
     return (
         <div className="settings-editor-layout">
-            <div className="dev-plan-selector glass-effect">
-                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>DEV: PLAN</span>
-                <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select">
-                    <option value="standard">Gratis</option>
-                    <option value="premium">PRO</option>
-                </select>
-            </div>
 
             <div className="settings-controls-panel glass-effect">
+                {/* FIX: Selector de plan integrado en el panel para no superponerse en móviles */}
+                <div className="dev-plan-selector-inline glass-effect">
+                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>DEV: PLAN</span>
+                    <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select">
+                        <option value="standard">Gratis</option>
+                        <option value="premium">PRO</option>
+                    </select>
+                </div>
+
                 <div className="settings-header-row">
                     <div>
                         <h2 className="settings-main-title">Editor Visual</h2>
@@ -188,7 +187,7 @@ function Settings({ config, onUpdate }) {
                 <div className="accordions-container">
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
-                            <span className="accordion-title"><SvgBuilding /> Textos Principales</span>
+                            <span className="accordion-title"><SvgBuilding /> Textos</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'identidad' && (
@@ -213,23 +212,23 @@ function Settings({ config, onUpdate }) {
 
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'apariencia' ? null : 'apariencia')}>
-                            <span className="accordion-title"><SvgPalette /> Estilos y Colores</span>
+                            <span className="accordion-title"><SvgPalette /> Diseño</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'apariencia' && (
                             <div className="accordion-content">
                                 <div className="toggle-box glass-input-effect" style={{ marginBottom: '20px' }}>
-                                    <div><strong className="toggle-title">Modo Oscuro (Vidriera)</strong></div>
+                                    <div><strong className="toggle-title">Modo Oscuro</strong></div>
                                     <label className="switch"><input type="checkbox" name="shopDarkMode" checked={config.shopDarkMode || false} onChange={handleChange} /><span className="slider round"></span></label>
                                 </div>
-                                <label className="settings-label">Color de Marca (Botones):</label>
+                                <label className="settings-label">Color Principal:</label>
                                 <div className="color-presets-grid accent-grid" style={{ marginBottom: '20px' }}>
                                     {ACCENT_COLORS.map(preset => (
                                         <button key={preset.hex} type="button" className={`color-preset-btn accent-btn ${config.colorTema === preset.hex ? 'active' : ''}`} style={{ backgroundColor: preset.hex }} onClick={() => onUpdate({ ...config, colorTema: preset.hex })} />
                                     ))}
                                 </div>
                                 <PremiumGate isPremium={isPremium}>
-                                    <label className="settings-label">Color Textos Principales:</label>
+                                    <label className="settings-label">Color de Textos:</label>
                                     <div className="color-presets-grid text-grid" style={{ marginBottom: '15px' }}>
                                         {TEXT_COLORS.map(preset => {
                                             const isSafe = checkColorSafety(preset.hex, currentBgColor);
@@ -237,7 +236,7 @@ function Settings({ config, onUpdate }) {
                                         })}
                                     </div>
                                     <div className="settings-form-group" style={{ marginTop: '20px' }}>
-                                        <label className="settings-label">Tipografía Corporativa:
+                                        <label className="settings-label">Tipografía:
                                             <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input select-input">
                                                 {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                                             </select>
@@ -257,13 +256,13 @@ function Settings({ config, onUpdate }) {
                             <div className="accordion-content">
                                 <PremiumGate isPremium={isPremium}>
                                     <div className="settings-form-group">
-                                        <label className="settings-label">Imagen de Portada (Fondo):</label>
+                                        <label className="settings-label">Imagen de Portada:</label>
                                         <div className="file-upload-container">
                                             <input type="text" name="bannerUrl" value={config.bannerUrl || ''} onChange={handleChange} className="settings-input file-url-input" placeholder="URL web o archivo →" />
                                             <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" style={{ display: 'none' }} />
                                             <button type="button" className="btn-upload-file" onClick={triggerFileInput}><SvgUpload /> Subir</button>
                                         </div>
-                                        <label className="settings-label" style={{ marginTop: '15px' }}>Video de Presentación (YouTube):</label>
+                                        <label className="settings-label" style={{ marginTop: '15px' }}>Video (YouTube):</label>
                                         <div className="file-upload-container">
                                             <span className="input-prefix-icon"><SvgVideo /></span>
                                             <input type="text" name="videoUrl" value={config.videoUrl || ''} onChange={handleChange} className="settings-input" placeholder="https://youtube.com/watch?v=..." style={{ paddingLeft: '40px' }} />
@@ -274,7 +273,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* REDES (RESTAURADO EL ICONO Y LA FUNCIÓN) */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
                             <span className="accordion-title"><SvgGlobe /> Contacto & Redes</span>
@@ -310,12 +308,11 @@ function Settings({ config, onUpdate }) {
 
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'funcionalidades' ? null : 'funcionalidades')}>
-                            <span className="accordion-title"><SvgZap /> Visibilidad de Módulos</span>
+                            <span className="accordion-title"><SvgZap /> Módulos</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'funcionalidades' && (
                             <div className="accordion-content">
-                                <p className="settings-subtitle" style={{ marginBottom: '15px' }}>Edita el contenido en "Gestión".</p>
                                 <div className="settings-form-group">
                                     <div className="toggle-box glass-input-effect">
                                         <div><strong className="toggle-title">Cotizar Reparación</strong></div>
@@ -406,7 +403,7 @@ function Settings({ config, onUpdate }) {
                                 {config.mostrarTracking && (
                                     <div className="shop-section shop-section-tracking">
                                         <div className="tracking-inner glass-effect">
-                                            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: 'var(--shop-text)' }}>Seguimiento de Equipo</h3>
+                                            <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', color: 'var(--shop-text)' }}>Seguimiento</h3>
                                             <div className="tracking-input-group">
                                                 <input type="text" placeholder="#12345" disabled />
                                                 <button className="shop-cta-btn">Buscar</button>
@@ -417,36 +414,15 @@ function Settings({ config, onUpdate }) {
 
                                 {config.mostrarPresupuestador !== false && (
                                     <div className="shop-section">
-                                        <h2 className="shop-section-title">Cotizar Reparación</h2>
+                                        <h2 className="shop-section-title">Servicios</h2>
                                         <div className="shop-services-grid">
                                             <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgPhone /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Pantallas</span></div>
                                             <div className="shop-service-card"><div className="service-icon" style={{ color: 'var(--shop-accent-icon)' }}><SvgBattery /></div><span style={{ color: 'var(--shop-text-secondary)' }}>Baterías</span></div>
                                         </div>
                                     </div>
                                 )}
-
-                                {config.videoUrl && isPremium && getEmbedUrl(config.videoUrl) && (
-                                    <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
-                                        <h2 className="shop-section-title">Presentación</h2>
-                                        <div className="shop-video-container">
-                                            <iframe src={getEmbedUrl(config.videoUrl)} title="Video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {config.mostrarMapa && isPremium && config.mapaUrl && (
-                                    <div className="shop-section" style={{ background: 'var(--shop-bg-secondary)' }}>
-                                        <h2 className="shop-section-title">Nuestra Ubicación</h2>
-                                        <div className="shop-map-preview">
-                                            <SvgMapPin style={{ color: 'var(--shop-accent)', width: '32px', height: '32px' }} />
-                                            <p style={{ margin: '10px 0', fontSize: '0.9rem', color: 'var(--shop-text-secondary)' }}>Vista previa de Mapas</p>
-                                            <span className="shop-secondary-btn" style={{ fontSize: '0.85rem', padding: '8px 15px' }}>Abrir Maps</span>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
-                            {/* WHATSAPP ANCLADO: Nunca saldrá del contenedor .shop-screen-container */}
                             {config.whatsapp && (
                                 <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                             )}
