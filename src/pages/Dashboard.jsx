@@ -24,6 +24,7 @@ const SvgSubFeatures = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" 
 const SvgAddTicket = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>;
 const SvgX = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>;
 const SvgMenu = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>;
+const SvgRefresh = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>;
 
 // --- SVGs DE FILTROS Y BÚSQUEDA ---
 const SvgChevronDown = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>;
@@ -71,7 +72,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Opciones de filtrado
     const sortOptions = [{ id: 'recientes', label: 'Recientes Primero', icon: <SvgRecent /> }, { id: 'prioridad', label: 'Urgentes Primero', icon: <SvgAlert /> }, { id: 'estado', label: 'Ingresados Primero', icon: <SvgPin /> }, { id: 'antiguos', label: 'Más Antiguos', icon: <SvgHourglass /> }];
     const tipoOptions = [{ id: 'todos', label: 'Todos los Equipos' }, { id: 'celular', label: 'Celulares / Tablets' }, { id: 'pc', label: 'PCs / Notebooks' }, { id: 'gpu', label: 'Placas de Video' }, { id: 'consola', label: 'Consolas' }];
     const estadoOptions = [{ id: 'todos', label: 'Cualquier Estado' }, { id: 'Ingresado', label: 'Solo Ingresados' }, { id: 'En Proceso', label: 'Solo En Proceso' }, { id: 'Finalizado', label: 'Solo Finalizados' }, { id: 'Entregado', label: 'Solo Entregados' }];
@@ -143,10 +143,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     return (
         <div className="dashboard-wrapper">
 
-            {/* OVERLAY FONDO OSCURO PARA EL MENÚ MÓVIL (Baja detrás del navbar) */}
             <div className={`mobile-menu-backdrop ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
 
-            {/* NAVBAR STICKY: Mantiene su lugar y permite que el menú fluya debajo */}
             <nav className="tech-navbar">
                 <div className="tech-brand">
                     <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -301,10 +299,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                                         <button onClick={() => moverAPapelera(ticket.id)} className="action-btn btn-dark">Ignorar</button>
                                                     </div>
                                                 )}
+
+                                                {/* FIX: Botón de Restaurar Premium en lugar de Eliminar/Restaurar viejos */}
                                                 {!isDeleteMode && vistaActual === 'papelera' && (
                                                     <div className="ticket-actions-absolute ticket-actions-trash">
-                                                        <button onClick={() => restaurarTicket(ticket.id)} className="action-btn btn-green">Restaurar</button>
-                                                        <button onClick={() => eliminarDefinitivamente(ticket.id)} className="action-btn btn-red">Eliminar</button>
+                                                        <button onClick={() => restaurarTicket(ticket.id)} className="btn-restore-premium">
+                                                            <SvgRefresh /> Restaurar
+                                                        </button>
                                                     </div>
                                                 )}
                                             </div>

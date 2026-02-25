@@ -9,7 +9,7 @@
     box-sizing: border-box;
 }
 
-/* --- NAVEGACIÓN STICKY (La clave del Responsive) --- */
+/* --- NAVEGACIÓN STICKY --- */
 .tech-navbar {
     position: sticky;
     top: 0;
@@ -544,6 +544,84 @@
     font-weight: 600;
 }
 
+.ticket-item-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.ticket-actions-absolute {
+    position: absolute;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+    user-select: none;
+}
+
+.ticket-actions-inbox {
+    top: 15px;
+}
+
+.ticket-actions-trash {
+    top: 25px;
+}
+
+.action-btn {
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem;
+    transition: transform 0.2s ease, filter 0.2s;
+    font-family: inherit;
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.btn-green {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.btn-dark {
+    background: var(--bg-input-glass);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-glass);
+}
+
+.btn-red {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* --- FIX NUEVO BOTÓN RESTAURAR PREMIUM --- */
+.btn-restore-premium {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-restore-premium:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
 @keyframes popIn {
     0% {
         opacity: 0;
@@ -590,7 +668,6 @@
         display: flex;
     }
 
-    /* BACKDROP OSCURO DEL MENÚ MÓVIL */
     .mobile-menu-backdrop {
         position: fixed;
         top: 0;
@@ -610,15 +687,12 @@
         pointer-events: auto;
     }
 
-    /* EL MENÚ CORTINA PERFECTO (100% Sólido y al Ancho Total) */
     .nav-menu {
         position: absolute;
         top: 100%;
-        /* Justo debajo del navbar sticky */
         left: 0;
         width: 100%;
         background: var(--bg-main);
-        /* Fondo de la app, cero transparencias */
         flex-direction: column;
         align-items: stretch;
         padding: 20px;
@@ -627,7 +701,6 @@
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         z-index: 9999;
         display: none;
-        height: 500px;
     }
 
     .nav-menu.mobile-open {
@@ -638,7 +711,7 @@
     .nav-link-btn {
         width: 100%;
         text-align: left;
-        padding: 15px;
+        padding: 15px 15px;
         border-bottom: 1px solid var(--border-glass);
         border-radius: 8px;
         margin-bottom: 5px;
@@ -671,7 +744,6 @@
         padding: 15px;
     }
 
-    /* FIX BOTON BORRAR: Izquierda con max prioridad */
     .floating-delete-btn {
         top: auto !important;
         bottom: 20px !important;
@@ -737,7 +809,6 @@
         left: 0;
     }
 
-    /* Abre hacia la izquierda en móvil */
     .tab-btn-action {
         margin-left: 0;
         width: 100%;
@@ -750,8 +821,6 @@
         padding-left: 0;
         padding-bottom: 90px;
     }
-
-    /* Espacio para botones flotantes */
 }
 
 @media (max-width: 400px) {
