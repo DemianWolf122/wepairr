@@ -1,10 +1,10 @@
-/* --- BOTÓN FLOTANTE (FAB) DE IA --- */
+/* --- BOTÓN FLOTANTE (FAB) --- */
 .ai-fab {
     position: fixed;
     bottom: 25px;
     right: 25px;
-    width: 65px;
-    height: 65px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     color: white;
@@ -14,100 +14,118 @@
     cursor: pointer;
     z-index: 1000;
     border: none;
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
-    /* ANIMACIÓN PREMIUM: Levitación Suave Continua */
-    animation: floatAI 4s ease-in-out infinite;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    /* FIX ANIMACIÓN: Respiración suave (Glow Pulse) sin saltos de coordenadas */
+    animation: premiumBreathe 4s ease-in-out infinite;
+}
+
+.ai-fab-hidden {
+    transform: scale(0) !important;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .ai-fab:hover {
-    transform: scale(1.05) translateY(-5px);
-    box-shadow: 0 12px 35px rgba(37, 99, 235, 0.5);
+    transform: scale(1.08);
     animation-play-state: paused;
+    box-shadow: 0 12px 35px rgba(37, 99, 235, 0.6);
 }
 
 .ai-fab:active {
     transform: scale(0.95);
 }
 
-/* Efecto visual tipo Apple/High-End */
-@keyframes floatAI {
+@keyframes premiumBreathe {
     0% {
-        transform: translateY(0px);
         box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        transform: scale(1);
     }
 
     50% {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+        box-shadow: 0 8px 35px rgba(37, 99, 235, 0.6);
+        transform: scale(1.03);
     }
 
     100% {
-        transform: translateY(0px);
         box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        transform: scale(1);
     }
 }
 
-/* --- VENTANA DEL CHAT --- */
+/* --- VENTANA DEL CHAT (ARQUITECTURA FLEXBOX FLUIDA) --- */
 .ai-chat-window {
     position: fixed;
     bottom: 100px;
+    /* Separación del borde inferior */
     right: 25px;
-    width: 350px;
+
+    /* Dimensiones Flexibles Inteligentes */
+    width: 380px;
     max-width: calc(100vw - 40px);
-    /* Previene desbordes en móviles chicos */
-    height: 500px;
-    max-height: 80vh;
-    /* Nunca tapará la barra de arriba */
+    /* Previene desbordes en 320px */
+    height: 600px;
+    max-height: calc(100vh - 120px);
+    /* Nunca se sale por arriba de la pantalla */
+
     background: var(--bg-panel-glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--border-glass);
-    border-radius: 20px;
+    border-radius: 24px;
+
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    /* Pilar del Responsive */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     overflow: hidden;
-    animation: slideUpFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     box-sizing: border-box;
 }
 
 .app-root.dark .ai-chat-window {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
     background: rgba(15, 23, 42, 0.95);
-    /* Más sólido en dark mode para lectura */
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
 
-@keyframes slideUpFade {
+/* Animación de entrada estilo Pop-Up Apple */
+.animate-pop-up {
+    animation: chatPopUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: bottom right;
+}
+
+@keyframes chatPopUp {
     0% {
         opacity: 0;
-        transform: translateY(20px) scale(0.95);
+        transform: scale(0.9) translateY(20px);
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: scale(1) translateY(0);
     }
 }
 
-/* --- CABECERA --- */
+/* --- CABECERA DEL CHAT --- */
 .ai-chat-header {
-    padding: 15px 20px;
+    padding: 18px 24px;
     background: var(--bg-input-glass);
     border-bottom: 1px solid var(--border-glass);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
+    /* Previene que la cabecera se aplaste */
 }
 
 .ai-header-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-weight: 800;
+    font-size: 1.05rem;
     color: var(--text-primary);
 }
 
@@ -116,126 +134,217 @@
 }
 
 .ai-close-btn {
-    background: transparent;
-    border: none;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glass);
     color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .ai-close-btn:hover {
-    color: var(--text-primary);
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+    transform: rotate(90deg);
 }
 
-/* --- CUERPO (MENSAJES) --- */
+/* --- CUERPO (LISTA DE MENSAJES) --- */
 .ai-chat-body {
     flex: 1;
-    padding: 20px;
+    /* Ocupa todo el espacio sobrante disponible */
+    padding: 24px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 18px;
     scrollbar-width: thin;
+    scrollbar-color: var(--border-glass) transparent;
 }
 
+/* Contenedor del mensaje para alinear */
+.ai-message-wrapper {
+    display: flex;
+    width: 100%;
+    animation: msgSlideUp 0.3s ease forwards;
+}
+
+.ai-message-wrapper.user {
+    justify-content: flex-end;
+}
+
+.ai-message-wrapper.ai {
+    justify-content: flex-start;
+}
+
+@keyframes msgSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilo de la Burbuja de Chat */
 .ai-message {
     max-width: 85%;
-    padding: 12px 16px;
-    border-radius: 16px;
+    padding: 14px 18px;
     font-size: 0.95rem;
     line-height: 1.5;
     word-wrap: break-word;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
 .ai-message.ai {
-    align-self: flex-start;
     background: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
     color: var(--text-primary);
-    border-bottom-left-radius: 4px;
+    /* Cola de globo a la izquierda */
+    border-radius: 20px 20px 20px 4px;
 }
 
 .ai-message.user {
-    align-self: flex-end;
-    background: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     color: white;
-    border-bottom-right-radius: 4px;
+    /* Cola de globo a la derecha */
+    border-radius: 20px 20px 4px 20px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
 }
 
-/* --- PIE (INPUT) --- */
+/* Animación de "Escribiendo..." */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 14px 20px !important;
+}
+
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-secondary);
+    border-radius: 50%;
+    animation: bounceType 1.4s infinite ease-in-out both;
+}
+
+.typing-indicator span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes bounceType {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* --- PIE DEL CHAT (INPUT INTEGRADO PÍLDORA) --- */
 .ai-chat-footer {
-    padding: 15px;
-    border-top: 1px solid var(--border-glass);
-    background: var(--bg-panel);
+    padding: 15px 20px 20px 20px;
+    background: transparent;
     flex-shrink: 0;
 }
 
-.ai-input-form {
+/* El nuevo diseño "Pill" integra input y botón en una sola línea */
+.ai-input-pill {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 99px;
+    /* Forma de píldora redonda */
+    padding: 5px 5px 5px 20px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.ai-input-form input {
+.ai-input-pill:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15);
+}
+
+.ai-input-pill input {
     flex: 1;
     min-width: 0;
-    /* Vital para que flexbox no lo desborde en 320px */
-    padding: 12px 15px;
-    border-radius: 12px;
-    border: 1px solid var(--border-glass);
-    background: var(--bg-input-glass);
+    /* Vital para que flexbox no rompa en móviles */
+    border: none;
+    background: transparent;
     color: var(--text-primary);
     outline: none;
     font-family: inherit;
-    font-size: 0.95rem;
-    transition: border-color 0.3s;
+    font-size: 1rem;
+    /* Evita zoom automático en iOS Safari */
 }
 
-.ai-input-form input:focus {
-    border-color: var(--accent-color);
+.ai-input-pill input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
 }
 
 .ai-submit-btn {
     background: var(--accent-color);
     color: white;
     border: none;
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* Botón redondo dentro de la píldora */
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: transform 0.2s var(--ease-bounce);
+    transition: transform 0.2s var(--ease-bounce), background-color 0.2s;
     flex-shrink: 0;
 }
 
 .ai-submit-btn:hover:not(:disabled) {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    background: var(--accent-hover);
 }
 
 .ai-submit-btn:disabled {
-    opacity: 0.5;
+    background: var(--border-glass);
+    color: var(--text-secondary);
     cursor: not-allowed;
+    transform: scale(1);
 }
 
-/* --- RESPONSIVE IA (HASTA 320PX) --- */
+/* =======================================================
+   RESPONSIVE PARA PANTALLAS CHICAS (Hasta 320px)
+======================================================= */
 @media (max-width: 768px) {
     .ai-fab {
         bottom: 20px;
         right: 20px;
-        width: 60px;
-        height: 60px;
+        width: 56px;
+        height: 56px;
     }
 
     .ai-chat-window {
         bottom: 90px;
         right: 15px;
-        left: auto;
+        /* Distancia del borde derecho */
+        /* Al usar calc(100vw - 30px) garantizamos que quedan 15px a la izq y 15px a la der exactos */
         width: calc(100vw - 30px);
-        /* 100% menos los márgenes */
+        transform-origin: bottom right;
     }
 }
 
@@ -251,40 +360,44 @@
         bottom: 75px;
         right: 10px;
         width: calc(100vw - 20px);
-        height: 85vh;
-        /* Ocupa casi toda la pantalla para chatear cómodamente */
+        /* 10px de margen por lado */
+        max-height: calc(100vh - 90px);
+        /* Usa casi toda la pantalla para chatear cómodo */
+        border-radius: 20px;
     }
 
     .ai-chat-header {
-        padding: 12px 15px;
+        padding: 15px 18px;
     }
 
     .ai-header-info {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
 
     .ai-chat-body {
-        padding: 15px;
-        gap: 10px;
+        padding: 18px 15px;
+        gap: 12px;
     }
 
     .ai-message {
-        font-size: 0.85rem;
-        padding: 10px 14px;
+        font-size: 0.9rem;
+        padding: 12px 16px;
     }
 
     .ai-chat-footer {
-        padding: 10px;
+        padding: 10px 15px 15px 15px;
     }
 
-    .ai-input-form input {
-        padding: 10px;
-        font-size: 0.85rem;
+    .ai-input-pill {
+        padding: 4px 4px 4px 15px;
+    }
+
+    .ai-input-pill input {
+        font-size: 0.95rem;
     }
 
     .ai-submit-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
+        width: 38px;
+        height: 38px;
     }
 }
