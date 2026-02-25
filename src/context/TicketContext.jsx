@@ -14,12 +14,8 @@ export const TicketProvider = ({ children }) => {
                 .select('*')
                 .order('id', { ascending: false });
 
-            if (data) {
-                setTickets(data);
-            }
-            if (error) {
-                console.error("❌ ERROR CARGANDO TICKETS DE SUPABASE:", error.message, error.details);
-            }
+            if (data) setTickets(data);
+            if (error) console.error("❌ ERROR CARGANDO TICKETS:", error);
         };
 
         fetchTickets();
@@ -27,8 +23,7 @@ export const TicketProvider = ({ children }) => {
 
     const actualizarEstadoTicket = async (id, nuevoEstado) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, estado: nuevoEstado } : t));
-        const { error } = await supabase.from('tickets').update({ estado: nuevoEstado }).eq('id', id);
-        if (error) console.error("❌ ERROR ACTUALIZANDO ESTADO:", error.message);
+        await supabase.from('tickets').update({ estado: nuevoEstado }).eq('id', id);
     };
 
     const actualizarPresupuesto = async (id, nuevoPresupuesto) => {
@@ -43,67 +38,65 @@ export const TicketProvider = ({ children }) => {
         const ticketActual = tickets.find(t => t.id === id);
         const estadoFinal = ticketActual?.estado === 'Ingresado' ? 'Presupuestado' : ticketActual?.estado;
 
-        const { error } = await supabase.from('tickets').update({
+        await supabase.from('tickets').update({
             presupuesto: nuevoPresupuesto,
             estado: estadoFinal
         }).eq('id', id);
-        if (error) console.error("❌ ERROR ACTUALIZANDO PRESUPUESTO:", error.message);
     };
 
     const moverAPapelera = async (id) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, borrado: true } : t));
-        const { error } = await supabase.from('tickets').update({ borrado: true }).eq('id', id);
-        if (error) console.error("❌ ERROR MOVIENDO A PAPELERA:", error.message);
+        await supabase.from('tickets').update({ borrado: true }).eq('id', id);
     };
 
     const restaurarTicket = async (id) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, borrado: false } : t));
-        const { error } = await supabase.from('tickets').update({ borrado: false }).eq('id', id);
-        if (error) console.error("❌ ERROR RESTAURANDO TICKET:", error.message);
+        await supabase.from('tickets').update({ borrado: false }).eq('id', id);
     };
 
     const eliminarDefinitivamente = async (id) => {
         setTickets(prev => prev.filter(t => t.id !== id));
-        const { error } = await supabase.from('tickets').delete().eq('id', id);
-        if (error) console.error("❌ ERROR ELIMINANDO TICKET:", error.message);
+        await supabase.from('tickets').delete().eq('id', id);
     };
 
     const convertirATicket = async (id) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, tipo: 'ticket', estado: 'Ingresado' } : t));
-        const { error } = await supabase.from('tickets').update({ tipo: 'ticket', estado: 'Ingresado' }).eq('id', id);
-        if (error) console.error("❌ ERROR CONVIRTIENDO CONSULTA:", error.message);
+        await supabase.from('tickets').update({ tipo: 'ticket', estado: 'Ingresado' }).eq('id', id);
     };
 
     const agregarTicketManual = async (datosTicket) => {
-        // Generar un ID numérico basado en la fecha para evitar colisiones
         const nuevoId = new Date().getTime();
         const ahora = new Date();
+
+        // FIX CRÍTICO: Construimos el objeto EXACTO que Supabase espera,
+        // descartando variables extrañas como "presupuestoInicial" que rompen el insert.
         const nuevoTicket = {
             id: nuevoId,
             tipo: 'ticket',
+            cliente: datosTicket.cliente,
+            dispositivo: datosTicket.dispositivo,
+            problema: datosTicket.problema,
             fechaIngreso: ahora.toISOString(),
             estado: 'Ingresado',
-            presupuesto: datosTicket.presupuestoInicial || null,
             prioridad: datosTicket.prioridad || 'Normal',
-            borrado: false,
-            ...datosTicket
+            presupuesto: datosTicket.presupuestoInicial || null,
+            borrado: false
         };
 
-        // Actualizamos la UI instantáneamente
-        setTickets(prev => [nuevoTicket, ...prev]);
-
-        // Mandamos a Supabase
         const { error } = await supabase.from('tickets').insert([nuevoTicket]);
+
         if (error) {
-            console.error("❌ ERROR GUARDANDO EN SUPABASE:", error.message, error.details);
-            alert("Hubo un error al guardar en Supabase. Revisa la consola (F12).");
+            console.error("❌ ERROR AL GUARDAR TICKET EN SUPABASE:", error);
+            throw error; // Lanza el error para que el formulario lo atrape
         }
+
+        // Si se guardó con éxito en la base de datos, lo mostramos en la pantalla
+        setTickets(prev => [nuevoTicket, ...prev]);
     };
 
     const editarTicket = async (id, datosActualizados) => {
         setTickets(prev => prev.map(t => t.id === id ? { ...t, ...datosActualizados } : t));
-        const { error } = await supabase.from('tickets').update(datosActualizados).eq('id', id);
-        if (error) console.error("❌ ERROR EDITANDO TICKET:", error.message);
+        await supabase.from('tickets').update(datosActualizados).eq('id', id);
     };
 
     return (

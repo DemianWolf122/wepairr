@@ -17,7 +17,7 @@ function NewTicketForm({ onTicketCreated }) {
 
     const [errores, setErrores] = useState({});
     const [showSuccess, setShowSuccess] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false); // Evita dobles clics
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -40,24 +40,31 @@ function NewTicketForm({ onTicketCreated }) {
 
         setIsSubmitting(true);
 
-        // FIX: Ahora esperamos (await) a que Supabase guarde el ticket
-        await agregarTicketManual({
-            cliente: { nombre: formData.cliente, telefono: formData.telefonoContacto },
-            dispositivo: formData.dispositivo + (formData.modeloDetallado ? ` (${formData.modeloDetallado})` : ''),
-            problema: formData.problema,
-            prioridad: formData.prioridad,
-            presupuestoInicial: formData.presupuestoInicial
-        });
+        try {
+            // Esperamos a que la base de datos confirme que se guardó
+            await agregarTicketManual({
+                cliente: { nombre: formData.cliente, telefono: formData.telefonoContacto },
+                dispositivo: formData.dispositivo + (formData.modeloDetallado ? ` (${formData.modeloDetallado})` : ''),
+                problema: formData.problema,
+                prioridad: formData.prioridad,
+                presupuestoInicial: formData.presupuestoInicial
+            });
 
-        setShowSuccess(true);
-        setIsSubmitting(false);
+            setShowSuccess(true);
 
-        // Limpiamos y volvemos a la vista de activos después de 1.5s
-        setTimeout(() => {
-            setShowSuccess(false);
-            setFormData({ cliente: '', telefonoContacto: '', dispositivo: '', modeloDetallado: '', problema: '', prioridad: 'Normal', presupuestoInicial: '' });
-            if (onTicketCreated) onTicketCreated();
-        }, 1500);
+            setTimeout(() => {
+                setShowSuccess(false);
+                setFormData({ cliente: '', telefonoContacto: '', dispositivo: '', modeloDetallado: '', problema: '', prioridad: 'Normal', presupuestoInicial: '' });
+                if (onTicketCreated) onTicketCreated();
+            }, 1500);
+
+        } catch (error) {
+            // Si la base de datos falla, liberamos el botón y avisamos
+            alert("No se pudo guardar el ticket en la base de datos. Revisa tu conexión a internet o la consola (F12).");
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -123,7 +130,7 @@ function NewTicketForm({ onTicketCreated }) {
 
                 <div className="form-actions full-width" style={{ position: 'relative' }}>
                     <button type="submit" className="btn-save-ticket" disabled={isSubmitting}>
-                        {isSubmitting ? 'Guardando...' : 'Crear Orden de Reparación'}
+                        {isSubmitting ? 'Guardando en la Nube...' : 'Crear Orden de Reparación'}
                     </button>
 
                     <div className={`success-notification ${showSuccess ? 'show' : ''}`}>
