@@ -4,9 +4,12 @@
     border-radius: 20px;
     border: 1px solid var(--border-glass);
     box-shadow: var(--shadow-glass);
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-header {
@@ -24,12 +27,14 @@
 .form-header p {
     color: var(--text-secondary);
     margin: 0;
+    font-size: 1rem;
 }
 
 .ticket-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
+    gap: 20px;
+    width: 100%;
 }
 
 .full-width {
@@ -37,18 +42,17 @@
 }
 
 .form-section {
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--bg-input-glass);
     padding: 20px;
     border-radius: 16px;
     border: 1px solid var(--border-glass);
-}
-
-.app-root.light .form-section {
-    background: rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .section-title {
-    margin: 0 0 20px 0;
+    margin: 0;
     font-size: 1.1rem;
     font-weight: 800;
     color: var(--text-primary);
@@ -62,44 +66,73 @@
 }
 
 .form-group {
-    margin-bottom: 15px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
 }
 
 .form-row {
     display: flex;
     gap: 15px;
+    width: 100%;
+}
+
+.input-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 4px;
 }
 
 .new-ticket-form-wrapper input,
-.new-ticket-form-wrapper textarea {
+.new-ticket-form-wrapper textarea,
+.form-select-input {
     width: 100%;
-    padding: 12px 15px;
+    padding: 14px 15px;
     border-radius: 12px;
     border: 1px solid var(--border-glass);
-    background: var(--bg-input-glass);
+    background: var(--bg-panel);
     color: var(--text-primary);
     font-size: 1rem;
     outline: none;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     box-sizing: border-box;
     font-family: inherit;
 }
 
 .app-root.light .new-ticket-form-wrapper input,
-.app-root.light .new-ticket-form-wrapper textarea {
+.app-root.light .new-ticket-form-wrapper textarea,
+.app-root.light .form-select-input {
     border-color: rgba(0, 0, 0, 0.15);
 }
 
 .new-ticket-form-wrapper input:focus,
-.new-ticket-form-wrapper textarea:focus {
+.new-ticket-form-wrapper textarea:focus,
+.form-select-input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+/* Para que el dropdown en móviles se vea nativo y limpio */
+.form-select-input {
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px auto;
+    padding-right: 40px;
+}
+
 .textarea-auto {
-    resize: none;
-    margin-bottom: 5px;
+    resize: vertical;
+    min-height: 80px;
+    padding-bottom: 30px !important;
 }
 
 .input-error {
@@ -107,42 +140,53 @@
     background: rgba(239, 68, 68, 0.05) !important;
 }
 
-.char-count {
-    position: absolute;
-    bottom: -20px;
-    right: 5px;
+.error-text {
+    color: var(--danger);
     font-size: 0.8rem;
-    color: var(--text-secondary);
-    font-weight: bold;
+    font-weight: 700;
+    margin-left: 5px;
+    animation: popIn 0.2s ease forwards;
 }
 
-/* ... TODO TU CSS ANTERIOR DE NEW TICKET FORM SE MANTIENE, SÓLO CAMBIA ESTO: ... */
+.char-count {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+    pointer-events: none;
+}
 
 .btn-save-ticket {
     width: 100%;
-    padding: 15px;
+    padding: 18px;
     background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 14px;
     font-size: 1.1rem;
-    font-weight: 800;
+    font-weight: 900;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+    margin-top: 10px;
 }
 
-/* FIX: Escala suave */
-.btn-save-ticket:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+.btn-save-ticket:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
 }
 
-/* (Asegúrate de dejar las clases .success-notification como estaban) */
+.btn-save-ticket:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
 
 .success-notification {
     position: absolute;
-    bottom: 0;
+    bottom: -10px;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
     background: var(--success);
@@ -154,22 +198,82 @@
     align-items: center;
     gap: 10px;
     opacity: 0;
-    transition: all 0.3s var(--ease-bounce);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
     z-index: 10;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
 }
 
 .success-notification.show {
     opacity: 1;
-    transform: translateX(-50%) translateY(50px);
+    transform: translateX(-50%) translateY(-20px);
+    /* Sube suavemente sobre el botón */
+}
+
+/* =======================================================
+   RESPONSIVE EXTREMO (Para pantallas de 320px a 768px)
+======================================================= */
+@media (max-width: 900px) {
+    .ticket-form-grid {
+        grid-template-columns: 1fr;
+        /* Todo a una columna en tablets */
+        gap: 15px;
+    }
 }
 
 @media (max-width: 768px) {
-    .ticket-form-grid {
-        grid-template-columns: 1fr;
+    .new-ticket-form-wrapper {
+        padding: 20px;
+        border-radius: 16px;
     }
 
     .form-row {
         flex-direction: column;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 400px) {
+    .new-ticket-form-wrapper {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .form-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .form-header p {
+        font-size: 0.9rem;
+    }
+
+    .form-section {
+        padding: 15px;
+        gap: 12px;
+    }
+
+    .section-title {
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+
+    .new-ticket-form-wrapper input,
+    .new-ticket-form-wrapper textarea,
+    .form-select-input {
+        padding: 12px;
+        font-size: 0.95rem;
+        /* Menos padding en 320px */
+    }
+
+    .btn-save-ticket {
+        padding: 15px;
+        font-size: 1rem;
+    }
+
+    .success-notification {
+        width: 90%;
+        box-sizing: border-box;
+        justify-content: center;
+        text-align: center;
     }
 }
