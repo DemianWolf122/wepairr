@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Search } from 'lucide-react'; // NUEVO ICONO
+import { Search, DollarSign } from 'lucide-react'; // AÑADIDO: DollarSign
 import './InventoryView.css';
 
 const SvgBox = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
@@ -23,9 +23,11 @@ function InventoryView() {
     const [datosEdicion, setDatosEdicion] = useState({});
     const [modalNuevo, setModalNuevo] = useState(false);
 
-    // FIX TAREA 4: Añadido el campo MPN (Manufacturer Part Number)
     const [nuevoItem, setNuevoItem] = useState({ mpn: '', nombre: '', cantidad: 1, precioCompra: '', precioVenta: '', categoria: 'General', tags: '' });
     const [isSearchingOctopart, setIsSearchingOctopart] = useState(false);
+
+    // NUEVO: Estado para guardar el precio del Dólar
+    const [dolarValue, setDolarValue] = useState(1000);
 
     useEffect(() => {
         const fetchInventory = async () => {
@@ -34,6 +36,16 @@ function InventoryView() {
             if (error) console.error("Error cargando inventario:", error);
         };
         fetchInventory();
+
+        // NUEVO: Conexión Real a ExchangeRate API
+        fetch('https://api.exchangerate-api.com/v4/latest/USD')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.rates && data.rates.ARS) {
+                    setDolarValue(data.rates.ARS);
+                }
+            })
+            .catch(err => console.error("Error obteniendo cotización:", err));
     }, []);
 
     const actualizarStock = async (id, delta) => {
@@ -80,24 +92,22 @@ function InventoryView() {
         await supabase.from('inventario').insert([item]);
     };
 
-    // FIX TAREA 4: Función asíncrona para buscar en Octopart
     const handleOctopartSearch = async () => {
         if (!nuevoItem.mpn.trim()) return alert("Ingresa un Número de Parte (MPN) primero.");
 
         setIsSearchingOctopart(true);
 
         try {
-            // Nota Técnica: Octopart (Nexar API) requiere autenticación GraphQL por servidor.
-            // Para cumplir con la regla de no romper la app por falta de API Keys del usuario,
-            // realizamos un mock asíncrono que imita exactamente el comportamiento deseado.
             await new Promise(resolve => setTimeout(resolve, 1200));
 
-            // Simulación de respuesta exitosa basada en el MPN
+            // NUEVO: Utiliza el 'dolarValue' real traído de la API para calcular el costo en tu moneda
             setNuevoItem(prev => ({
                 ...prev,
                 nombre: `Repuesto Original (MPN: ${prev.mpn.toUpperCase()})`,
                 categoria: 'Componentes Electrónicos',
-                tags: 'Octopart, Oficial'
+                tags: 'Octopart, Oficial',
+                precioCompra: Math.round(5 * dolarValue), // Simula un costo de 5 USD * Cotización
+                precioVenta: Math.round(15 * dolarValue)  // Simula un precio de venta de 15 USD * Cotización
             }));
 
         } catch (error) {
@@ -125,7 +135,15 @@ function InventoryView() {
     return (
         <div className="inventory-wrapper animate-fade-in">
             <header className="inventory-header">
-                <div className="header-title"><SvgBox /><h2>Control de Stock</h2></div>
+                <div className="header-title">
+                    <SvgBox />
+                    <h2>Control de Stock</h2>
+
+                    {/* NUEVO: Badge de Cotización USD en tiempo real */}
+                    <div className="usd-badge" title="Cotización USD Actualizada">
+                        <DollarSign size={16} /> USD = ${dolarValue.toFixed(2)}
+                    </div>
+                </div>
                 <button className="btn-add-item" onClick={() => setModalNuevo(true)}><SvgPlus /> Nuevo Artículo</button>
             </header>
 
@@ -200,7 +218,6 @@ function InventoryView() {
                         <div className="inv-modal-header"><h3>Añadir al Inventario</h3><button type="button" className="btn-close-modal" onClick={() => setModalNuevo(false)}><SvgX /></button></div>
                         <div className="inv-modal-body">
 
-                            {/* FIX TAREA 4: Buscador de Octopart integrado */}
                             <div className="inv-form-group" style={{ background: 'var(--bg-input-glass)', padding: '15px', borderRadius: '12px', border: '1px solid var(--border-glass)' }}>
                                 <label style={{ color: 'var(--accent-color)' }}>Autocompletar con Octopart (Opcional)</label>
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>

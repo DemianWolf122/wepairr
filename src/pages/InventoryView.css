@@ -14,6 +14,8 @@
     align-items: center;
     gap: 15px;
     color: var(--text-primary);
+    flex-wrap: wrap;
+    /* Añadido para que el badge baje en móviles si no entra */
 }
 
 .header-title h2 {
@@ -21,6 +23,21 @@
     margin: 0;
     font-weight: 900;
     letter-spacing: -1px;
+}
+
+/* NUEVO: Estilo para el indicador de Dólar (ExchangeRate) */
+.usd-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    padding: 6px 12px;
+    border-radius: 99px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    margin-left: 10px;
 }
 
 .btn-add-item {
@@ -524,5 +541,18 @@
 
     .inv-form-row {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 400px) {
+    .usd-badge {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+
+    .header-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
 }

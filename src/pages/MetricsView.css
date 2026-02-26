@@ -1,0 +1,199 @@
+.metrics-wrapper {
+    padding: 30px;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.metrics-header {
+    margin-bottom: 30px;
+}
+
+.metrics-main-title {
+    color: var(--text-primary);
+    margin: 0 0 10px 0;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.metrics-subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* =========================================
+   KPI CARDS (Indicadores Superiores)
+========================================= */
+.metrics-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi-card {
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.app-root.dark .kpi-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.kpi-title {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.kpi-value {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.text-blue {
+    color: #3b82f6;
+}
+
+.text-green {
+    color: #10b981;
+}
+
+.text-purple {
+    color: #8b5cf6;
+}
+
+.kpi-trend {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.kpi-trend.up {
+    color: #10b981;
+}
+
+.kpi-trend.down {
+    color: #ef4444;
+}
+
+/* =========================================
+   GRILLA DE GRÁFICOS RECHARTS
+========================================= */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.chart-container {
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    /* Asegura espacio para Recharts */
+}
+
+.chart-title {
+    margin: 0 0 25px 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.chart-wrapper {
+    flex: 1;
+    width: 100%;
+    min-height: 280px;
+    /* Vital para que ResponsiveContainer funcione */
+}
+
+/* =========================================
+   LEYENDA PERSONALIZADA (PIE CHART)
+========================================= */
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-glass);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.legend-value {
+    color: var(--text-primary);
+    font-weight: 800;
+}
+
+/* =========================================
+   RESPONSIVE EXTREMO (320px)
+========================================= */
+@media (max-width: 768px) {
+    .metrics-wrapper {
+        padding: 15px;
+    }
+
+    .metrics-main-title {
+        font-size: 1.6rem;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        min-height: 380px;
+        padding: 20px 10px;
+        /* Reduce padding lateral en móviles */
+    }
+}
+
+@media (max-width: 400px) {
+    .kpi-value {
+        font-size: 2.2rem;
+    }
+
+    .chart-container {
+        min-height: 350px;
+    }
+}
