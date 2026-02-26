@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import generarPDF from '../utils/generarPDF';
-import { QRCodeCanvas } from 'qrcode.react'; // FIX: Cambiado a Canvas para permitir descarga PNG
+import { QRCodeCanvas } from 'qrcode.react';
 import './TicketCard.css';
 
 // --- SVGs Premium ---
@@ -35,7 +35,7 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
 
     const getDeviceIcon = (dispositivo = "") => {
         const name = dispositivo.toLowerCase();
-        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa') || name.includes('gpu') || name.includes('rx ')) return <IconGPU />;
+        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa') || name.includes('grafica') || name.includes('gpu') || name.includes('rx ')) return <IconGPU />;
         if (name.includes('pc') || name.includes('notebook') || name.includes('escritorio') || name.includes('laptop') || name.includes('mac')) return <IconPC />;
         if (name.includes('ps4') || name.includes('ps5') || name.includes('xbox') || name.includes('consola')) return <IconConsole />;
         return <IconPhone />;
@@ -65,13 +65,23 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
+    // FIX: Ahora este botón tendrá una clase especial en CSS para ser clickeable
     const handleNotifyFinalizado = (e) => {
-        e.stopPropagation();
-        if (!ticket.cliente?.telefono) { alert("Este cliente no tiene un teléfono registrado."); return; }
+        e.preventDefault(); // Prevenir comportamientos por defecto
+        e.stopPropagation(); // Detener propagación
+
+        if (!ticket.cliente?.telefono) {
+            alert("Este cliente no tiene un teléfono registrado.");
+            return;
+        }
+
         const phone = ticket.cliente.telefono.replace(/[\s\-\(\)]/g, '');
         const costo = ticket.presupuesto ? ticket.presupuesto : 'a confirmar';
         const msg = `¡Buenas noticias! Tu ${ticket.dispositivo} ya está listo. Costo: $${costo}. Te esperamos en el taller.`;
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+
+        // Usamos window.open asegurando que se ejecute
+        const win = window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        if (!win) alert("Por favor, permite las ventanas emergentes para abrir WhatsApp.");
     };
 
     const handlePDF = (e) => {
@@ -79,7 +89,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         generarPDF(ticket);
     };
 
-    // FIX: Lógica para descargar el código QR generado en el Canvas
     const handleDownloadQR = (e) => {
         e.stopPropagation();
         const canvas = document.getElementById(`qr-canvas-${ticket.id}`);
@@ -111,7 +120,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
 
     const statusColorTheme = getStatusTheme(ticket.estado);
     const prioridad = ticket.prioridad ? ticket.prioridad.toLowerCase() : 'normal';
-
     const trackingUrl = `${window.location.origin}/tracking/${ticket.id}`;
 
     return (
@@ -189,7 +197,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                             <p className="tc-problem-soft">"{ticket.problema}"</p>
                         </div>
 
-                        {/* FIX: Contenedor del QR clickeable con Hover de Descarga */}
                         {!isConsulta && (
                             <div className="ticket-qr-container" title="Descargar código QR" onClick={handleDownloadQR}>
                                 <QRCodeCanvas id={`qr-canvas-${ticket.id}`} value={trackingUrl} size={45} level="L" />
@@ -214,10 +221,10 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                         </div>
                     </div>
 
+                    {/* BOTÓN REPARADO: Se agrega la clase 'btn-notify-whatsapp' para controlarlo desde CSS */}
                     {ticket.estado === 'Finalizado' && vista === 'activos' && (
                         <button
-                            className="tc-btn-soft btn-save"
-                            style={{ marginTop: '10px', background: '#25D366', color: '#fff', border: 'none', width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                            className="tc-btn-soft btn-notify-whatsapp"
                             onClick={handleNotifyFinalizado}
                         >
                             <SvgWhatsApp /> Notificar Reparación
