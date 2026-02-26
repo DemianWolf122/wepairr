@@ -647,14 +647,14 @@
 /* =======================================================
    RESPONSIVE PARA PANTALLAS (FLEXBOX FLUIDO)
 ======================================================= */
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
     .ticket-list {
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         padding-left: 0;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1060px) {
     .tech-navbar {
         padding: 0 15px;
     }
@@ -706,6 +706,7 @@
     .nav-menu.mobile-open {
         display: flex;
         animation: slideDownMenu 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        height: 500px;
     }
 
     .nav-link-btn {
@@ -850,6 +851,7 @@
     .tab-btn {
         font-size: 0.75rem;
         padding: 8px 10px;
+        max-width: 85vh;
     }
 
     .custom-sort-header {
@@ -862,5 +864,21 @@
         height: 50px !important;
         bottom: 15px !important;
         left: 15px !important;
+    }
+
+    .tab-btn-action {
+        max-width: 85vh;
+
+    }
+
+    .filters-group {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .custom-sort-menu {
+        width: 100%;
+        right: auto;
+        left: 0;
     }
 }

@@ -140,6 +140,11 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         setMobileMenuOpen(false);
     };
 
+    // FIX: Recreada la función vital para que el formulario vuelva a la vista tras guardar
+    const handleTicketCreated = () => {
+        setVistaActual('activos');
+    };
+
     return (
         <div className="dashboard-wrapper">
 
@@ -278,6 +283,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 </header>
 
                                 {vistaActual === 'nuevo' ? (
+                                    /* El formulario ahora sí llamará a la función existente y no crasheará */
                                     <NewTicketForm onTicketCreated={handleTicketCreated} />
                                 ) : (
                                     <div className="ticket-list">
@@ -300,7 +306,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                                     </div>
                                                 )}
 
-                                                {/* FIX: Botón de Restaurar Premium en lugar de Eliminar/Restaurar viejos */}
                                                 {!isDeleteMode && vistaActual === 'papelera' && (
                                                     <div className="ticket-actions-absolute ticket-actions-trash">
                                                         <button onClick={() => restaurarTicket(ticket.id)} className="btn-restore-premium">
