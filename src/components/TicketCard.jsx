@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import generarPDF from '../utils/generarPDF';
+import { QRCodeSVG } from 'qrcode.react'; // NUEVO: Librería de QR
 import './TicketCard.css';
 
+// --- SVGs Premium ---
 const IconPhone = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect></svg>;
 const IconPC = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" /><line x1="8" y1="6" x2="16" y2="6" /><line x1="8" y1="10" x2="16" y2="10" /></svg>;
 const IconConsole = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M6 12h4m-2-2v4m7-2h.01M18 10h.01M3 7l2 10h14l2-10H3z" /></svg>;
 const IconGPU = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" /><path d="M6 18v2m4-2v2m4-2v2m4-2v2M2 10h20M7 10l2 4m3-4l2 4" /></svg>;
+
 const SvgUser = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 const SvgCalendar = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
 const SvgWhatsApp = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>;
@@ -19,9 +22,11 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     const isConsulta = ticket.tipo === 'consulta';
     const [isEditing, setIsEditing] = useState(false);
 
+    // FIX: Agregado el campo "prioridad" al estado de edición
     const [editData, setEditData] = useState({
         dispositivo: ticket.dispositivo || '',
         problema: ticket.problema || '',
+        prioridad: ticket.prioridad || 'Normal',
         cliente: {
             nombre: ticket.cliente?.nombre || '',
             telefono: ticket.cliente?.telefono || ''
@@ -30,9 +35,9 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
 
     const getDeviceIcon = (dispositivo = "") => {
         const name = dispositivo.toLowerCase();
-        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa') || name.includes('grafica') || name.includes('gpu') || name.includes('rx ')) return <IconGPU />;
-        if (name.includes('pc') || name.includes('notebook') || name.includes('escritorio') || name.includes('mother') || name.includes('laptop') || name.includes('mac')) return <IconPC />;
-        if (name.includes('ps4') || name.includes('ps5') || name.includes('xbox') || name.includes('consola') || name.includes('nintendo')) return <IconConsole />;
+        if (name.includes('rtx') || name.includes('gtx') || name.includes('placa') || name.includes('gpu') || name.includes('rx ')) return <IconGPU />;
+        if (name.includes('pc') || name.includes('notebook') || name.includes('escritorio') || name.includes('laptop') || name.includes('mac')) return <IconPC />;
+        if (name.includes('ps4') || name.includes('ps5') || name.includes('xbox') || name.includes('consola')) return <IconConsole />;
         return <IconPhone />;
     };
 
@@ -60,6 +65,16 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
+    // FIX TAREA 1: Notificación Especial de WhatsApp al Finalizar
+    const handleNotifyFinalizado = (e) => {
+        e.stopPropagation();
+        if (!ticket.cliente?.telefono) { alert("Este cliente no tiene un teléfono registrado."); return; }
+        const phone = ticket.cliente.telefono.replace(/[\s\-\(\)]/g, '');
+        const costo = ticket.presupuesto ? ticket.presupuesto : 'a confirmar';
+        const msg = `¡Buenas noticias! Tu ${ticket.dispositivo} ya está listo. Costo: $${costo}. Te esperamos en el taller.`;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
     const handlePDF = (e) => {
         e.stopPropagation();
         generarPDF(ticket);
@@ -74,6 +89,7 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         setEditData({
             dispositivo: ticket.dispositivo || '',
             problema: ticket.problema || '',
+            prioridad: ticket.prioridad || 'Normal',
             cliente: { nombre: ticket.cliente?.nombre || '', telefono: ticket.cliente?.telefono || '' }
         });
         setIsEditing(false);
@@ -82,12 +98,13 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     const statusColorTheme = getStatusTheme(ticket.estado);
     const prioridad = ticket.prioridad ? ticket.prioridad.toLowerCase() : 'normal';
 
+    // Generamos la URL del tracking en base al ID del ticket
+    const trackingUrl = `${window.location.origin}/tracking/${ticket.id}`;
+
     return (
         <div className={`ticket-card-soft priority-${prioridad} glass-effect ${isEditing ? 'is-editing' : ''} ${isDeleteMode ? 'delete-mode-active' : ''}`}>
-
             <div className={`ticket-status-bar st-bar-${statusColorTheme}`}></div>
 
-            {/* OVERLAY DE ELIMINACIÓN */}
             {isDeleteMode && (
                 <div className="ticket-delete-overlay" onClick={onDelete}>
                     <SvgTrash />
@@ -117,35 +134,34 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                 <div className="tc-body-edit animate-fade-in">
                     <div className="tc-edit-field">
                         <label className="tc-edit-label">Equipo / Dispositivo</label>
-                        <input
-                            type="text" className="tc-input-soft" placeholder="Ej: iPhone 13 Pro"
-                            value={editData.dispositivo} onChange={e => setEditData({ ...editData, dispositivo: e.target.value })}
-                        />
+                        <input type="text" className="tc-input-soft" placeholder="Ej: iPhone 13 Pro" value={editData.dispositivo} onChange={e => setEditData({ ...editData, dispositivo: e.target.value })} />
                     </div>
 
                     <div className="tc-edit-field">
                         <label className="tc-edit-label">Falla o problema reportado</label>
-                        <textarea
-                            className="tc-input-soft" rows="2" placeholder="Describa el problema..."
-                            value={editData.problema} onChange={e => setEditData({ ...editData, problema: e.target.value })}
-                        />
+                        <textarea className="tc-input-soft" rows="2" placeholder="Describa el problema..." value={editData.problema} onChange={e => setEditData({ ...editData, problema: e.target.value })} />
                     </div>
 
                     <div className="tc-edit-row">
                         <div className="tc-edit-field" style={{ flex: 1 }}>
                             <label className="tc-edit-label">Nombre Cliente</label>
-                            <input
-                                type="text" className="tc-input-soft" placeholder="Ej: Juan Pérez"
-                                value={editData.cliente.nombre} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, nombre: e.target.value } })}
-                            />
+                            <input type="text" className="tc-input-soft" value={editData.cliente.nombre} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, nombre: e.target.value } })} />
                         </div>
                         <div className="tc-edit-field" style={{ flex: 1 }}>
-                            <label className="tc-edit-label">Teléfono / WhatsApp</label>
-                            <input
-                                type="text" className="tc-input-soft" placeholder="Ej: 1123456789"
-                                value={editData.cliente.telefono} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, telefono: e.target.value } })}
-                            />
+                            <label className="tc-edit-label">WhatsApp</label>
+                            <input type="text" className="tc-input-soft" value={editData.cliente.telefono} onChange={e => setEditData({ ...editData, cliente: { ...editData.cliente, telefono: e.target.value } })} />
                         </div>
+                    </div>
+
+                    {/* FIX TAREA 1: Selector de Urgencia en Edición */}
+                    <div className="tc-edit-field">
+                        <label className="tc-edit-label">Nivel de Urgencia</label>
+                        <select className="tc-input-soft select-input" value={editData.prioridad} onChange={e => setEditData({ ...editData, prioridad: e.target.value })}>
+                            <option value="Baja">Baja</option>
+                            <option value="Normal">Normal</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Urgente">Urgente</option>
+                        </select>
                     </div>
 
                     <div className="tc-edit-actions">
@@ -155,8 +171,19 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                 </div>
             ) : (
                 <div className="tc-body-soft">
-                    <h3 className="tc-device-soft">{getDeviceIcon(ticket.dispositivo)} {ticket.dispositivo || 'Dispositivo N/A'}</h3>
-                    <p className="tc-problem-soft">"{ticket.problema}"</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                            <h3 className="tc-device-soft">{getDeviceIcon(ticket.dispositivo)} {ticket.dispositivo || 'Dispositivo N/A'}</h3>
+                            <p className="tc-problem-soft">"{ticket.problema}"</p>
+                        </div>
+
+                        {/* FIX TAREA 1: Integración de Código QR en la tarjeta */}
+                        {!isConsulta && (
+                            <div className="ticket-qr-container" title="Escanear para ver seguimiento" style={{ padding: '5px', background: 'white', borderRadius: '8px', flexShrink: 0 }}>
+                                <QRCodeSVG value={trackingUrl} size={45} level="L" />
+                            </div>
+                        )}
+                    </div>
 
                     <div className="tc-client-row">
                         <div className="tc-client-soft">
@@ -171,6 +198,17 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                             <button className="tc-btn-icon btn-pdf" onClick={handlePDF} title="PDF"><SvgPDF /></button>
                         </div>
                     </div>
+
+                    {/* FIX TAREA 1: Botón Especial de WhatsApp para Tickets Finalizados */}
+                    {ticket.estado === 'Finalizado' && vista === 'activos' && (
+                        <button
+                            className="tc-btn-soft btn-save"
+                            style={{ marginTop: '10px', background: '#25D366', color: '#fff', border: 'none', width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer' }}
+                            onClick={handleNotifyFinalizado}
+                        >
+                            <SvgWhatsApp /> Notificar Reparación
+                        </button>
+                    )}
                 </div>
             )}
 

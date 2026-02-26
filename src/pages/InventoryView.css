@@ -345,6 +345,7 @@
 .stock-number {
     font-size: 1.2rem;
     font-weight: 900;
+    color: var(--text-secondary);
 }
 
 .inv-edit-mode {

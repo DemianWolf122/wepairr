@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Search, Wrench, ChevronRight } from 'lucide-react'; // Iconos para la sección iFixit
 import './CommunityWiki.css';
 
+// --- SVGs Originales ---
 const SvgPlus = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
 const SvgArrow = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
 const SvgLike = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>;
@@ -14,6 +16,9 @@ const POSTS_INICIALES = [
 ];
 
 function CommunityWiki() {
+    // --- ESTADOS DE LA COMUNIDAD LOCAL ---
+    const [activeTab, setActiveTab] = useState('local'); // 'local' o 'ifixit'
+
     const [posts, setPosts] = useState(() => {
         const guardados = localStorage.getItem('wepairr_wiki_posts');
         return guardados ? JSON.parse(guardados) : POSTS_INICIALES;
@@ -24,14 +29,19 @@ function CommunityWiki() {
     const [busqueda, setBusqueda] = useState('');
     const [orden, setOrdenarPor] = useState('recientes');
     const [nuevoPost, setNuevoPost] = useState({ titulo: '', categoria: 'General', contenido: '', imagenPrincipal: null, imagenesSecundarias: [] });
-
-    // LIGHTBOX
     const [imagenLightbox, setImagenLightbox] = useState(null);
-
     const fileInputPrincipalRef = useRef(null);
 
+    // --- ESTADOS DE iFIXIT ---
+    const [ifixitQuery, setIfixitQuery] = useState('');
+    const [ifixitGuides, setIfixitGuides] = useState([]);
+    const [loadingIfixit, setLoadingIfixit] = useState(false);
+    const [errorIfixit, setErrorIfixit] = useState(null);
+
+    // Persistencia Local
     useEffect(() => { localStorage.setItem('wepairr_wiki_posts', JSON.stringify(posts)); }, [posts]);
 
+    // Lógica Comunidad Local
     const manejarLike = (e, id) => {
         e.stopPropagation();
         setPosts(prev => prev.map(post => post.id === id ? { ...post, likes: post.likedByMe ? post.likes - 1 : post.likes + 1, likedByMe: !post.likedByMe } : post));
@@ -59,53 +69,150 @@ function CommunityWiki() {
         .filter(p => p.titulo.toLowerCase().includes(busqueda.toLowerCase()) || p.contenido.toLowerCase().includes(busqueda.toLowerCase()))
         .sort((a, b) => orden === 'likes' ? b.likes - a.likes : b.fecha - a.fecha);
 
+    // Lógica Búsqueda iFixit
+    const handleIfixitSearch = async (e) => {
+        e.preventDefault();
+        if (!ifixitQuery.trim()) return;
+
+        setLoadingIfixit(true);
+        setErrorIfixit(null);
+        setIfixitGuides([]);
+
+        try {
+            const response = await fetch(`https://www.ifixit.com/api/2.0/search/${encodeURIComponent(ifixitQuery)}?type=guide`);
+            if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+            const data = await response.json();
+            setIfixitGuides(data.results || []);
+        } catch (err) {
+            setErrorIfixit("No se pudieron cargar los manuales. Intenta de nuevo.");
+            console.error(err);
+        } finally {
+            setLoadingIfixit(false);
+        }
+    };
+
     return (
-        <div className="wiki-wrapper">
-            <header className="wiki-header">
+        <div className="wiki-wrapper animate-fade-in" style={{ padding: '30px', boxSizing: 'border-box', width: '100%', maxWidth: '1400px', margin: '0 auto' }}>
+            <header className="wiki-header" style={{ marginBottom: '20px' }}>
                 <div className="wiki-header-text">
-                    <h2>Comunidad Wepairr</h2>
-                    <p>Encuentra fallas, esquemas y comparte conocimiento.</p>
+                    <h2>Base de Conocimiento</h2>
+                    <p>Encuentra fallas locales y manuales oficiales de iFixit.</p>
                 </div>
-                <button className="btn-new-post" onClick={() => setMostrandoFormulario(true)}><SvgPlus /> Nuevo Aporte</button>
+                {activeTab === 'local' && (
+                    <button className="btn-new-post" onClick={() => setMostrandoFormulario(true)}><SvgPlus /> Nuevo Aporte</button>
+                )}
             </header>
 
-            <div className="wiki-tools-bar glass-effect">
-                <div className="search-box">
-                    <SvgSearch />
-                    <input type="text" placeholder="Buscar falla o componente..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
-                </div>
-                <div className="sort-box">
-                    <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Ordenar por:</span>
-                    <select value={orden} onChange={e => setOrdenarPor(e.target.value)} className="sort-select">
-                        <option value="recientes">Más Recientes</option>
-                        <option value="likes">Mejor Valorados</option>
-                    </select>
-                </div>
+            {/* PESTAÑAS DE NAVEGACIÓN */}
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '15px' }}>
+                <button
+                    onClick={() => setActiveTab('local')}
+                    style={{ background: 'transparent', border: 'none', color: activeTab === 'local' ? 'var(--accent-color)' : 'var(--text-secondary)', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', paddingBottom: '5px', borderBottom: activeTab === 'local' ? '2px solid var(--accent-color)' : '2px solid transparent', transition: 'all 0.2s' }}
+                >
+                    Comunidad Wepairr
+                </button>
+                <button
+                    onClick={() => setActiveTab('ifixit')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', border: 'none', color: activeTab === 'ifixit' ? 'var(--accent-color)' : 'var(--text-secondary)', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', paddingBottom: '5px', borderBottom: activeTab === 'ifixit' ? '2px solid var(--accent-color)' : '2px solid transparent', transition: 'all 0.2s' }}
+                >
+                    <Wrench size={18} /> Guías iFixit
+                </button>
             </div>
 
-            <div className="wiki-grid">
-                {postsFiltrados.length === 0 && <p style={{ color: 'var(--text-secondary)', gridColumn: '1/-1', textAlign: 'center' }}>No se encontraron resultados.</p>}
-
-                {postsFiltrados.map(post => (
-                    <div key={post.id} className="wiki-card" onClick={() => setPostSeleccionado(post)}>
-                        {post.imagenPrincipal && <div className="wiki-thumbnail" style={{ backgroundImage: `url(${post.imagenPrincipal})` }}></div>}
-                        <span className="wiki-tag">{post.categoria}</span>
-                        <h3>{post.titulo}</h3>
-                        <p className="wiki-card-desc">{post.contenido.length > 80 ? post.contenido.substring(0, 80) + '...' : post.contenido}</p>
-                        <div className="wiki-footer">
-                            <span>Por: {post.autor}</span>
-                            <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                                <span className="read-more">Ver más <SvgArrow /></span>
-                                <button className={`btn-like ${post.likedByMe ? 'liked' : ''}`} onClick={(e) => manejarLike(e, post.id)}>
-                                    <SvgLike /> {post.likes}
-                                </button>
-                            </div>
+            {/* VISTA 1: COMUNIDAD LOCAL (Tu código original intacto) */}
+            {activeTab === 'local' && (
+                <>
+                    <div className="wiki-tools-bar glass-effect">
+                        <div className="search-box" style={{ background: 'var(--bg-input-glass)', border: '1px solid var(--border-glass)', borderRadius: '12px', padding: '10px 15px', display: 'flex', alignItems: 'center', gap: '10px', flex: 1, maxWidth: '400px' }}>
+                            <SvgSearch />
+                            <input type="text" placeholder="Buscar falla o componente..." value={busqueda} onChange={e => setBusqueda(e.target.value)} style={{ border: 'none', background: 'transparent', color: 'var(--text-primary)', outline: 'none', width: '100%', fontSize: '0.95rem' }} />
+                        </div>
+                        <div className="sort-box" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 'bold' }}>Ordenar por:</span>
+                            <select value={orden} onChange={e => setOrdenarPor(e.target.value)} className="sort-select" style={{ background: 'var(--bg-input-glass)', border: '1px solid var(--border-glass)', color: 'var(--text-primary)', padding: '10px', borderRadius: '10px', outline: 'none', fontWeight: 'bold' }}>
+                                <option value="recientes">Más Recientes</option>
+                                <option value="likes">Mejor Valorados</option>
+                            </select>
                         </div>
                     </div>
-                ))}
-            </div>
 
-            {/* MODAL DETALLE CON LIGHTBOX */}
+                    <div className="wiki-grid">
+                        {postsFiltrados.length === 0 && <p style={{ color: 'var(--text-secondary)', gridColumn: '1/-1', textAlign: 'center', marginTop: '40px' }}>No se encontraron resultados en la comunidad local.</p>}
+
+                        {postsFiltrados.map(post => (
+                            <div key={post.id} className="wiki-card glass-effect" onClick={() => setPostSeleccionado(post)}>
+                                {post.imagenPrincipal && <div className="wiki-thumbnail" style={{ backgroundImage: `url(${post.imagenPrincipal})` }}></div>}
+                                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                    <span className="wiki-tag">{post.categoria}</span>
+                                    <h3 style={{ margin: '10px 0', fontSize: '1.2rem', color: 'var(--text-primary)' }}>{post.titulo}</h3>
+                                    <p className="wiki-card-desc" style={{ color: 'var(--text-secondary)', lineHeight: '1.5', flex: 1 }}>{post.contenido.length > 80 ? post.contenido.substring(0, 80) + '...' : post.contenido}</p>
+                                    <div className="wiki-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '15px', paddingTop: '15px', borderTop: '1px solid var(--border-glass)' }}>
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Por: {post.autor}</span>
+                                        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                            <span className="read-more" style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '5px' }}>Ver más <SvgArrow /></span>
+                                            <button className={`btn-like ${post.likedByMe ? 'liked' : ''}`} onClick={(e) => manejarLike(e, post.id)} style={{ background: post.likedByMe ? 'rgba(239, 68, 68, 0.1)' : 'var(--bg-input-glass)', border: '1px solid', borderColor: post.likedByMe ? 'rgba(239, 68, 68, 0.3)' : 'var(--border-glass)', color: post.likedByMe ? '#ef4444' : 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', fontWeight: 'bold' }}>
+                                                <SvgLike /> {post.likes}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+
+            {/* VISTA 2: INTEGRACIÓN API iFIXIT */}
+            {activeTab === 'ifixit' && (
+                <div className="animate-fade-in">
+                    <form onSubmit={handleIfixitSearch} style={{ display: 'flex', gap: '15px', maxWidth: '600px', margin: '0 auto 40px auto', flexWrap: 'wrap' }}>
+                        <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
+                            <Search style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={20} />
+                            <input
+                                type="text"
+                                placeholder="Ej. iPhone 13 battery, PS5 teardown..."
+                                value={ifixitQuery}
+                                onChange={(e) => setIfixitQuery(e.target.value)}
+                                style={{ width: '100%', padding: '15px 15px 15px 45px', borderRadius: '12px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none', boxSizing: 'border-box' }}
+                            />
+                        </div>
+                        <button type="submit" disabled={loadingIfixit} style={{ padding: '0 25px', background: 'var(--accent-color)', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: loadingIfixit ? 'not-allowed' : 'pointer', fontSize: '1rem', height: '50px' }}>
+                            {loadingIfixit ? 'Buscando...' : 'Buscar'}
+                        </button>
+                    </form>
+
+                    {errorIfixit && <div style={{ textAlign: 'center', color: '#ef4444', padding: '20px' }}>{errorIfixit}</div>}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '25px' }}>
+                        {ifixitGuides.length === 0 && !loadingIfixit && !errorIfixit && ifixitQuery && (
+                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-secondary)', marginTop: '40px' }}>No se encontraron guías oficiales para "{ifixitQuery}".</div>
+                        )}
+
+                        {ifixitGuides.map(guide => (
+                            <div key={guide.guideid} className="glass-effect" style={{ borderRadius: '16px', border: '1px solid var(--border-glass)', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'transform 0.2s ease', cursor: 'pointer' }} onClick={() => window.open(`https://www.ifixit.com/Guide/${guide.url.split('/Guide/')[1]}`, '_blank')}>
+                                {guide.image && (
+                                    <div style={{ width: '100%', height: '180px', backgroundImage: `url(${guide.image.standard})`, backgroundSize: 'cover', backgroundPosition: 'center', borderBottom: '1px solid var(--border-glass)' }}></div>
+                                )}
+                                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                    <h3 style={{ margin: '0 0 10px 0', fontSize: '1.1rem', color: 'var(--text-primary)', lineHeight: '1.4' }}>{guide.title}</h3>
+
+                                    <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-glass)', paddingTop: '15px' }}>
+                                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
+                                            <Wrench size={14} /> Dificultad: {guide.difficulty || 'N/A'}
+                                        </span>
+                                        <span style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>
+                                            Ver Guía <ChevronRight size={16} />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* MODALES ORIGINALES LOCALES */}
             {postSeleccionado && (
                 <div className="wiki-modal-overlay" onClick={() => setPostSeleccionado(null)}>
                     <div className="wiki-modal-container animate-scale-in" onClick={e => e.stopPropagation()}>
@@ -132,7 +239,6 @@ function CommunityWiki() {
                 </div>
             )}
 
-            {/* VISOR A PANTALLA COMPLETA */}
             {imagenLightbox && (
                 <div className="lightbox-overlay animate-fade-in" onClick={() => setImagenLightbox(null)}>
                     <button className="btn-close-lightbox"><SvgX /></button>
@@ -140,7 +246,6 @@ function CommunityWiki() {
                 </div>
             )}
 
-            {/* MODAL NUEVO POST */}
             {mostrandoFormulario && (
                 <div className="wiki-modal-overlay" onClick={() => setMostrandoFormulario(false)}>
                     <div className="wiki-modal-container new-post-form animate-scale-in" onClick={e => e.stopPropagation()}>
