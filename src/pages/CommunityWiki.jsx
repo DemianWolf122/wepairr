@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Wrench, ChevronRight } from 'lucide-react'; // Iconos para la sección iFixit
+import { Search, Wrench, ChevronRight } from 'lucide-react';
 import './CommunityWiki.css';
 
 // --- SVGs Originales ---
@@ -16,8 +16,7 @@ const POSTS_INICIALES = [
 ];
 
 function CommunityWiki() {
-    // --- ESTADOS DE LA COMUNIDAD LOCAL ---
-    const [activeTab, setActiveTab] = useState('local'); // 'local' o 'ifixit'
+    const [activeTab, setActiveTab] = useState('local');
 
     const [posts, setPosts] = useState(() => {
         const guardados = localStorage.getItem('wepairr_wiki_posts');
@@ -32,16 +31,13 @@ function CommunityWiki() {
     const [imagenLightbox, setImagenLightbox] = useState(null);
     const fileInputPrincipalRef = useRef(null);
 
-    // --- ESTADOS DE iFIXIT ---
     const [ifixitQuery, setIfixitQuery] = useState('');
     const [ifixitGuides, setIfixitGuides] = useState([]);
     const [loadingIfixit, setLoadingIfixit] = useState(false);
     const [errorIfixit, setErrorIfixit] = useState(null);
 
-    // Persistencia Local
     useEffect(() => { localStorage.setItem('wepairr_wiki_posts', JSON.stringify(posts)); }, [posts]);
 
-    // Lógica Comunidad Local
     const manejarLike = (e, id) => {
         e.stopPropagation();
         setPosts(prev => prev.map(post => post.id === id ? { ...post, likes: post.likedByMe ? post.likes - 1 : post.likes + 1, likedByMe: !post.likedByMe } : post));
@@ -69,7 +65,6 @@ function CommunityWiki() {
         .filter(p => p.titulo.toLowerCase().includes(busqueda.toLowerCase()) || p.contenido.toLowerCase().includes(busqueda.toLowerCase()))
         .sort((a, b) => orden === 'likes' ? b.likes - a.likes : b.fecha - a.fecha);
 
-    // Lógica Búsqueda iFixit
     const handleIfixitSearch = async (e) => {
         e.preventDefault();
         if (!ifixitQuery.trim()) return;
@@ -83,7 +78,13 @@ function CommunityWiki() {
             if (!response.ok) throw new Error("Error en la respuesta del servidor");
 
             const data = await response.json();
-            setIfixitGuides(data.results || []);
+
+            // FIX: Filtramos los resultados para quitar las guías vacías o "N/A" que dan error 404
+            const guiasValidas = (data.results || []).filter(
+                guide => guide.difficulty && guide.difficulty !== 'N/A'
+            );
+
+            setIfixitGuides(guiasValidas);
         } catch (err) {
             setErrorIfixit("No se pudieron cargar los manuales. Intenta de nuevo.");
             console.error(err);
@@ -104,7 +105,6 @@ function CommunityWiki() {
                 )}
             </header>
 
-            {/* PESTAÑAS DE NAVEGACIÓN */}
             <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '15px' }}>
                 <button
                     onClick={() => setActiveTab('local')}
@@ -120,7 +120,6 @@ function CommunityWiki() {
                 </button>
             </div>
 
-            {/* VISTA 1: COMUNIDAD LOCAL (Tu código original intacto) */}
             {activeTab === 'local' && (
                 <>
                     <div className="wiki-tools-bar glass-effect">
@@ -163,7 +162,6 @@ function CommunityWiki() {
                 </>
             )}
 
-            {/* VISTA 2: INTEGRACIÓN API iFIXIT */}
             {activeTab === 'ifixit' && (
                 <div className="animate-fade-in">
                     <form onSubmit={handleIfixitSearch} style={{ display: 'flex', gap: '15px', maxWidth: '600px', margin: '0 auto 40px auto', flexWrap: 'wrap' }}>
@@ -186,7 +184,7 @@ function CommunityWiki() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '25px' }}>
                         {ifixitGuides.length === 0 && !loadingIfixit && !errorIfixit && ifixitQuery && (
-                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-secondary)', marginTop: '40px' }}>No se encontraron guías oficiales para "{ifixitQuery}".</div>
+                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-secondary)', marginTop: '40px' }}>No se encontraron guías oficiales válidas para "{ifixitQuery}".</div>
                         )}
 
                         {ifixitGuides.map(guide => (
@@ -199,7 +197,7 @@ function CommunityWiki() {
 
                                     <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-glass)', paddingTop: '15px' }}>
                                         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'bold' }}>
-                                            <Wrench size={14} /> Dificultad: {guide.difficulty || 'N/A'}
+                                            <Wrench size={14} /> Dificultad: {guide.difficulty}
                                         </span>
                                         <span style={{ color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '0.9rem', display: 'flex', alignItems: 'center' }}>
                                             Ver Guía <ChevronRight size={16} />
@@ -212,7 +210,6 @@ function CommunityWiki() {
                 </div>
             )}
 
-            {/* MODALES ORIGINALES LOCALES */}
             {postSeleccionado && (
                 <div className="wiki-modal-overlay" onClick={() => setPostSeleccionado(null)}>
                     <div className="wiki-modal-container animate-scale-in" onClick={e => e.stopPropagation()}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import generarPDF from '../utils/generarPDF';
-import { QRCodeSVG } from 'qrcode.react'; // NUEVO: Librería de QR
+import { QRCodeCanvas } from 'qrcode.react'; // FIX: Cambiado a Canvas para permitir descarga PNG
 import './TicketCard.css';
 
 // --- SVGs Premium ---
@@ -17,12 +17,12 @@ const SvgEdit = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="cu
 const SvgSave = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>;
 const SvgX = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const SvgTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>;
+const SvgDownload = () => <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
 
 function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicket, isDeleteMode, onDelete }) {
     const isConsulta = ticket.tipo === 'consulta';
     const [isEditing, setIsEditing] = useState(false);
 
-    // FIX: Agregado el campo "prioridad" al estado de edición
     const [editData, setEditData] = useState({
         dispositivo: ticket.dispositivo || '',
         problema: ticket.problema || '',
@@ -65,7 +65,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
-    // FIX TAREA 1: Notificación Especial de WhatsApp al Finalizar
     const handleNotifyFinalizado = (e) => {
         e.stopPropagation();
         if (!ticket.cliente?.telefono) { alert("Este cliente no tiene un teléfono registrado."); return; }
@@ -78,6 +77,21 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     const handlePDF = (e) => {
         e.stopPropagation();
         generarPDF(ticket);
+    };
+
+    // FIX: Lógica para descargar el código QR generado en el Canvas
+    const handleDownloadQR = (e) => {
+        e.stopPropagation();
+        const canvas = document.getElementById(`qr-canvas-${ticket.id}`);
+        if (!canvas) return;
+
+        const pngUrl = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pngUrl;
+        downloadLink.download = `QR_Tracking_ID${ticket.id}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
     };
 
     const handleSaveEdit = () => {
@@ -98,7 +112,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     const statusColorTheme = getStatusTheme(ticket.estado);
     const prioridad = ticket.prioridad ? ticket.prioridad.toLowerCase() : 'normal';
 
-    // Generamos la URL del tracking en base al ID del ticket
     const trackingUrl = `${window.location.origin}/tracking/${ticket.id}`;
 
     return (
@@ -153,7 +166,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                         </div>
                     </div>
 
-                    {/* FIX TAREA 1: Selector de Urgencia en Edición */}
                     <div className="tc-edit-field">
                         <label className="tc-edit-label">Nivel de Urgencia</label>
                         <select className="tc-input-soft select-input" value={editData.prioridad} onChange={e => setEditData({ ...editData, prioridad: e.target.value })}>
@@ -177,10 +189,13 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                             <p className="tc-problem-soft">"{ticket.problema}"</p>
                         </div>
 
-                        {/* FIX TAREA 1: Integración de Código QR en la tarjeta */}
+                        {/* FIX: Contenedor del QR clickeable con Hover de Descarga */}
                         {!isConsulta && (
-                            <div className="ticket-qr-container" title="Escanear para ver seguimiento" style={{ padding: '5px', background: 'white', borderRadius: '8px', flexShrink: 0 }}>
-                                <QRCodeSVG value={trackingUrl} size={45} level="L" />
+                            <div className="ticket-qr-container" title="Descargar código QR" onClick={handleDownloadQR}>
+                                <QRCodeCanvas id={`qr-canvas-${ticket.id}`} value={trackingUrl} size={45} level="L" />
+                                <div className="qr-hover-overlay">
+                                    <SvgDownload />
+                                </div>
                             </div>
                         )}
                     </div>
@@ -199,7 +214,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                         </div>
                     </div>
 
-                    {/* FIX TAREA 1: Botón Especial de WhatsApp para Tickets Finalizados */}
                     {ticket.estado === 'Finalizado' && vista === 'activos' && (
                         <button
                             className="tc-btn-soft btn-save"
