@@ -138,7 +138,7 @@
     color: var(--text-primary);
     font-size: 0.85rem;
     font-weight: 700;
-    margin-bottom: 0;
+    margin-bottom: 10px;
 }
 
 .settings-input {
@@ -162,7 +162,7 @@
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg...");
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 16px auto;
@@ -400,6 +400,108 @@ input:checked+.slider:before {
     font-weight: 800;
     font-size: 1.1rem;
     color: var(--text-primary);
+}
+
+/* =======================================================
+   ESTILOS INYECTADOS: STRIPE (FACTURACIÓN)
+======================================================= */
+.btn-connect-stripe {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: #635bff;
+    /* Color Oficial Stripe */
+    color: white;
+    border: none;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(99, 91, 255, 0.3);
+    transition: transform 0.2s, background-color 0.2s;
+    font-size: 1rem;
+}
+
+.btn-connect-stripe:hover {
+    transform: translateY(-2px);
+    background: #544dc9;
+}
+
+.btn-connect-stripe:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.stripe-connected-box {
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.stripe-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 900;
+    color: var(--text-primary);
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 10px;
+}
+
+.status-dot-active {
+    width: 10px;
+    height: 10px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #10b981;
+}
+
+.stripe-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stripe-info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.btn-stripe-secondary {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-stripe-secondary:hover {
+    border-color: #635bff;
+    color: #635bff;
+}
+
+.btn-disconnect-stripe {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    align-self: center;
+    margin-top: 5px;
 }
 
 /* --- SECCIÓN DERECHA: LIENZO Y MOCKUP --- */

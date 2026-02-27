@@ -187,15 +187,15 @@ function ToolsView() {
                         <div className="firmware-grid">
                             <div className="firmware-card" onClick={() => window.open('https://samfw.com/', '_blank')}>
                                 <h4 style={{ color: '#2563eb' }}>Samsung (SamFW)</h4>
-                                <p style={{ fontSize: '0.8rem' }}>Roms Odin, FRP Reset</p>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Roms Odin, FRP Reset</p>
                             </div>
                             <div className="firmware-card" onClick={() => window.open('https://mirom.net/', '_blank')}>
                                 <h4 style={{ color: '#f97316' }}>Xiaomi (MiRom)</h4>
-                                <p style={{ fontSize: '0.8rem' }}>Fastboot & Recovery</p>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Fastboot & Recovery</p>
                             </div>
                             <div className="firmware-card" onClick={() => window.open('https://ipsw.me/', '_blank')}>
-                                <h4 style={{ color: '#000000' }}>Apple (IPSW)</h4>
-                                <p style={{ fontSize: '0.8rem' }}>iOS Restore Images</p>
+                                <h4 style={{ color: 'var(--text-primary)' }}>Apple (IPSW)</h4>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>iOS Restore Images</p>
                             </div>
                         </div>
                     </div>

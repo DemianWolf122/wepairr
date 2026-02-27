@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Wrench, ChevronRight } from 'lucide-react';
+import { Search, Wrench, ChevronRight, FileText, Upload, ExternalLink } from 'lucide-react'; // AÑADIDO: ExternalLink
 import './CommunityWiki.css';
 
-// --- SVGs Originales ---
+// --- SVGs Originales Intactos ---
 const SvgPlus = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
 const SvgArrow = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
 const SvgLike = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>;
@@ -18,11 +18,11 @@ const POSTS_INICIALES = [
 function CommunityWiki() {
     const [activeTab, setActiveTab] = useState('local');
 
+    // Estados Comunidad Local
     const [posts, setPosts] = useState(() => {
         const guardados = localStorage.getItem('wepairr_wiki_posts');
         return guardados ? JSON.parse(guardados) : POSTS_INICIALES;
     });
-
     const [postSeleccionado, setPostSeleccionado] = useState(null);
     const [mostrandoFormulario, setMostrandoFormulario] = useState(false);
     const [busqueda, setBusqueda] = useState('');
@@ -31,10 +31,15 @@ function CommunityWiki() {
     const [imagenLightbox, setImagenLightbox] = useState(null);
     const fileInputPrincipalRef = useRef(null);
 
+    // Estados iFixit
     const [ifixitQuery, setIfixitQuery] = useState('');
     const [ifixitGuides, setIfixitGuides] = useState([]);
     const [loadingIfixit, setLoadingIfixit] = useState(false);
     const [errorIfixit, setErrorIfixit] = useState(null);
+
+    // Estados Visor PDF y Búsqueda de Esquemas
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [schematicQuery, setSchematicQuery] = useState('');
 
     useEffect(() => { localStorage.setItem('wepairr_wiki_posts', JSON.stringify(posts)); }, [posts]);
 
@@ -78,8 +83,6 @@ function CommunityWiki() {
             if (!response.ok) throw new Error("Error en la respuesta del servidor");
 
             const data = await response.json();
-
-            // FIX: Filtramos los resultados para quitar las guías vacías o "N/A" que dan error 404
             const guiasValidas = (data.results || []).filter(
                 guide => guide.difficulty && guide.difficulty !== 'N/A'
             );
@@ -93,19 +96,48 @@ function CommunityWiki() {
         }
     };
 
+    const handlePdfUpload = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+            const url = URL.createObjectURL(file);
+            setPdfUrl(url);
+        } else if (file) {
+            alert("Por favor, sube un archivo con formato .pdf");
+        }
+    };
+
+    // FIX: Búsqueda Inteligente de Esquemas (Google Dorks)
+    const searchSchematicOnline = (site) => {
+        if (!schematicQuery.trim()) return alert("Ingresa un modelo para buscar.");
+        let queryUrl = '';
+
+        switch (site) {
+            case 'google':
+                // Busca específicamente archivos PDF con las palabras clave schematic o boardview
+                queryUrl = `https://www.google.com/search?q=filetype:pdf+${encodeURIComponent(schematicQuery)}+schematic+OR+boardview`;
+                break;
+            case 'manualslib':
+                queryUrl = `https://www.manualslib.com/c/${encodeURIComponent(schematicQuery)}.html`;
+                break;
+            default:
+                return;
+        }
+        window.open(queryUrl, '_blank');
+    };
+
     return (
         <div className="wiki-wrapper animate-fade-in" style={{ padding: '30px', boxSizing: 'border-box', width: '100%', maxWidth: '1400px', margin: '0 auto' }}>
             <header className="wiki-header" style={{ marginBottom: '20px' }}>
                 <div className="wiki-header-text">
                     <h2>Base de Conocimiento</h2>
-                    <p>Encuentra fallas locales y manuales oficiales de iFixit.</p>
+                    <p>Fallas locales, manuales de iFixit y visor de esquemáticos.</p>
                 </div>
                 {activeTab === 'local' && (
                     <button className="btn-new-post" onClick={() => setMostrandoFormulario(true)}><SvgPlus /> Nuevo Aporte</button>
                 )}
             </header>
 
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '15px' }}>
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', borderBottom: '1px solid var(--border-glass)', paddingBottom: '15px', flexWrap: 'wrap' }}>
                 <button
                     onClick={() => setActiveTab('local')}
                     style={{ background: 'transparent', border: 'none', color: activeTab === 'local' ? 'var(--accent-color)' : 'var(--text-secondary)', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', paddingBottom: '5px', borderBottom: activeTab === 'local' ? '2px solid var(--accent-color)' : '2px solid transparent', transition: 'all 0.2s' }}
@@ -118,8 +150,15 @@ function CommunityWiki() {
                 >
                     <Wrench size={18} /> Guías iFixit
                 </button>
+                <button
+                    onClick={() => setActiveTab('pdf')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', border: 'none', color: activeTab === 'pdf' ? 'var(--accent-color)' : 'var(--text-secondary)', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', paddingBottom: '5px', borderBottom: activeTab === 'pdf' ? '2px solid var(--accent-color)' : '2px solid transparent', transition: 'all 0.2s' }}
+                >
+                    <FileText size={18} /> Planos (PDF)
+                </button>
             </div>
 
+            {/* VISTA 1: COMUNIDAD LOCAL */}
             {activeTab === 'local' && (
                 <>
                     <div className="wiki-tools-bar glass-effect">
@@ -162,6 +201,7 @@ function CommunityWiki() {
                 </>
             )}
 
+            {/* VISTA 2: INTEGRACIÓN API iFIXIT */}
             {activeTab === 'ifixit' && (
                 <div className="animate-fade-in">
                     <form onSubmit={handleIfixitSearch} style={{ display: 'flex', gap: '15px', maxWidth: '600px', margin: '0 auto 40px auto', flexWrap: 'wrap' }}>
@@ -210,6 +250,63 @@ function CommunityWiki() {
                 </div>
             )}
 
+            {/* VISTA 3: VISOR DE ESQUEMÁTICOS PDF + BUSCADOR INTELIGENTE */}
+            {activeTab === 'pdf' && (
+                <div className="animate-fade-in glass-effect" style={{ padding: '30px', borderRadius: '20px', minHeight: '600px', display: 'flex', flexDirection: 'column', border: '1px solid var(--border-glass)' }}>
+
+                    {/* Buscador de Planos Web (Google Dorks) */}
+                    <div style={{ background: 'var(--bg-input-glass)', borderRadius: '16px', padding: '20px', marginBottom: '25px', border: '1px solid var(--border-glass)' }}>
+                        <h4 style={{ margin: '0 0 15px 0', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '10px' }}><Search size={18} /> Buscar Esquema en Web</h4>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                            <input
+                                type="text"
+                                placeholder="Modelo (Ej. MacBook Pro A1278)"
+                                value={schematicQuery}
+                                onChange={(e) => setSchematicQuery(e.target.value)}
+                                style={{ flex: 1, padding: '12px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-panel)', color: 'var(--text-primary)', minWidth: '200px' }}
+                            />
+                            <button onClick={() => searchSchematicOnline('google')} style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '0 20px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <ExternalLink size={16} /> PDF en Google
+                            </button>
+                            <button onClick={() => searchSchematicOnline('manualslib')} style={{ background: '#f59e0b', color: 'white', border: 'none', padding: '0 20px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <ExternalLink size={16} /> ManualsLib
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '15px', borderTop: '1px solid var(--border-glass)', paddingTop: '20px' }}>
+                        <div>
+                            <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '1.5rem' }}>Visor Local</h3>
+                            <p style={{ color: 'var(--text-secondary)', margin: '5px 0 0 0' }}>Carga el PDF que descargaste para verlo aquí.</p>
+                        </div>
+
+                        <input type="file" id="pdf-upload" accept="application/pdf" onChange={handlePdfUpload} hidden />
+                        <label htmlFor="pdf-upload" style={{ cursor: 'pointer', background: 'var(--accent-color)', color: 'white', padding: '12px 24px', borderRadius: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', transition: 'transform 0.2s', boxShadow: '0 4px 15px rgba(37, 99, 235, 0.3)' }}>
+                            <Upload size={18} /> Cargar Archivo
+                        </label>
+                    </div>
+
+                    {pdfUrl ? (
+                        <div style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-glass)', background: '#fff', minHeight: '60vh' }}>
+                            <iframe
+                                src={`${pdfUrl}#toolbar=1&navpanes=0&scrollbar=1&zoom=100`}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 'none', display: 'block' }}
+                                title="Visor de Esquemáticos"
+                            ></iframe>
+                        </div>
+                    ) : (
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '2px dashed var(--border-glass)', borderRadius: '16px', color: 'var(--text-secondary)', minHeight: '40vh', background: 'var(--bg-input-glass)' }}>
+                            <FileText size={64} style={{ marginBottom: '15px', opacity: 0.5, color: 'var(--accent-color)' }} />
+                            <h3 style={{ margin: '0 0 10px 0', color: 'var(--text-primary)' }}>Visualizador Vacío</h3>
+                            <p style={{ fontSize: '0.95rem', opacity: 0.8, margin: 0 }}>Usa el buscador de arriba para hallar el plano y cárgalo aquí.</p>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* MODALES LOCALES */}
             {postSeleccionado && (
                 <div className="wiki-modal-overlay" onClick={() => setPostSeleccionado(null)}>
                     <div className="wiki-modal-container animate-scale-in" onClick={e => e.stopPropagation()}>

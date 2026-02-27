@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import './Settings.css';
 
+// --- SVGs Originales ---
 const SvgChevronDown = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="chevron-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>;
 const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
@@ -19,6 +20,8 @@ const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="cu
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 const SvgVideo = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>;
+// INYECTADO: Icono de Tarjeta de Crédito
+const SvgCreditCard = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>;
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -72,6 +75,9 @@ function Settings({ config, onUpdate }) {
     const [igConnecting, setIgConnecting] = useState(false);
     const fileInputRef = useRef(null);
 
+    // INYECTADO: Estado para Stripe
+    const [stripeConnecting, setStripeConnecting] = useState(false);
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         onUpdate({ ...config, [name]: type === 'checkbox' ? checked : value });
@@ -95,6 +101,16 @@ function Settings({ config, onUpdate }) {
             onUpdate({ ...config, instagramConnected: true });
             setIgConnecting(false);
         }, 1500);
+    };
+
+    // INYECTADO: Función Simulada de Conexión a Stripe
+    const handleConnectStripe = () => {
+        setStripeConnecting(true);
+        // Aquí iría la redirección a Stripe Connect OAuth
+        setTimeout(() => {
+            onUpdate({ ...config, stripeConnected: true });
+            setStripeConnecting(false);
+        }, 2000);
     };
 
     const handlePreviewChange = (mode) => {
@@ -176,6 +192,7 @@ function Settings({ config, onUpdate }) {
                 </div>
 
                 <div className="accordions-container">
+                    {/* SECCIÓN 1: IDENTIDAD */}
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Textos</span>
@@ -201,6 +218,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* SECCIÓN 2: APARIENCIA */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'apariencia' ? null : 'apariencia')}>
                             <span className="accordion-title"><SvgPalette /> Diseño</span>
@@ -238,6 +256,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* SECCIÓN 3: MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'multimedia' ? null : 'multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
@@ -259,6 +278,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* SECCIÓN 4: REDES */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
                             <span className="accordion-title"><SvgGlobe /> Contacto & Redes</span>
@@ -289,6 +309,7 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
+                    {/* SECCIÓN 5: FUNCIONALIDADES */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'funcionalidades' ? null : 'funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Módulos</span>
@@ -321,6 +342,50 @@ function Settings({ config, onUpdate }) {
                             </div>
                         )}
                     </div>
+
+                    {/* INYECTADO: SECCIÓN 6: FACTURACIÓN & STRIPE */}
+                    <div className={`accordion-item ${seccionAbierta === 'facturacion' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'facturacion' ? null : 'facturacion')}>
+                            <span className="accordion-title"><SvgCreditCard /> Facturación & Pagos</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
+                        </div>
+                        {seccionAbierta === 'facturacion' && (
+                            <div className="accordion-content">
+                                <PremiumGate isPremium={isPremium}>
+                                    <div className="settings-form-group">
+                                        {!config.stripeConnected ? (
+                                            <div className="stripe-connect-area">
+                                                <p className="settings-label" style={{ marginBottom: '10px' }}>Gestiona tu suscripción y cobra a clientes internacionales.</p>
+                                                <button type="button" onClick={handleConnectStripe} className="btn-connect-stripe" disabled={stripeConnecting}>
+                                                    {stripeConnecting ? 'Conectando...' : 'Conectar con Stripe'}
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="stripe-connected-box animate-fade-in">
+                                                <div className="stripe-status">
+                                                    <span className="status-dot-active"></span> Cuenta Vinculada
+                                                </div>
+                                                <div className="stripe-actions">
+                                                    <div className="stripe-info-row">
+                                                        <span>Plan Actual:</span>
+                                                        <strong>Wepairr Pro</strong>
+                                                    </div>
+                                                    <button className="btn-stripe-secondary">Gestionar Suscripción</button>
+                                                    <hr className="settings-divider-soft" />
+                                                    <div className="toggle-box glass-input-effect">
+                                                        <div><strong className="toggle-title">Links de Pago</strong></div>
+                                                        <label className="switch"><input type="checkbox" defaultChecked={true} /><span className="slider round"></span></label>
+                                                    </div>
+                                                </div>
+                                                <button type="button" onClick={() => onUpdate({ ...config, stripeConnected: false })} className="btn-disconnect-stripe">Desvincular Cuenta</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </PremiumGate>
+                            </div>
+                        )}
+                    </div>
+
                 </div>
             </div>
 
@@ -396,7 +461,6 @@ function Settings({ config, onUpdate }) {
                                         </div>
                                     )}
 
-                                    {/* FIX: AGREGADO FEED DE INSTAGRAM A LA VISTA PREVIA */}
                                     {config.instagramConnected && isPremium && (
                                         <div className="shop-section">
                                             <h2 className="shop-section-title" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}><SvgInstagram /> Nuestro Instagram</h2>
@@ -410,7 +474,6 @@ function Settings({ config, onUpdate }) {
                                     )}
                                 </div>
 
-                                {/* FIX: BÓTON DE WHATSAPP EN LA VISTA PREVIA */}
                                 {config.whatsapp && config.whatsapp.length > 0 && (
                                     <div className="floating-wa-btn-preview"><SvgWhatsApp /></div>
                                 )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import * as Sentry from "@sentry/react"; // INYECTADO: Importación para el Profiler
 import Dashboard from './pages/Dashboard';
 import ClientReception from './pages/ClientReception';
 import Home from './pages/Home';
@@ -110,4 +111,5 @@ function App() {
   );
 }
 
-export default App;
+// INYECTADO: Exportamos envuelto en Sentry Profiler para medir el rendimiento de toda la App
+export default Sentry.withProfiler(App);
