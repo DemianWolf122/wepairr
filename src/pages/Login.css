@@ -11,7 +11,6 @@
     box-sizing: border-box;
 }
 
-/* BOTÓN DE VOLVER ATRÁS */
 .btn-back-home {
     position: absolute;
     top: 30px;
@@ -119,11 +118,22 @@
     gap: 20px;
 }
 
-/* MENSAJE DE ERROR ROJO */
 .login-error-msg {
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.3);
     color: #ef4444;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* INYECTADO: Mensaje de éxito verde */
+.login-success-msg {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
     padding: 12px 15px;
     border-radius: 12px;
     font-size: 0.85rem;
@@ -160,7 +170,6 @@
 .input-with-icon input {
     width: 100%;
     padding: 14px 45px 14px 45px;
-    /* Ajustado el padding derecho para el ojo */
     border-radius: 12px;
     border: 1px solid var(--border-glass);
     background: var(--bg-input-glass);
@@ -176,7 +185,6 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* BOTÓN DE MOSTRAR CONTRASEÑA (OJO) */
 .btn-toggle-password {
     position: absolute;
     right: 15px;
@@ -233,13 +241,20 @@
     color: var(--text-secondary);
 }
 
-.login-footer a {
+/* INYECTADO: Estilo para el link de cambiar modo */
+.toggle-mode-link {
     color: var(--accent-color);
-    text-decoration: none;
+    cursor: pointer;
     font-weight: bold;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.2s;
 }
 
-/* Bolas de luz de fondo */
+.toggle-mode-link:hover {
+    text-decoration-color: var(--accent-color);
+}
+
 .ambient-blob {
     position: absolute;
     border-radius: 50%;

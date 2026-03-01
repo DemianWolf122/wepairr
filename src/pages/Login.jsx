@@ -1,34 +1,61 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { Mail, Lock, User, Users, ArrowRight, ShieldCheck, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Users, ArrowRight, ShieldCheck, ArrowLeft, Eye, EyeOff, UserPlus } from 'lucide-react';
 import './Login.css';
 
 export default function Login() {
     const [isTeam, setIsTeam] = useState(false);
+    const [isRegistering, setIsRegistering] = useState(false); // INYECTADO: Estado para alternar entre Login y Registro
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+
     const [errorMsg, setErrorMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState(''); // INYECTADO: Mensaje de éxito al registrarse
+
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleAuth = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setErrorMsg(''); // Resetea el error anterior
+        setErrorMsg('');
+        setSuccessMsg('');
 
-        // Conexión REAL a Supabase Auth
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (isRegistering) {
+                // FLUJO DE REGISTRO
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            is_team: isTeam // Guardamos si es taller o individual como metadato
+                        }
+                    }
+                });
 
-            if (error) {
-                console.error("Error Auth:", error.message);
-                // Si falla, mostramos el error y NO navegamos
-                setErrorMsg("Credenciales inválidas. Verifica tu correo y contraseña.");
+                if (error) {
+                    setErrorMsg("Error al registrar: " + error.message);
+                } else {
+                    setSuccessMsg("¡Cuenta creada con éxito! Entrando al taller...");
+                    // Si Supabase no requiere confirmación de email, el usuario ya estará logueado.
+                    setTimeout(() => {
+                        navigate('/dashboard');
+                    }, 1500);
+                }
             } else {
-                // Si es exitoso, entra al sistema
-                navigate('/dashboard');
+                // FLUJO DE INICIO DE SESIÓN
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    console.error("Error Auth:", error.message);
+                    setErrorMsg("Credenciales inválidas. Verifica tu correo y contraseña.");
+                } else {
+                    navigate('/dashboard');
+                }
             }
         } catch (err) {
             setErrorMsg("Hubo un problema de conexión con el servidor. Intenta de nuevo.");
@@ -37,9 +64,14 @@ export default function Login() {
         }
     };
 
+    const toggleMode = () => {
+        setIsRegistering(!isRegistering);
+        setErrorMsg('');
+        setSuccessMsg('');
+    };
+
     return (
         <div className="login-wrapper">
-            {/* BOTÓN VOLVER AL HOME */}
             <button className="btn-back-home" onClick={() => navigate('/')}>
                 <ArrowLeft size={18} /> Volver al Inicio
             </button>
@@ -50,7 +82,7 @@ export default function Login() {
                         <ShieldCheck size={32} color="white" />
                     </div>
                     <h2>Wepairr <span style={{ color: 'var(--accent-color)' }}>OS</span></h2>
-                    <p>Sistema de Gestión para Servicios Técnicos</p>
+                    <p>{isRegistering ? 'Crea tu espacio de trabajo (Beta)' : 'Sistema de Gestión para Servicios Técnicos'}</p>
                 </div>
 
                 <div className="login-type-toggle">
@@ -62,12 +94,17 @@ export default function Login() {
                     </button>
                 </div>
 
-                <form onSubmit={handleLogin} className="login-form">
+                <form onSubmit={handleAuth} className="login-form">
 
-                    {/* CARTEL DE ERROR */}
                     {errorMsg && (
                         <div className="login-error-msg animate-fade-in">
                             {errorMsg}
+                        </div>
+                    )}
+
+                    {successMsg && (
+                        <div className="login-success-msg animate-fade-in">
+                            {successMsg}
                         </div>
                     )}
 
@@ -90,7 +127,7 @@ export default function Login() {
                     </div>
 
                     <div className="login-input-group">
-                        <label>Contraseña</label>
+                        <label>Contraseña {isRegistering && "(Mínimo 6 caracteres)"}</label>
                         <div className="input-with-icon">
                             <Lock size={18} className="input-icon" />
                             <input
@@ -99,8 +136,8 @@ export default function Login() {
                                 onChange={e => setPassword(e.target.value)}
                                 placeholder="••••••••"
                                 required
+                                minLength={isRegistering ? 6 : undefined}
                             />
-                            {/* BOTÓN MOSTRAR/OCULTAR CONTRASEÑA */}
                             <button
                                 type="button"
                                 className="btn-toggle-password"
@@ -113,16 +150,22 @@ export default function Login() {
                     </div>
 
                     <button type="submit" className="btn-login-submit" disabled={loading}>
-                        {loading ? 'Verificando Credenciales...' : <>Ingresar al Espacio de Trabajo <ArrowRight size={18} /></>}
+                        {loading
+                            ? (isRegistering ? 'Creando cuenta...' : 'Verificando Credenciales...')
+                            : (isRegistering ? <><UserPlus size={18} /> Registrar Taller</> : <>Ingresar al Espacio de Trabajo <ArrowRight size={18} /></>)
+                        }
                     </button>
                 </form>
 
                 <div className="login-footer">
-                    ¿No tienes un taller registrado? <a href="#">Solicitar Beta Access</a>
+                    {isRegistering ? (
+                        <>¿Ya tienes una cuenta? <span onClick={toggleMode} className="toggle-mode-link">Inicia Sesión aquí</span></>
+                    ) : (
+                        <>¿No tienes un taller registrado? <span onClick={toggleMode} className="toggle-mode-link">Crea tu cuenta gratis</span></>
+                    )}
                 </div>
             </div>
 
-            {/* Fondo decorativo animado (Efecto SaaS moderno) */}
             <div className="ambient-blob blob-1"></div>
             <div className="ambient-blob blob-2"></div>
         </div>
