@@ -6,21 +6,11 @@ import ClientReception from './pages/ClientReception';
 import Home from './pages/Home';
 import StatusTracking from './pages/StatusTracking';
 import Directory from './pages/Directory';
-import Login from './pages/Login';
+import Login from './pages/Login'; // <-- AQUÍ ESTÁ TU NUEVA PANTALLA IMPORTADA
 import { TicketProvider } from './context/TicketContext';
 import './index.css';
 
-function Login() {
-  return (
-    <div style={{ padding: '50px', backgroundColor: 'var(--bg-main)', height: '100vh', color: 'var(--text-primary)', textAlign: 'center', fontFamily: 'system-ui, sans-serif' }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Acceso Técnicos</h1>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>Ingresa tus credenciales para acceder a tu espacio de trabajo.</p>
-      <Link to="/dashboard" style={{ display: 'inline-block', padding: '15px 30px', backgroundColor: 'var(--accent-color)', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem' }}>
-        Entrar a mi Cuenta
-      </Link>
-    </div>
-  );
-}
+// *** AQUÍ ESTABA LA FUNCIÓN DUMMY DE LOGIN. FUE ELIMINADA PARA EVITAR EL CHOQUE ***
 
 const CONFIG_INICIAL = {
   plan: 'premium',
