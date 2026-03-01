@@ -1,33 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { Mail, Lock, User, Users, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User, Users, ArrowRight, ShieldCheck, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import './Login.css';
 
 export default function Login() {
     const [isTeam, setIsTeam] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setErrorMsg(''); // Resetea el error anterior
 
-        // Conexión real a Supabase Auth
+        // Conexión REAL a Supabase Auth
         try {
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
             if (error) {
-                // Si da error (ej. credenciales inválidas), para la demo/beta dejamos que entre igual
-                console.warn("Error Auth:", error.message);
-                navigate('/dashboard');
+                console.error("Error Auth:", error.message);
+                // Si falla, mostramos el error y NO navegamos
+                setErrorMsg("Credenciales inválidas. Verifica tu correo y contraseña.");
             } else {
+                // Si es exitoso, entra al sistema
                 navigate('/dashboard');
             }
         } catch (err) {
-            navigate('/dashboard');
+            setErrorMsg("Hubo un problema de conexión con el servidor. Intenta de nuevo.");
         } finally {
             setLoading(false);
         }
@@ -35,6 +39,11 @@ export default function Login() {
 
     return (
         <div className="login-wrapper">
+            {/* BOTÓN VOLVER AL HOME */}
+            <button className="btn-back-home" onClick={() => navigate('/')}>
+                <ArrowLeft size={18} /> Volver al Inicio
+            </button>
+
             <div className="login-container glass-effect">
                 <div className="login-header">
                     <div className="login-logo-circle">
@@ -54,6 +63,14 @@ export default function Login() {
                 </div>
 
                 <form onSubmit={handleLogin} className="login-form">
+
+                    {/* CARTEL DE ERROR */}
+                    {errorMsg && (
+                        <div className="login-error-msg animate-fade-in">
+                            {errorMsg}
+                        </div>
+                    )}
+
                     {isTeam && (
                         <div className="login-input-group animate-fade-in">
                             <label>ID del Taller (Nomenclatura)</label>
@@ -76,7 +93,22 @@ export default function Login() {
                         <label>Contraseña</label>
                         <div className="input-with-icon">
                             <Lock size={18} className="input-icon" />
-                            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                required
+                            />
+                            {/* BOTÓN MOSTRAR/OCULTAR CONTRASEÑA */}
+                            <button
+                                type="button"
+                                className="btn-toggle-password"
+                                onClick={() => setShowPassword(!showPassword)}
+                                title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
                         </div>
                     </div>
 
