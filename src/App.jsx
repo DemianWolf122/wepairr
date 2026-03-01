@@ -6,6 +6,7 @@ import ClientReception from './pages/ClientReception';
 import Home from './pages/Home';
 import StatusTracking from './pages/StatusTracking';
 import Directory from './pages/Directory';
+import Login from './pages/Login';
 import { TicketProvider } from './context/TicketContext';
 import './index.css';
 

@@ -23,6 +23,7 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
     const isConsulta = ticket.tipo === 'consulta';
     const [isEditing, setIsEditing] = useState(false);
 
+    // INYECTADO: Agregamos codigo_interno y tecnico_asignado al estado de edición
     const [editData, setEditData] = useState({
         dispositivo: ticket.dispositivo || '',
         problema: ticket.problema || '',
@@ -30,7 +31,9 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         cliente: {
             nombre: ticket.cliente?.nombre || '',
             telefono: ticket.cliente?.telefono || ''
-        }
+        },
+        codigo_interno: ticket.codigo_interno || '',
+        tecnico_asignado: ticket.tecnico_asignado || ''
     });
 
     const getDeviceIcon = (dispositivo = "") => {
@@ -65,10 +68,9 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
-    // FIX: Ahora este botón tendrá una clase especial en CSS para ser clickeable
     const handleNotifyFinalizado = (e) => {
-        e.preventDefault(); // Prevenir comportamientos por defecto
-        e.stopPropagation(); // Detener propagación
+        e.preventDefault();
+        e.stopPropagation();
 
         if (!ticket.cliente?.telefono) {
             alert("Este cliente no tiene un teléfono registrado.");
@@ -79,7 +81,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
         const costo = ticket.presupuesto ? ticket.presupuesto : 'a confirmar';
         const msg = `¡Buenas noticias! Tu ${ticket.dispositivo} ya está listo. Costo: $${costo}. Te esperamos en el taller.`;
 
-        // Usamos window.open asegurando que se ejecute
         const win = window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         if (!win) alert("Por favor, permite las ventanas emergentes para abrir WhatsApp.");
     };
@@ -113,7 +114,9 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
             dispositivo: ticket.dispositivo || '',
             problema: ticket.problema || '',
             prioridad: ticket.prioridad || 'Normal',
-            cliente: { nombre: ticket.cliente?.nombre || '', telefono: ticket.cliente?.telefono || '' }
+            cliente: { nombre: ticket.cliente?.nombre || '', telefono: ticket.cliente?.telefono || '' },
+            codigo_interno: ticket.codigo_interno || '',
+            tecnico_asignado: ticket.tecnico_asignado || ''
         });
         setIsEditing(false);
     };
@@ -134,7 +137,22 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
             )}
 
             <div className="tc-header-soft">
-                <div className="tc-id-soft">#{ticket.id}</div>
+                {/* INYECTADO: Columna para el ID, Cód. Interno y Técnico */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div className="tc-id-soft">#{ticket.id}</div>
+
+                    {ticket.codigo_interno && (
+                        <span style={{ fontSize: '0.75rem', background: 'var(--bg-input-glass)', padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border-glass)', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
+                            Ref: {ticket.codigo_interno}
+                        </span>
+                    )}
+                    {ticket.tecnico_asignado && (
+                        <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <SvgUser /> {ticket.tecnico_asignado}
+                        </span>
+                    )}
+                </div>
+
                 <div className="tc-actions-top">
                     {vista === 'activos' && !isEditing && !isDeleteMode && (
                         <button className="tc-btn-icon btn-edit-soft" onClick={() => setIsEditing(true)} title="Editar información">
@@ -174,14 +192,33 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                         </div>
                     </div>
 
-                    <div className="tc-edit-field">
-                        <label className="tc-edit-label">Nivel de Urgencia</label>
-                        <select className="tc-input-soft select-input" value={editData.prioridad} onChange={e => setEditData({ ...editData, prioridad: e.target.value })}>
-                            <option value="Baja">Baja</option>
-                            <option value="Normal">Normal</option>
-                            <option value="Alta">Alta</option>
-                            <option value="Urgente">Urgente</option>
-                        </select>
+                    <div className="tc-edit-row">
+                        <div className="tc-edit-field" style={{ flex: 1 }}>
+                            <label className="tc-edit-label">Nivel de Urgencia</label>
+                            <select className="tc-input-soft select-input" value={editData.prioridad} onChange={e => setEditData({ ...editData, prioridad: e.target.value })}>
+                                <option value="Baja">Baja</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* INYECTADO: Edición de Nomenclatura y Técnico */}
+                    <div className="tc-edit-row">
+                        <div className="tc-edit-field" style={{ flex: 1 }}>
+                            <label className="tc-edit-label">Cód. Interno</label>
+                            <input type="text" className="tc-input-soft" placeholder="Ej. WEP-1004" value={editData.codigo_interno} onChange={e => setEditData({ ...editData, codigo_interno: e.target.value })} style={{ textTransform: 'uppercase' }} />
+                        </div>
+                        <div className="tc-edit-field" style={{ flex: 1 }}>
+                            <label className="tc-edit-label">Técnico Asignado</label>
+                            <select className="tc-input-soft select-input" value={editData.tecnico_asignado} onChange={e => setEditData({ ...editData, tecnico_asignado: e.target.value })}>
+                                <option value="">Sin Asignar</option>
+                                <option value="Demian">Demian (Admin)</option>
+                                <option value="Lucila">Lucila</option>
+                                <option value="Ricardo">Ricardo</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div className="tc-edit-actions">
@@ -221,7 +258,6 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
                         </div>
                     </div>
 
-                    {/* BOTÓN REPARADO: Se agrega la clase 'btn-notify-whatsapp' para controlarlo desde CSS */}
                     {ticket.estado === 'Finalizado' && vista === 'activos' && (
                         <button
                             className="tc-btn-soft btn-notify-whatsapp"
