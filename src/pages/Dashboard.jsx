@@ -1,5 +1,6 @@
 import React, { useContext, useState, useMemo, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // INYECTADO: useNavigate para el Logout
+import { supabase } from '../supabaseClient'; // INYECTADO: Supabase para cerrar sesión
 import TicketCard from '../components/TicketCard';
 import Settings from '../components/Settings';
 import CommunityWiki from './CommunityWiki';
@@ -38,39 +39,64 @@ const SvgAlert = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height
 const SvgPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22" /><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" /></svg>;
 const SvgHourglass = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 22h14" /><path d="M5 2h14" /><path d="M17 22v-4.172a2 2 0 0 0-.832-1.664L12 12l-4.168 4.164A2 2 0 0 0 7 17.828V22" /><path d="M7 2v4.172a2 2 0 0 0 .832 1.664L12 12l4.168-4.164A2 2 0 0 0 17 6.172V2" /></svg>;
 
+// INYECTADO: SVGs para el Perfil y Tareas
+const SvgUserCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>;
+const SvgLogout = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>;
+
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
+    const navigate = useNavigate(); // Instancia para redireccionar al login
+
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion');
     const [subSeccionGestion, setSubSeccionGestion] = useState('tickets');
 
-    // --- ESTADOS ---
+    // --- ESTADOS DE GESTIÓN DE TICKETS ---
     const [busqueda, setBusqueda] = useState('');
     const [criterioOrden, setCriterioOrden] = useState('recientes');
     const [filtroTipo, setFiltroTipo] = useState('todos');
     const [filtroEstado, setFiltroEstado] = useState('todos');
     const [isDeleteMode, setIsDeleteMode] = useState(false);
 
+    // --- ESTADOS DE MENÚS Y DROPDOWNS ---
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
     const [isTipoMenuOpen, setIsTipoMenuOpen] = useState(false);
     const [isEstadoMenuOpen, setIsEstadoMenuOpen] = useState(false);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false); // INYECTADO: Menú Perfil
 
     const sortRef = useRef(null);
     const tipoRef = useRef(null);
     const estadoRef = useRef(null);
+    const profileRef = useRef(null); // INYECTADO: Ref del Perfil
 
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
     const [vistaActual, setVistaActual] = useState('activos');
+
+    // INYECTADO: ESTADO PARA EL TABLERO KANBAN DE TAREAS INTERNAS
+    const [tareasInternas, setTareasInternas] = useState([
+        { id: 1, text: "Comprar flux y malla desoldante", assignee: "Demian", status: "pending" },
+        { id: 2, text: "Llamar al cliente del iPhone 11 para confirmar presupuesto", assignee: "Lucila", status: "progress" },
+        { id: 3, text: "Limpiar y ordenar estación de calor principal", assignee: "Ricardo", status: "done" }
+    ]);
+    const [nuevaTareaTxt, setNuevaTareaTxt] = useState("");
+    const [nuevoAsignado, setNuevoAsignado] = useState("Demian");
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (sortRef.current && !sortRef.current.contains(event.target)) setIsSortMenuOpen(false);
             if (tipoRef.current && !tipoRef.current.contains(event.target)) setIsTipoMenuOpen(false);
             if (estadoRef.current && !estadoRef.current.contains(event.target)) setIsEstadoMenuOpen(false);
+            if (profileRef.current && !profileRef.current.contains(event.target)) setIsProfileMenuOpen(false); // INYECTADO
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // INYECTADO: Función para cerrar sesión real en Supabase
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        navigate('/login');
+    };
 
     const sortOptions = [{ id: 'recientes', label: 'Recientes Primero', icon: <SvgRecent /> }, { id: 'prioridad', label: 'Urgentes Primero', icon: <SvgAlert /> }, { id: 'estado', label: 'Ingresados Primero', icon: <SvgPin /> }, { id: 'antiguos', label: 'Más Antiguos', icon: <SvgHourglass /> }];
     const tipoOptions = [{ id: 'todos', label: 'Todos los Equipos' }, { id: 'celular', label: 'Celulares / Tablets' }, { id: 'pc', label: 'PCs / Notebooks' }, { id: 'gpu', label: 'Placas de Video' }, { id: 'consola', label: 'Consolas' }];
@@ -140,9 +166,24 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         setMobileMenuOpen(false);
     };
 
-    // FIX: Recreada la función vital para que el formulario vuelva a la vista tras guardar
     const handleTicketCreated = () => {
         setVistaActual('activos');
+    };
+
+    // INYECTADO: LÓGICA DE TAREAS KANBAN
+    const agregarTarea = (e) => {
+        e.preventDefault();
+        if (!nuevaTareaTxt.trim()) return;
+        setTareasInternas([{ id: Date.now(), text: nuevaTareaTxt, assignee: nuevoAsignado, status: 'pending' }, ...tareasInternas]);
+        setNuevaTareaTxt("");
+    };
+
+    const moverTarea = (id, newStatus) => {
+        setTareasInternas(tareasInternas.map(t => t.id === id ? { ...t, status: newStatus } : t));
+    };
+
+    const borrarTarea = (id) => {
+        setTareasInternas(tareasInternas.filter(t => t.id !== id));
     };
 
     return (
@@ -160,6 +201,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
                 <div className={`nav-menu ${mobileMenuOpen ? 'mobile-open' : ''}`}>
                     <button onClick={() => cambiarSeccion('gestion')} className={`nav-link-btn ${seccionPrincipal === 'gestion' ? 'nav-link-active' : ''}`}>Gestión</button>
+                    {/* INYECTADO: Nueva pestaña Tareas */}
+                    <button onClick={() => cambiarSeccion('tareas')} className={`nav-link-btn ${seccionPrincipal === 'tareas' ? 'nav-link-active' : ''}`}>Tareas</button>
                     <button onClick={() => cambiarSeccion('metricas')} className={`nav-link-btn ${seccionPrincipal === 'metricas' ? 'nav-link-active' : ''}`}>Métricas</button>
                     <button onClick={() => cambiarSeccion('inventario')} className={`nav-link-btn ${seccionPrincipal === 'inventario' ? 'nav-link-active' : ''}`}>Inventario</button>
                     <button onClick={() => cambiarSeccion('herramientas')} className={`nav-link-btn ${seccionPrincipal === 'herramientas' ? 'nav-link-active' : ''}`}>Herramientas</button>
@@ -171,6 +214,30 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     <button onClick={toggleTheme} className="theme-toggle-btn" title="Cambiar Tema">
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </button>
+
+                    {/* INYECTADO: Menú de Perfil Desplegable */}
+                    <div className="profile-wrapper" ref={profileRef}>
+                        <button className={`profile-btn ${isProfileMenuOpen ? 'active' : ''}`} onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}>
+                            <SvgUserCircle />
+                        </button>
+                        {isProfileMenuOpen && (
+                            <div className="profile-dropdown-menu animate-fade-in">
+                                <div className="profile-menu-header">
+                                    <strong>Admin Taller</strong>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Wepairr Pro</span>
+                                </div>
+                                <div className="profile-menu-body">
+                                    <button onClick={() => { cambiarSeccion('configuracion'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
+                                        Personalizar Taller
+                                    </button>
+                                    <button onClick={handleLogout} className="profile-menu-item text-danger" style={{ borderTop: '1px solid var(--border-glass)' }}>
+                                        <SvgLogout /> Cerrar Sesión
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="btn-view-site">
                         Mi Vidriera <SvgExternal />
                     </Link>
@@ -283,7 +350,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 </header>
 
                                 {vistaActual === 'nuevo' ? (
-                                    /* El formulario ahora sí llamará a la función existente y no crasheará */
                                     <NewTicketForm onTicketCreated={handleTicketCreated} />
                                 ) : (
                                     <div className="ticket-list">
@@ -323,6 +389,100 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         {subSeccionGestion === 'features' && (
                             <FeaturesManager config={config} onUpdate={setConfig} />
                         )}
+                    </div>
+                )}
+
+                {/* INYECTADO: VISTA DEL TABLERO DE TAREAS (KANBAN) */}
+                {seccionPrincipal === 'tareas' && (
+                    <div className="gestion-container animate-fade-in">
+                        <header style={{ marginBottom: '30px' }}>
+                            <h2 style={{ fontSize: '2rem', margin: '0 0 10px 0', color: 'var(--text-primary)' }}>Tablero del Taller</h2>
+                            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Organiza y delega el trabajo interno del equipo.</p>
+                        </header>
+
+                        {/* Formulario de Nueva Tarea */}
+                        <form onSubmit={agregarTarea} className="glass-effect" style={{ padding: '20px', borderRadius: '16px', display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap', alignItems: 'center', border: '1px solid var(--border-glass)' }}>
+                            <input
+                                type="text"
+                                placeholder="Escribe una nueva tarea..."
+                                value={nuevaTareaTxt}
+                                onChange={e => setNuevaTareaTxt(e.target.value)}
+                                style={{ flex: 1, minWidth: '250px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem' }}
+                            />
+                            <select
+                                value={nuevoAsignado}
+                                onChange={e => setNuevoAsignado(e.target.value)}
+                                style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}
+                            >
+                                <option value="Demian">Para: Demian</option>
+                                <option value="Lucila">Para: Lucila</option>
+                                <option value="Ricardo">Para: Ricardo</option>
+                                <option value="Todos">Para: Todos</option>
+                            </select>
+                            <button type="submit" style={{ padding: '12px 25px', borderRadius: '10px', border: 'none', background: 'var(--accent-color)', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s' }}>
+                                Añadir Tarea
+                            </button>
+                        </form>
+
+                        {/* Tablero Kanban */}
+                        <div className="kanban-board">
+                            {/* Columna 1: Pendientes */}
+                            <div className="kanban-col glass-effect">
+                                <h3 className="kanban-header kanban-pending">Pendientes <span className="kanban-count">{tareasInternas.filter(t => t.status === 'pending').length}</span></h3>
+                                <div className="kanban-cards">
+                                    {tareasInternas.filter(t => t.status === 'pending').map(tarea => (
+                                        <div key={tarea.id} className="kanban-card">
+                                            <p>{tarea.text}</p>
+                                            <div className="kanban-card-footer">
+                                                <span className="kanban-assignee">👤 {tarea.assignee}</span>
+                                                <div style={{ display: 'flex', gap: '5px' }}>
+                                                    <button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button>
+                                                    <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>▶</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Columna 2: En Proceso */}
+                            <div className="kanban-col glass-effect">
+                                <h3 className="kanban-header kanban-progress">En Proceso <span className="kanban-count">{tareasInternas.filter(t => t.status === 'progress').length}</span></h3>
+                                <div className="kanban-cards">
+                                    {tareasInternas.filter(t => t.status === 'progress').map(tarea => (
+                                        <div key={tarea.id} className="kanban-card">
+                                            <p>{tarea.text}</p>
+                                            <div className="kanban-card-footer">
+                                                <span className="kanban-assignee">👤 {tarea.assignee}</span>
+                                                <div style={{ display: 'flex', gap: '5px' }}>
+                                                    <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'pending')}>◀</button>
+                                                    <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'done')}>▶</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Columna 3: Completadas */}
+                            <div className="kanban-col glass-effect">
+                                <h3 className="kanban-header kanban-done">Completadas <span className="kanban-count">{tareasInternas.filter(t => t.status === 'done').length}</span></h3>
+                                <div className="kanban-cards">
+                                    {tareasInternas.filter(t => t.status === 'done').map(tarea => (
+                                        <div key={tarea.id} className="kanban-card" style={{ opacity: 0.7 }}>
+                                            <p style={{ textDecoration: 'line-through' }}>{tarea.text}</p>
+                                            <div className="kanban-card-footer">
+                                                <span className="kanban-assignee">👤 {tarea.assignee}</span>
+                                                <div style={{ display: 'flex', gap: '5px' }}>
+                                                    <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>◀</button>
+                                                    <button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )}
 
