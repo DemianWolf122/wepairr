@@ -120,7 +120,7 @@
     border-color: var(--accent-color);
 }
 
-/* --- INYECTADO: DROPDOWN DE PERFIL --- */
+/* --- DROPDOWN DE PERFIL --- */
 .profile-wrapper {
     position: relative;
 }
@@ -155,7 +155,7 @@
     border: 1px solid var(--border-glass);
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    min-width: 220px;
+    min-width: 240px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -210,7 +210,6 @@
     background: rgba(239, 68, 68, 0.1);
 }
 
-
 .btn-view-site {
     color: #fff;
     text-decoration: none;
@@ -255,7 +254,6 @@
     overflow: hidden;
 }
 
-/* Contenedor flexible interno para evitar desbordes */
 .gestion-container {
     display: flex;
     flex-direction: column;
@@ -319,11 +317,7 @@
 /* --- CABECERA DE GESTIÓN --- */
 .gestion-header-row {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 25px;
-    gap: 15px;
-    flex-wrap: wrap;
     width: 100%;
     box-sizing: border-box;
 }
@@ -331,7 +325,6 @@
 .gestion-sub-nav {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
     padding: 5px;
     background: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
@@ -383,7 +376,6 @@
     border-radius: 14px;
     border: 1px solid var(--border-glass);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    margin-left: auto;
     box-sizing: border-box;
 }
 
@@ -713,7 +705,7 @@
 }
 
 /* =======================================================
-   INYECTADO: TABLERO KANBAN DE TAREAS
+   TABLERO KANBAN DE TAREAS
 ======================================================= */
 .kanban-board {
     display: grid;
@@ -834,6 +826,123 @@
 .btn-trash:hover {
     background: #ef4444;
     border-color: #ef4444;
+}
+
+/* =======================================================
+   NUEVO: GRILLA DE EQUIPO / STAFF
+======================================================= */
+.equipo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.equipo-card {
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.equipo-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+}
+
+.equipo-header {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.equipo-avatar {
+    width: 70px;
+    height: 70px;
+    background: var(--bg-input-glass);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent-color);
+    border: 2px solid var(--border-glass);
+}
+
+.equipo-avatar svg {
+    width: 35px;
+    height: 35px;
+}
+
+.equipo-status-dot {
+    position: absolute;
+    bottom: 5px;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-panel);
+}
+
+.equipo-status-dot.online {
+    background: #10b981;
+}
+
+.equipo-status-dot.offline {
+    background: #64748b;
+}
+
+.equipo-name {
+    margin: 0 0 5px 0;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+}
+
+.equipo-role {
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    font-weight: 800;
+    background: rgba(37, 99, 235, 0.1);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 15px;
+}
+
+.equipo-details {
+    width: 100%;
+    background: var(--bg-input-glass);
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px solid var(--border-glass);
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.equipo-details p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.equipo-details strong {
+    color: var(--text-primary);
+}
+
+.btn-equipo-action {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent-color);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.btn-equipo-action:hover {
+    filter: brightness(1.1);
 }
 
 @keyframes popIn {
@@ -977,6 +1086,7 @@
     .gestion-sub-nav {
         width: 100%;
         flex-wrap: nowrap;
+        overflow-x: auto;
     }
 
     .sub-nav-btn {
@@ -1086,7 +1196,6 @@
 
     .tab-btn-action {
         max-width: 85vh;
-
     }
 
     .filters-group {
