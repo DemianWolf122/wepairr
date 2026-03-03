@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import './Settings.css';
 
-// --- SVGs Originales ---
 const SvgChevronDown = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="chevron-icon"><polyline points="6 9 12 15 18 9"></polyline></svg>;
 const SvgLock = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>;
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
@@ -19,9 +18,6 @@ const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" s
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
-const SvgVideo = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>;
-// INYECTADO: Icono de Tarjeta de Crédito
-const SvgCreditCard = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>;
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -54,7 +50,11 @@ const AutoResizeTextarea = ({ name, value, onChange, placeholder, maxLength, cla
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+            // Previene el error asegurándose que el valor no sea null al calcular la altura
+            const scrollHeight = textareaRef.current.scrollHeight;
+            if (scrollHeight > 0) {
+                textareaRef.current.style.height = `${scrollHeight}px`;
+            }
         }
     }, [value]);
     return (
@@ -74,9 +74,6 @@ function Settings({ config, onUpdate }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [igConnecting, setIgConnecting] = useState(false);
     const fileInputRef = useRef(null);
-
-    // INYECTADO: Estado para Stripe
-    const [stripeConnecting, setStripeConnecting] = useState(false);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -101,16 +98,6 @@ function Settings({ config, onUpdate }) {
             onUpdate({ ...config, instagramConnected: true });
             setIgConnecting(false);
         }, 1500);
-    };
-
-    // INYECTADO: Función Simulada de Conexión a Stripe
-    const handleConnectStripe = () => {
-        setStripeConnecting(true);
-        // Aquí iría la redirección a Stripe Connect OAuth
-        setTimeout(() => {
-            onUpdate({ ...config, stripeConnected: true });
-            setStripeConnecting(false);
-        }, 2000);
     };
 
     const handlePreviewChange = (mode) => {
@@ -186,8 +173,8 @@ function Settings({ config, onUpdate }) {
 
                 <div className="settings-header-row">
                     <div>
-                        <h2 className="settings-main-title">Editor Visual</h2>
-                        <p className="settings-subtitle">Define el aspecto de tu vidriera.</p>
+                        <h2 className="settings-main-title">Ajustes del Taller</h2>
+                        <p className="settings-subtitle">Define el aspecto de tu vidriera y configuraciones.</p>
                     </div>
                 </div>
 
@@ -208,7 +195,7 @@ function Settings({ config, onUpdate }) {
                                         <input type="text" name="titulo" value={config.titulo || ''} onChange={handleChange} className="settings-input" maxLength={45} />
                                     </label>
                                     <label className="settings-label">Descripción Corta (Máx 120):
-                                        <AutoResizeTextarea name="descripcion" value={config.descripcion} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} />
+                                        <AutoResizeTextarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} />
                                     </label>
                                     <label className="settings-label">Horarios de Atención:
                                         <input type="text" name="horariosAtencion" value={config.horariosAtencion || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Lun a Vie 9 a 18hs" maxLength={50} />
@@ -339,49 +326,6 @@ function Settings({ config, onUpdate }) {
                                         )}
                                     </PremiumGate>
                                 </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* INYECTADO: SECCIÓN 6: FACTURACIÓN & STRIPE */}
-                    <div className={`accordion-item ${seccionAbierta === 'facturacion' ? 'active' : ''}`}>
-                        <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'facturacion' ? null : 'facturacion')}>
-                            <span className="accordion-title"><SvgCreditCard /> Facturación & Pagos</span>
-                            <span className="accordion-chevron"><SvgChevronDown /></span>
-                        </div>
-                        {seccionAbierta === 'facturacion' && (
-                            <div className="accordion-content">
-                                <PremiumGate isPremium={isPremium}>
-                                    <div className="settings-form-group">
-                                        {!config.stripeConnected ? (
-                                            <div className="stripe-connect-area">
-                                                <p className="settings-label" style={{ marginBottom: '10px' }}>Gestiona tu suscripción y cobra a clientes internacionales.</p>
-                                                <button type="button" onClick={handleConnectStripe} className="btn-connect-stripe" disabled={stripeConnecting}>
-                                                    {stripeConnecting ? 'Conectando...' : 'Conectar con Stripe'}
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="stripe-connected-box animate-fade-in">
-                                                <div className="stripe-status">
-                                                    <span className="status-dot-active"></span> Cuenta Vinculada
-                                                </div>
-                                                <div className="stripe-actions">
-                                                    <div className="stripe-info-row">
-                                                        <span>Plan Actual:</span>
-                                                        <strong>Wepairr Pro</strong>
-                                                    </div>
-                                                    <button className="btn-stripe-secondary">Gestionar Suscripción</button>
-                                                    <hr className="settings-divider-soft" />
-                                                    <div className="toggle-box glass-input-effect">
-                                                        <div><strong className="toggle-title">Links de Pago</strong></div>
-                                                        <label className="switch"><input type="checkbox" defaultChecked={true} /><span className="slider round"></span></label>
-                                                    </div>
-                                                </div>
-                                                <button type="button" onClick={() => onUpdate({ ...config, stripeConnected: false })} className="btn-disconnect-stripe">Desvincular Cuenta</button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </PremiumGate>
                             </div>
                         )}
                     </div>
