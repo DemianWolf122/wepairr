@@ -39,14 +39,14 @@ const SvgUserCircle = () => <svg xmlns="http://www.w3.org/2000/svg" width="22" h
 const SvgLogout = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>;
 const SvgChart = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg>;
 const SvgSettingsConfig = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>;
+const SvgShield = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>;
+const SvgLayout = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>;
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const navigate = useNavigate();
 
-    // ESTADO PRINCIPAL: Nav limpia (gestion_tickets, gestion_taller, inventario, herramientas, comunidad, configuracion)
+    // 1. ESTADOS DE NAVEGACIÓN PRINCIPAL REESTRUCTURADOS
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion_tickets');
-
-    // SUB-ESTADO PARA GESTIÓN DEL TALLER
     const [subSeccionTaller, setSubSeccionTaller] = useState('tareas');
 
     // --- ESTADOS DE GESTIÓN DE TICKETS ---
@@ -55,6 +55,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [filtroTipo, setFiltroTipo] = useState('todos');
     const [filtroEstado, setFiltroEstado] = useState('todos');
     const [isDeleteMode, setIsDeleteMode] = useState(false);
+    const [vistaActual, setVistaActual] = useState('activos');
 
     // --- ESTADOS DE MENÚS Y DROPDOWNS ---
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -70,9 +71,11 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
-    const [vistaActual, setVistaActual] = useState('activos');
+    // --- ROL DEL USUARIO ACTUAL (Simulado para Beta) ---
+    // En producción esto viene de Supabase auth
+    const [userRole, setUserRole] = useState('Super Admin');
 
-    // ESTADO PARA EL TABLERO KANBAN DE TAREAS INTERNAS
+    // --- ESTADO PARA TABLERO KANBAN ---
     const [tareasInternas, setTareasInternas] = useState([
         { id: 1, text: "Comprar flux y malla desoldante", assignee: "Demian", status: "pending" },
         { id: 2, text: "Llamar al cliente del iPhone 11 para confirmar presupuesto", assignee: "Lucila", status: "progress" },
@@ -81,12 +84,20 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [nuevaTareaTxt, setNuevaTareaTxt] = useState("");
     const [nuevoAsignado, setNuevoAsignado] = useState("Demian");
 
-    // ESTADO PARA GESTIÓN DE EQUIPO
+    // --- ESTADO PARA GESTIÓN DE EQUIPO Y ROLES ---
     const [miembrosEquipo, setMiembrosEquipo] = useState([
-        { id: 1, nombre: 'Demian', rol: 'Administrador', estado: 'Online', especialidad: 'Microelectrónica' },
-        { id: 2, nombre: 'Lucila', rol: 'Recepción / Ventas', estado: 'Online', especialidad: 'Atención al Cliente' },
-        { id: 3, nombre: 'Ricardo', rol: 'Técnico Jr.', estado: 'Offline', especialidad: 'Cambio de Pantallas' }
+        { id: 1, nombre: 'Demian', rol: 'Super Admin', estado: 'Online', email: 'demian@wepairr.com' },
+        { id: 2, nombre: 'Lucila', rol: 'Recepción', estado: 'Online', email: 'lucila@wepairr.com' },
+        { id: 3, nombre: 'Ricardo', rol: 'Técnico Full', estado: 'Offline', email: 'ricardo@wepairr.com' }
     ]);
+
+    // --- AJUSTES INTERNOS DEL TALLER ---
+    const [tallerConfig, setTallerConfig] = useState({
+        moneda: 'ARS',
+        prefijoTickets: 'WEP',
+        impuesto: 21,
+        notificarEmail: true
+    });
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -154,7 +165,11 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         });
     }, [tickets, vistaActual, criterioOrden, filtroTipo, filtroEstado, busqueda]);
 
+    // PROTECCIÓN POR ROLES
+    const puedeAdministrarTickets = userRole === 'Super Admin' || userRole === 'Técnico Full';
+
     const ciclarEstado = (id, estadoActual) => {
+        if (!puedeAdministrarTickets) return alert("Solo los técnicos o administradores pueden cambiar el estado.");
         if (isDeleteMode) return;
         const SECUENCIA_ESTADOS = ['Ingresado', 'En Proceso', 'Finalizado', 'Entregado'];
         const indiceActual = SECUENCIA_ESTADOS.indexOf(estadoActual);
@@ -163,6 +178,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     };
 
     const handleDeleteAction = (id) => {
+        if (userRole !== 'Super Admin') return alert("Solo un Super Admin puede borrar tickets.");
         if (vistaActual === 'papelera') eliminarDefinitivamente(id);
         else moverAPapelera(id);
     };
@@ -172,23 +188,25 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         setMobileMenuOpen(false);
     };
 
-    const handleTicketCreated = () => {
-        setVistaActual('activos');
-    };
-
+    // FUNCIONES KANBAN
     const agregarTarea = (e) => {
         e.preventDefault();
         if (!nuevaTareaTxt.trim()) return;
         setTareasInternas([{ id: Date.now(), text: nuevaTareaTxt, assignee: nuevoAsignado, status: 'pending' }, ...tareasInternas]);
         setNuevaTareaTxt("");
     };
-
     const moverTarea = (id, newStatus) => {
+        if (!puedeAdministrarTickets) return alert("No tienes permisos para mover tareas.");
         setTareasInternas(tareasInternas.map(t => t.id === id ? { ...t, status: newStatus } : t));
     };
-
     const borrarTarea = (id) => {
+        if (userRole !== 'Super Admin') return alert("Solo un Super Admin puede borrar tareas.");
         setTareasInternas(tareasInternas.filter(t => t.id !== id));
+    };
+
+    // FUNCIONES DE ROLES
+    const cambiarRolMiembro = (id, nuevoRol) => {
+        setMiembrosEquipo(miembrosEquipo.map(m => m.id === id ? { ...m, rol: nuevoRol } : m));
     };
 
     return (
@@ -196,6 +214,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
             <div className={`mobile-menu-backdrop ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
 
+            {/* --- NAV PRINCIPAL LIMPIO --- */}
             <nav className="tech-navbar">
                 <div className="tech-brand">
                     <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -217,6 +236,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </button>
 
+                    {/* MENÚ DE PERFIL DESPLEGABLE */}
                     <div className="profile-wrapper" ref={profileRef}>
                         <button className={`profile-btn ${isProfileMenuOpen ? 'active' : ''}`} onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}>
                             <SvgUserCircle />
@@ -224,12 +244,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         {isProfileMenuOpen && (
                             <div className="profile-dropdown-menu animate-fade-in">
                                 <div className="profile-menu-header">
-                                    <strong>Admin Taller</strong>
-                                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Wepairr Pro</span>
+                                    <strong>Demian</strong>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>{userRole}</span>
                                 </div>
                                 <div className="profile-menu-body">
-                                    <button onClick={() => { cambiarSeccion('configuracion'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
-                                        <SvgSettingsConfig /> Ajustes del Taller
+                                    {/* Botón directo al editor de vidriera web desde el perfil */}
+                                    <button onClick={() => { cambiarSeccion('ajustes_web'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
+                                        <SvgLayout /> Editor de Vidriera Web
                                     </button>
                                     <button onClick={handleLogout} className="profile-menu-item text-danger" style={{ borderTop: '1px solid var(--border-glass)' }}>
                                         <SvgLogout /> Cerrar Sesión
@@ -241,9 +262,10 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 </div>
             </nav>
 
-            <main className={`dashboard-content ${seccionPrincipal === 'configuracion' ? 'modo-editor-activo' : ''}`}>
+            <main className={`dashboard-content ${seccionPrincipal === 'ajustes_web' ? 'modo-editor-activo' : ''}`}>
 
-                {seccionPrincipal === 'gestion_tickets' && vistaActual !== 'nuevo' && (
+                {/* BOTÓN FLOTANTE ELIMINAR (Solo visible para Admin en Tickets) */}
+                {seccionPrincipal === 'gestion_tickets' && vistaActual !== 'nuevo' && userRole === 'Super Admin' && (
                     <button
                         className={`floating-delete-btn ${isDeleteMode ? 'active' : ''}`}
                         onClick={() => setIsDeleteMode(!isDeleteMode)}
@@ -255,7 +277,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
                 {/* VISTA 1: GESTIÓN DE TICKETS */}
                 {seccionPrincipal === 'gestion_tickets' && (
-                    <div className="gestion-container">
+                    <div className="gestion-container animate-fade-in">
                         <div className="gestion-header-row" style={{ justifyContent: 'space-between' }}>
                             <h2 style={{ fontSize: '2rem', margin: 0, color: 'var(--text-primary)' }}>Gestión de Tickets</h2>
                             <div className="search-box-tickets">
@@ -336,7 +358,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         </header>
 
                         {vistaActual === 'nuevo' ? (
-                            <NewTicketForm onTicketCreated={handleTicketCreated} />
+                            <NewTicketForm onTicketCreated={() => setVistaActual('activos')} />
                         ) : (
                             <div className="ticket-list">
                                 {ticketsMostrados.length === 0 && <p className="ticket-list-empty">No se encontraron tickets con estos filtros.</p>}
@@ -357,8 +379,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                                 <button onClick={() => moverAPapelera(ticket.id)} className="action-btn btn-dark">Ignorar</button>
                                             </div>
                                         )}
-
-                                        {!isDeleteMode && vistaActual === 'papelera' && (
+                                        {!isDeleteMode && vistaActual === 'papelera' && userRole === 'Super Admin' && (
                                             <div className="ticket-actions-absolute ticket-actions-trash">
                                                 <button onClick={() => restaurarTicket(ticket.id)} className="btn-restore-premium">
                                                     <SvgRefresh /> Restaurar
@@ -380,12 +401,14 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 <h2 style={{ fontSize: '2rem', margin: '0 0 5px 0', color: 'var(--text-primary)' }}>Gestión del Taller</h2>
                                 <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Centro de comando: Administración de equipo, tareas, analíticas y módulos.</p>
                             </div>
+
+                            {/* SUB-NAVEGACIÓN INTERNA */}
                             <div className="gestion-sub-nav" style={{ width: '100%', overflowX: 'auto', flexWrap: 'nowrap' }}>
                                 <button className={`sub-nav-btn ${subSeccionTaller === 'tareas' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('tareas')}>
-                                    <SvgSubTickets /> Tablero Kanban
+                                    <SvgSubTickets /> Tareas (Kanban)
                                 </button>
                                 <button className={`sub-nav-btn ${subSeccionTaller === 'equipo' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('equipo')}>
-                                    <SvgUserCircle /> Equipo y Staff
+                                    <SvgUserCircle /> Mi Equipo
                                 </button>
                                 <button className={`sub-nav-btn ${subSeccionTaller === 'metricas' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('metricas')}>
                                     <SvgChart /> Métricas (BI)
@@ -393,8 +416,15 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 <button className={`sub-nav-btn ${subSeccionTaller === 'funcionalidades' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('funcionalidades')}>
                                     <SvgSubFeatures /> Módulos
                                 </button>
-                                <button className={`sub-nav-btn`} onClick={() => setSeccionPrincipal('configuracion')}>
-                                    <SvgSettingsConfig /> Ajustes del Sistema
+                                {/* PESTAÑA CRÍTICA: Configuración Privada del Taller */}
+                                {userRole === 'Super Admin' && (
+                                    <button className={`sub-nav-btn ${subSeccionTaller === 'configuracion_taller' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('configuracion_taller')}>
+                                        <SvgSettingsConfig /> Config. del Taller
+                                    </button>
+                                )}
+                                {/* BOTÓN DIRECTO AL EDITOR WEB */}
+                                <button className={`sub-nav-btn`} onClick={() => setSeccionPrincipal('ajustes_web')} style={{ marginLeft: 'auto', background: 'var(--accent-color)', color: 'white' }}>
+                                    <SvgLayout /> Editor Web Público
                                 </button>
                             </div>
                         </div>
@@ -494,10 +524,9 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                             <h3 className="equipo-name">{miembro.nombre}</h3>
                                             <span className="equipo-role">{miembro.rol}</span>
                                             <div className="equipo-details">
-                                                <p><strong>Especialidad:</strong> {miembro.especialidad}</p>
+                                                <p><strong>Email:</strong> {miembro.email}</p>
                                                 <p><strong>Estado:</strong> {miembro.estado}</p>
                                             </div>
-                                            <button className="btn-equipo-action">Asignar Ticket</button>
                                         </div>
                                     ))}
                                 </div>
@@ -518,14 +547,102 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </div>
                         )}
 
+                        {/* NUEVA SUB-VISTA: CONFIGURACIÓN AVANZADA DEL TALLER (SOLO ADMIN) */}
+                        {subSeccionTaller === 'configuracion_taller' && userRole === 'Super Admin' && (
+                            <div className="config-taller-container animate-fade-in">
+
+                                <div className="config-taller-section glass-effect">
+                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><SvgShield /> Delegación de Roles y Accesos</h3>
+                                    <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>Controla qué pueden hacer los miembros de tu taller. Solo tú puedes borrar tickets.</p>
+
+                                    <div className="roles-table-wrapper">
+                                        <table className="roles-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Usuario</th>
+                                                    <th>Email</th>
+                                                    <th>Rol Actual</th>
+                                                    <th>Permisos</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {miembrosEquipo.map(miembro => (
+                                                    <tr key={miembro.id}>
+                                                        <td style={{ fontWeight: 'bold' }}>{miembro.nombre}</td>
+                                                        <td style={{ color: 'var(--text-secondary)' }}>{miembro.email}</td>
+                                                        <td>
+                                                            <select
+                                                                className="role-select-input"
+                                                                value={miembro.rol}
+                                                                onChange={(e) => cambiarRolMiembro(miembro.id, e.target.value)}
+                                                                disabled={miembro.nombre === 'Demian'} // Evitar quitarse admin a sí mismo
+                                                            >
+                                                                <option value="Super Admin">Super Admin</option>
+                                                                <option value="Técnico Full">Técnico Full</option>
+                                                                <option value="Recepción">Recepción</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            {miembro.rol === 'Super Admin' && <span className="permiso-badge admin">Acceso Total</span>}
+                                                            {miembro.rol === 'Técnico Full' && <span className="permiso-badge tech">Gestiona Tickets, no borra</span>}
+                                                            {miembro.rol === 'Recepción' && <span className="permiso-badge recep">Solo ingresa y cobra</span>}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div className="config-taller-section glass-effect" style={{ marginTop: '20px' }}>
+                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><SvgSettingsConfig /> Preferencias Internas</h3>
+                                    <div className="config-grid-2">
+                                        <div className="config-input-group">
+                                            <label>Prefijo Interno de Tickets</label>
+                                            <input
+                                                type="text"
+                                                value={tallerConfig.prefijoTickets}
+                                                onChange={e => setTallerConfig({ ...tallerConfig, prefijoTickets: e.target.value.toUpperCase() })}
+                                                maxLength={5}
+                                                placeholder="Ej: WEP"
+                                            />
+                                            <small>Los tickets nuevos saldrán como {tallerConfig.prefijoTickets}-001</small>
+                                        </div>
+                                        <div className="config-input-group">
+                                            <label>Moneda Local</label>
+                                            <select value={tallerConfig.moneda} onChange={e => setTallerConfig({ ...tallerConfig, moneda: e.target.value })}>
+                                                <option value="ARS">Peso Argentino (ARS)</option>
+                                                <option value="USD">Dólar Estadounidense (USD)</option>
+                                                <option value="EUR">Euro (EUR)</option>
+                                                <option value="MXN">Peso Mexicano (MXN)</option>
+                                                <option value="COP">Peso Colombiano (COP)</option>
+                                            </select>
+                                        </div>
+                                        <div className="config-input-group">
+                                            <label>Porcentaje de IVA / Impuestos (%)</label>
+                                            <input
+                                                type="number"
+                                                value={tallerConfig.impuesto}
+                                                onChange={e => setTallerConfig({ ...tallerConfig, impuesto: e.target.value })}
+                                                min="0" max="100"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button className="btn-save-taller-config">Guardar Preferencias</button>
+                                </div>
+
+                            </div>
+                        )}
+
                     </div>
                 )}
 
-                {/* RESTO DE VISTAS PRINCIPALES */}
+                {/* VISUALIZACIÓN DE COMPONENTES RAÍZ */}
                 {seccionPrincipal === 'inventario' && <InventoryView />}
                 {seccionPrincipal === 'herramientas' && <ToolsView />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
-                {seccionPrincipal === 'configuracion' && <Settings config={config} onUpdate={setConfig} />}
+                {seccionPrincipal === 'ajustes_web' && <Settings config={config} onUpdate={setConfig} />}
+
             </main>
 
             <AIChatAssistant />
