@@ -45,11 +45,9 @@ const SvgLayout = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" heigh
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const navigate = useNavigate();
 
-    // 1. ESTADOS DE NAVEGACIÓN PRINCIPAL REESTRUCTURADOS
     const [seccionPrincipal, setSeccionPrincipal] = useState('gestion_tickets');
     const [subSeccionTaller, setSubSeccionTaller] = useState('tareas');
 
-    // --- ESTADOS DE GESTIÓN DE TICKETS ---
     const [busqueda, setBusqueda] = useState('');
     const [criterioOrden, setCriterioOrden] = useState('recientes');
     const [filtroTipo, setFiltroTipo] = useState('todos');
@@ -57,7 +55,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [isDeleteMode, setIsDeleteMode] = useState(false);
     const [vistaActual, setVistaActual] = useState('activos');
 
-    // --- ESTADOS DE MENÚS Y DROPDOWNS ---
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
     const [isTipoMenuOpen, setIsTipoMenuOpen] = useState(false);
@@ -71,11 +68,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
-    // --- ROL DEL USUARIO ACTUAL (Simulado para Beta) ---
-    // En producción esto viene de Supabase auth
     const [userRole, setUserRole] = useState('Super Admin');
 
-    // --- ESTADO PARA TABLERO KANBAN ---
     const [tareasInternas, setTareasInternas] = useState([
         { id: 1, text: "Comprar flux y malla desoldante", assignee: "Demian", status: "pending" },
         { id: 2, text: "Llamar al cliente del iPhone 11 para confirmar presupuesto", assignee: "Lucila", status: "progress" },
@@ -84,14 +78,12 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [nuevaTareaTxt, setNuevaTareaTxt] = useState("");
     const [nuevoAsignado, setNuevoAsignado] = useState("Demian");
 
-    // --- ESTADO PARA GESTIÓN DE EQUIPO Y ROLES ---
     const [miembrosEquipo, setMiembrosEquipo] = useState([
         { id: 1, nombre: 'Demian', rol: 'Super Admin', estado: 'Online', email: 'demian@wepairr.com' },
         { id: 2, nombre: 'Lucila', rol: 'Recepción', estado: 'Online', email: 'lucila@wepairr.com' },
         { id: 3, nombre: 'Ricardo', rol: 'Técnico Full', estado: 'Offline', email: 'ricardo@wepairr.com' }
     ]);
 
-    // --- AJUSTES INTERNOS DEL TALLER ---
     const [tallerConfig, setTallerConfig] = useState({
         moneda: 'ARS',
         prefijoTickets: 'WEP',
@@ -165,7 +157,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         });
     }, [tickets, vistaActual, criterioOrden, filtroTipo, filtroEstado, busqueda]);
 
-    // PROTECCIÓN POR ROLES
     const puedeAdministrarTickets = userRole === 'Super Admin' || userRole === 'Técnico Full';
 
     const ciclarEstado = (id, estadoActual) => {
@@ -188,7 +179,10 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         setMobileMenuOpen(false);
     };
 
-    // FUNCIONES KANBAN
+    const handleTicketCreated = () => {
+        setVistaActual('activos');
+    };
+
     const agregarTarea = (e) => {
         e.preventDefault();
         if (!nuevaTareaTxt.trim()) return;
@@ -204,17 +198,14 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         setTareasInternas(tareasInternas.filter(t => t.id !== id));
     };
 
-    // FUNCIONES DE ROLES
     const cambiarRolMiembro = (id, nuevoRol) => {
         setMiembrosEquipo(miembrosEquipo.map(m => m.id === id ? { ...m, rol: nuevoRol } : m));
     };
 
     return (
         <div className="dashboard-wrapper">
-
             <div className={`mobile-menu-backdrop ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
 
-            {/* --- NAV PRINCIPAL LIMPIO --- */}
             <nav className="tech-navbar">
                 <div className="tech-brand">
                     <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -236,7 +227,11 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </button>
 
-                    {/* MENÚ DE PERFIL DESPLEGABLE */}
+                    {/* BOTÓN PERMANENTE: VER VIDRIERA */}
+                    <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="btn-view-site" title="Ver mi tienda pública">
+                        <SvgExternal /> Ver Vidriera
+                    </Link>
+
                     <div className="profile-wrapper" ref={profileRef}>
                         <button className={`profile-btn ${isProfileMenuOpen ? 'active' : ''}`} onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}>
                             <SvgUserCircle />
@@ -248,7 +243,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>{userRole}</span>
                                 </div>
                                 <div className="profile-menu-body">
-                                    {/* Botón directo al editor de vidriera web desde el perfil */}
                                     <button onClick={() => { cambiarSeccion('ajustes_web'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
                                         <SvgLayout /> Editor de Vidriera Web
                                     </button>
@@ -264,7 +258,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
             <main className={`dashboard-content ${seccionPrincipal === 'ajustes_web' ? 'modo-editor-activo' : ''}`}>
 
-                {/* BOTÓN FLOTANTE ELIMINAR (Solo visible para Admin en Tickets) */}
                 {seccionPrincipal === 'gestion_tickets' && vistaActual !== 'nuevo' && userRole === 'Super Admin' && (
                     <button
                         className={`floating-delete-btn ${isDeleteMode ? 'active' : ''}`}
@@ -275,19 +268,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     </button>
                 )}
 
-                {/* VISTA 1: GESTIÓN DE TICKETS */}
                 {seccionPrincipal === 'gestion_tickets' && (
                     <div className="gestion-container animate-fade-in">
                         <div className="gestion-header-row" style={{ justifyContent: 'space-between' }}>
                             <h2 style={{ fontSize: '2rem', margin: 0, color: 'var(--text-primary)' }}>Gestión de Tickets</h2>
                             <div className="search-box-tickets">
                                 <SvgSearch />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar cliente, equipo o #ID..."
-                                    value={busqueda}
-                                    onChange={e => setBusqueda(e.target.value)}
-                                />
+                                <input type="text" placeholder="Buscar cliente, equipo o #ID..." value={busqueda} onChange={e => setBusqueda(e.target.value)} />
                             </div>
                         </div>
 
@@ -358,7 +345,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         </header>
 
                         {vistaActual === 'nuevo' ? (
-                            <NewTicketForm onTicketCreated={() => setVistaActual('activos')} />
+                            <NewTicketForm onTicketCreated={handleTicketCreated} />
                         ) : (
                             <div className="ticket-list">
                                 {ticketsMostrados.length === 0 && <p className="ticket-list-empty">No se encontraron tickets con estos filtros.</p>}
@@ -393,7 +380,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     </div>
                 )}
 
-                {/* VISTA 2: GESTIÓN DEL TALLER (HUB CENTRAL) */}
                 {seccionPrincipal === 'gestion_taller' && (
                     <div className="gestion-container animate-fade-in">
                         <div className="gestion-header-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '15px' }}>
@@ -402,7 +388,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Centro de comando: Administración de equipo, tareas, analíticas y módulos.</p>
                             </div>
 
-                            {/* SUB-NAVEGACIÓN INTERNA */}
                             <div className="gestion-sub-nav" style={{ width: '100%', overflowX: 'auto', flexWrap: 'nowrap' }}>
                                 <button className={`sub-nav-btn ${subSeccionTaller === 'tareas' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('tareas')}>
                                     <SvgSubTickets /> Tareas (Kanban)
@@ -416,20 +401,24 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 <button className={`sub-nav-btn ${subSeccionTaller === 'funcionalidades' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('funcionalidades')}>
                                     <SvgSubFeatures /> Módulos
                                 </button>
-                                {/* PESTAÑA CRÍTICA: Configuración Privada del Taller */}
                                 {userRole === 'Super Admin' && (
                                     <button className={`sub-nav-btn ${subSeccionTaller === 'configuracion_taller' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('configuracion_taller')}>
                                         <SvgSettingsConfig /> Config. del Taller
                                     </button>
                                 )}
-                                {/* BOTÓN DIRECTO AL EDITOR WEB */}
-                                <button className={`sub-nav-btn`} onClick={() => setSeccionPrincipal('ajustes_web')} style={{ marginLeft: 'auto', background: 'var(--accent-color)', color: 'white' }}>
-                                    <SvgLayout /> Editor Web Público
-                                </button>
+
+                                {/* BOTONES DE ACCESO RÁPIDO PARA EL TALLER */}
+                                <div style={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
+                                    <button className="sub-nav-btn" onClick={() => setSeccionPrincipal('ajustes_web')} style={{ background: 'var(--bg-input-glass)', color: 'var(--text-primary)', border: '1px solid var(--border-glass)' }}>
+                                        <SvgLayout /> Editor de Vidriera
+                                    </button>
+                                    <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="sub-nav-btn" style={{ background: 'var(--success)', color: 'white' }}>
+                                        <SvgExternal /> Ver mi vidriera
+                                    </Link>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Sub-vista: TAREAS KANBAN */}
                         {subSeccionTaller === 'tareas' && (
                             <div className="animate-fade-in">
                                 <form onSubmit={agregarTarea} className="glass-effect" style={{ padding: '20px', borderRadius: '16px', display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap', alignItems: 'center', border: '1px solid var(--border-glass)' }}>
@@ -511,7 +500,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </div>
                         )}
 
-                        {/* Sub-vista: EQUIPO Y STAFF */}
                         {subSeccionTaller === 'equipo' && (
                             <div className="animate-fade-in">
                                 <div className="equipo-grid">
@@ -533,24 +521,20 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </div>
                         )}
 
-                        {/* Sub-vista: MÉTRICAS */}
                         {subSeccionTaller === 'metricas' && (
                             <div className="animate-fade-in" style={{ marginTop: '20px' }}>
                                 <MetricsView tickets={tickets} />
                             </div>
                         )}
 
-                        {/* Sub-vista: FUNCIONALIDADES */}
                         {subSeccionTaller === 'funcionalidades' && (
                             <div className="animate-fade-in" style={{ marginTop: '20px' }}>
                                 <FeaturesManager config={config} onUpdate={setConfig} />
                             </div>
                         )}
 
-                        {/* NUEVA SUB-VISTA: CONFIGURACIÓN AVANZADA DEL TALLER (SOLO ADMIN) */}
                         {subSeccionTaller === 'configuracion_taller' && userRole === 'Super Admin' && (
                             <div className="config-taller-container animate-fade-in">
-
                                 <div className="config-taller-section glass-effect">
                                     <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><SvgShield /> Delegación de Roles y Accesos</h3>
                                     <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>Controla qué pueden hacer los miembros de tu taller. Solo tú puedes borrar tickets.</p>
@@ -575,7 +559,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                                                 className="role-select-input"
                                                                 value={miembro.rol}
                                                                 onChange={(e) => cambiarRolMiembro(miembro.id, e.target.value)}
-                                                                disabled={miembro.nombre === 'Demian'} // Evitar quitarse admin a sí mismo
+                                                                disabled={miembro.nombre === 'Demian'}
                                                             >
                                                                 <option value="Super Admin">Super Admin</option>
                                                                 <option value="Técnico Full">Técnico Full</option>
@@ -630,14 +614,11 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     </div>
                                     <button className="btn-save-taller-config">Guardar Preferencias</button>
                                 </div>
-
                             </div>
                         )}
-
                     </div>
                 )}
 
-                {/* VISUALIZACIÓN DE COMPONENTES RAÍZ */}
                 {seccionPrincipal === 'inventario' && <InventoryView />}
                 {seccionPrincipal === 'herramientas' && <ToolsView />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}

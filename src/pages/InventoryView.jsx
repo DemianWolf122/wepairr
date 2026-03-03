@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Search, DollarSign } from 'lucide-react'; // AÑADIDO: DollarSign
+import { Search, DollarSign } from 'lucide-react';
 import './InventoryView.css';
 
 const SvgBox = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
@@ -26,18 +26,25 @@ function InventoryView() {
     const [nuevoItem, setNuevoItem] = useState({ mpn: '', nombre: '', cantidad: 1, precioCompra: '', precioVenta: '', categoria: 'General', tags: '' });
     const [isSearchingOctopart, setIsSearchingOctopart] = useState(false);
 
-    // NUEVO: Estado para guardar el precio del Dólar
     const [dolarValue, setDolarValue] = useState(1000);
 
-    useEffect(() => {
-        const fetchInventory = async () => {
-            const { data, error } = await supabase.from('inventario').select('*').order('id', { ascending: false });
-            if (data) setInventario(data);
-            if (error) console.error("Error cargando inventario:", error);
-        };
-        fetchInventory();
+    // INYECTADO: Estado del usuario actual
+    const [user, setUser] = useState(null);
 
-        // NUEVO: Conexión Real a ExchangeRate API
+    // 1. Detectar Usuario Logueado
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setUser(session?.user || null);
+        });
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user || null);
+        });
+        return () => subscription.unsubscribe();
+    }, []);
+
+    // 2. Cargar Inventario Seguro
+    useEffect(() => {
+        // API Dólar
         fetch('https://api.exchangerate-api.com/v4/latest/USD')
             .then(res => res.json())
             .then(data => {
@@ -46,30 +53,82 @@ function InventoryView() {
                 }
             })
             .catch(err => console.error("Error obteniendo cotización:", err));
-    }, []);
+
+        if (!user) {
+            setInventario([]);
+            return;
+        }
+
+        const fetchInventory = async () => {
+            try {
+                // Filtramos por user_id en Supabase
+                const { data, error } = await supabase
+                    .from('inventario')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('id', { ascending: false });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    setInventario(data);
+                } else {
+                    // Fallback a LocalStorage
+                    const local = localStorage.getItem(`wepairr_inventory_${user.id}`);
+                    if (local) setInventario(JSON.parse(local));
+                }
+            } catch (error) {
+                console.warn("Error cargando inventario de Supabase, usando LocalStorage.");
+                const local = localStorage.getItem(`wepairr_inventory_${user.id}`);
+                if (local) setInventario(JSON.parse(local));
+            }
+        };
+        fetchInventory();
+    }, [user]);
+
+    // Función de Sincronización Local/Nube
+    const syncInventory = (newInv) => {
+        setInventario(newInv);
+        if (user) {
+            localStorage.setItem(`wepairr_inventory_${user.id}`, JSON.stringify(newInv));
+        }
+    };
 
     const actualizarStock = async (id, delta) => {
         const itemActual = inventario.find(i => i.id === id);
         if (!itemActual) return;
         const nuevaCantidad = Math.max(0, itemActual.cantidad + delta);
 
-        setInventario(prev => prev.map(item => item.id === id ? { ...item, cantidad: nuevaCantidad } : item));
-        await supabase.from('inventario').update({ cantidad: nuevaCantidad }).eq('id', id);
+        const invActualizado = inventario.map(item => item.id === id ? { ...item, cantidad: nuevaCantidad } : item);
+        syncInventory(invActualizado);
+
+        if (user) {
+            try { await supabase.from('inventario').update({ cantidad: nuevaCantidad }).eq('id', id).eq('user_id', user.id); } catch (e) { }
+        }
     };
 
     const iniciarEdicion = (item) => { setEditandoId(item.id); setDatosEdicion(item); };
 
     const guardarEdicion = async () => {
-        setInventario(prev => prev.map(i => i.id === editandoId ? datosEdicion : i));
+        const invActualizado = inventario.map(i => i.id === editandoId ? datosEdicion : i);
+        syncInventory(invActualizado);
+
         const idAEditar = editandoId;
         setEditandoId(null);
-        await supabase.from('inventario').update(datosEdicion).eq('id', idAEditar);
+
+        if (user) {
+            try { await supabase.from('inventario').update(datosEdicion).eq('id', idAEditar).eq('user_id', user.id); } catch (e) { }
+        }
     };
 
     const eliminarItem = async (id) => {
         if (window.confirm('¿Seguro que deseas eliminar este artículo?')) {
-            setInventario(prev => prev.filter(i => i.id !== id));
-            await supabase.from('inventario').delete().eq('id', id);
+            const invActualizado = inventario.filter(i => i.id !== id);
+            syncInventory(invActualizado);
+
+            if (user) {
+                try { await supabase.from('inventario').delete().eq('id', id).eq('user_id', user.id); } catch (e) { }
+            }
         }
     };
 
@@ -85,11 +144,17 @@ function InventoryView() {
             tags: nuevoItem.tags.split(',').map(t => t.trim()).filter(t => t)
         };
 
-        setInventario([item, ...inventario]);
+        const invActualizado = [item, ...inventario];
+        syncInventory(invActualizado);
+
         setModalNuevo(false);
         setNuevoItem({ mpn: '', nombre: '', cantidad: 1, precioCompra: '', precioVenta: '', categoria: 'General', tags: '' });
 
-        await supabase.from('inventario').insert([item]);
+        if (user) {
+            try {
+                await supabase.from('inventario').insert([{ ...item, user_id: user.id }]);
+            } catch (e) { console.warn("No se pudo guardar en Supabase."); }
+        }
     };
 
     const handleOctopartSearch = async () => {
@@ -100,14 +165,13 @@ function InventoryView() {
         try {
             await new Promise(resolve => setTimeout(resolve, 1200));
 
-            // NUEVO: Utiliza el 'dolarValue' real traído de la API para calcular el costo en tu moneda
             setNuevoItem(prev => ({
                 ...prev,
                 nombre: `Repuesto Original (MPN: ${prev.mpn.toUpperCase()})`,
                 categoria: 'Componentes Electrónicos',
                 tags: 'Octopart, Oficial',
-                precioCompra: Math.round(5 * dolarValue), // Simula un costo de 5 USD * Cotización
-                precioVenta: Math.round(15 * dolarValue)  // Simula un precio de venta de 15 USD * Cotización
+                precioCompra: Math.round(5 * dolarValue),
+                precioVenta: Math.round(15 * dolarValue)
             }));
 
         } catch (error) {
@@ -139,7 +203,6 @@ function InventoryView() {
                     <SvgBox />
                     <h2>Control de Stock</h2>
 
-                    {/* NUEVO: Badge de Cotización USD en tiempo real */}
                     <div className="usd-badge" title="Cotización USD Actualizada">
                         <DollarSign size={16} /> USD = ${dolarValue.toFixed(2)}
                     </div>

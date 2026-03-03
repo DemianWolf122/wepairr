@@ -18,6 +18,9 @@ const SvgMonitorDevice = () => <svg viewBox="0 0 24 24" width="18" height="18" s
 const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>;
 const SvgUpload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>;
 const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
+const SvgLayout = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>;
+const SvgEye = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
+const SvgExternal = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>;
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -31,9 +34,27 @@ const PremiumGate = ({ children, isPremium }) => {
     );
 };
 
-const ACCENT_COLORS = [{ hex: '#2563eb' }, { hex: '#10b981' }, { hex: '#8b5cf6' }, { hex: '#e11d48' }, { hex: '#f97316' }, { hex: '#334155' }, { hex: '#ec4899' }, { hex: '#06b6d4' }, { hex: '#eab308' }, { hex: '#4f46e5' }];
-const TEXT_COLORS = [{ hex: '#000000' }, { hex: '#0f172a' }, { hex: '#334155' }, { hex: '#1e3a8a' }, { hex: '#ffffff' }, { hex: '#f8fafc' }, { hex: '#cbd5e1' }, { hex: '#e0f2fe' }];
+const ACCENT_COLORS = ['#2563eb', '#10b981', '#8b5cf6', '#e11d48', '#f97316', '#334155', '#06b6d4', '#eab308'];
 const FONTS = [{ label: 'Inter (Corp)', value: '"Inter", system-ui, sans-serif' }, { label: 'Helvetica', value: '"Helvetica Neue", Helvetica, sans-serif' }, { label: 'Montserrat', value: '"Montserrat", sans-serif' }];
+
+const TEMPLATES = [
+    {
+        id: 'dark-tech', name: 'Dark Tech Pro', color: '#141c2f', border: '#2563eb',
+        config: { shopDarkMode: true, colorTema: '#2563eb', colorTitulo: '#ffffff', colorSubtitulo: '#cbd5e1', borderRadius: '16px', fontFamily: '"Inter", system-ui, sans-serif' }
+    },
+    {
+        id: 'light-apple', name: 'Minimalist Clean', color: '#f8fafc', border: '#334155',
+        config: { shopDarkMode: false, colorTema: '#000000', colorTitulo: '#0f172a', colorSubtitulo: '#64748b', borderRadius: '24px', fontFamily: '"Helvetica Neue", Helvetica, sans-serif' }
+    },
+    {
+        id: 'neon-cyber', name: 'Neon Cyberpunk', color: '#090e17', border: '#10b981',
+        config: { shopDarkMode: true, colorTema: '#10b981', colorTitulo: '#10b981', colorSubtitulo: '#a7f3d0', borderRadius: '8px', fontFamily: '"Inter", system-ui, sans-serif' }
+    },
+    {
+        id: 'crimson', name: 'Crimson Red', color: '#1a0505', border: '#e11d48',
+        config: { shopDarkMode: true, colorTema: '#e11d48', colorTitulo: '#ffffff', colorSubtitulo: '#fecdd3', borderRadius: '16px', fontFamily: '"Montserrat", sans-serif' }
+    }
+];
 
 const getLuminance = (hex) => {
     if (!hex) return 0;
@@ -50,7 +71,6 @@ const AutoResizeTextarea = ({ name, value, onChange, placeholder, maxLength, cla
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
-            // Previene el error asegurándose que el valor no sea null al calcular la altura
             const scrollHeight = textareaRef.current.scrollHeight;
             if (scrollHeight > 0) {
                 textareaRef.current.style.height = `${scrollHeight}px`;
@@ -70,9 +90,10 @@ function Settings({ config, onUpdate }) {
     const isPremium = currentPlan === 'premium';
     const [previewMode, setPreviewMode] = useState('mobile');
     const [isAnimatingPreview, setIsAnimatingPreview] = useState(false);
-    const [seccionAbierta, setSeccionAbierta] = useState('identidad');
+    const [seccionAbierta, setSeccionAbierta] = useState('plantillas');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [igConnecting, setIgConnecting] = useState(false);
+    const [showTemplatesModal, setShowTemplatesModal] = useState(false);
     const fileInputRef = useRef(null);
 
     const handleChange = (e) => {
@@ -105,6 +126,12 @@ function Settings({ config, onUpdate }) {
         setIsAnimatingPreview(true);
         setMobileMenuOpen(false);
         setTimeout(() => { setPreviewMode(mode); setTimeout(() => setIsAnimatingPreview(false), 50); }, 350);
+    };
+
+    const aplicarPlantilla = (templateConfig) => {
+        onUpdate({ ...config, ...templateConfig });
+        setShowTemplatesModal(false);
+        setSeccionAbierta('apariencia');
     };
 
     const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
@@ -162,9 +189,36 @@ function Settings({ config, onUpdate }) {
     return (
         <div className="settings-editor-layout">
 
+            {showTemplatesModal && (
+                <div className="settings-modal-overlay" onClick={() => setShowTemplatesModal(false)}>
+                    <div className="settings-modal-container animate-scale-in" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header-settings">
+                            <h3>Biblioteca de Plantillas</h3>
+                            <button className="btn-close-modal" onClick={() => setShowTemplatesModal(false)}><SvgX /></button>
+                        </div>
+                        <div className="templates-grid">
+                            {TEMPLATES.map(tpl => (
+                                <div key={tpl.id} className="template-card" style={{ background: tpl.color, borderColor: tpl.border }}>
+                                    <div className="template-preview-mock">
+                                        <div className="mock-nav" style={{ borderBottom: `1px solid ${tpl.border}50` }}></div>
+                                        <div className="mock-hero">
+                                            <div className="mock-title" style={{ background: tpl.config.colorTitulo }}></div>
+                                            <div className="mock-subtitle" style={{ background: tpl.config.colorSubtitulo }}></div>
+                                            <div className="mock-btn" style={{ background: tpl.config.colorTema }}></div>
+                                        </div>
+                                    </div>
+                                    <h4 style={{ color: tpl.config.shopDarkMode ? '#fff' : '#000' }}>{tpl.name}</h4>
+                                    <button className="btn-apply-template" onClick={() => aplicarPlantilla(tpl.config)}>Elegir Plantilla</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="settings-controls-panel glass-effect">
                 <div className="dev-plan-selector-inline glass-effect">
-                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>DEV: PLAN</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>PLAN ACTUAL</span>
                     <select value={currentPlan} onChange={(e) => { setCurrentPlan(e.target.value); handleChange(e); }} name="plan" className="plan-select">
                         <option value="standard">Gratis</option>
                         <option value="premium">PRO</option>
@@ -173,13 +227,32 @@ function Settings({ config, onUpdate }) {
 
                 <div className="settings-header-row">
                     <div>
-                        <h2 className="settings-main-title">Ajustes del Taller</h2>
-                        <p className="settings-subtitle">Define el aspecto de tu vidriera y configuraciones.</p>
+                        <h2 className="settings-main-title">Personalización</h2>
+                        <p className="settings-subtitle">Edita el aspecto de tu web pública.</p>
                     </div>
+                    {/* INYECTADO: BOTÓN VER VIDRIERA EN SETTINGS */}
+                    <a href={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" rel="noreferrer" className="btn-view-site-settings" title="Abrir página en otra pestaña">
+                        <SvgEye /> Ver Vidriera
+                    </a>
                 </div>
 
                 <div className="accordions-container">
-                    {/* SECCIÓN 1: IDENTIDAD */}
+
+                    <div className={`accordion-item ${seccionAbierta === 'plantillas' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('plantillas')}>
+                            <span className="accordion-title"><SvgLayout /> Plantillas (Themes)</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
+                        </div>
+                        {seccionAbierta === 'plantillas' && (
+                            <div className="accordion-content" style={{ textAlign: 'center' }}>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '15px' }}>Acelera tu diseño eligiendo una de nuestras combinaciones profesionales probadas.</p>
+                                <button onClick={() => setShowTemplatesModal(true)} className="btn-open-templates">
+                                    <SvgEye /> Ver Galería de Plantillas
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
                     <div className={`accordion-item ${seccionAbierta === 'identidad' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => toggleSeccion('identidad')}>
                             <span className="accordion-title"><SvgBuilding /> Textos</span>
@@ -195,7 +268,7 @@ function Settings({ config, onUpdate }) {
                                         <input type="text" name="titulo" value={config.titulo || ''} onChange={handleChange} className="settings-input" maxLength={45} />
                                     </label>
                                     <label className="settings-label">Descripción Corta (Máx 120):
-                                        <AutoResizeTextarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} />
+                                        <textarea name="descripcion" value={config.descripcion || ''} onChange={handleChange} className="settings-input settings-textarea" maxLength={120} rows={3} style={{ resize: 'vertical' }} />
                                     </label>
                                     <label className="settings-label">Horarios de Atención:
                                         <input type="text" name="horariosAtencion" value={config.horariosAtencion || ''} onChange={handleChange} className="settings-input" placeholder="Ej. Lun a Vie 9 a 18hs" maxLength={50} />
@@ -205,10 +278,9 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* SECCIÓN 2: APARIENCIA */}
                     <div className={`accordion-item ${seccionAbierta === 'apariencia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'apariencia' ? null : 'apariencia')}>
-                            <span className="accordion-title"><SvgPalette /> Diseño</span>
+                            <span className="accordion-title"><SvgPalette /> Diseño & Colores</span>
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'apariencia' && (
@@ -217,22 +289,20 @@ function Settings({ config, onUpdate }) {
                                     <div><strong className="toggle-title">Modo Oscuro</strong></div>
                                     <label className="switch"><input type="checkbox" name="shopDarkMode" checked={config.shopDarkMode || false} onChange={handleChange} /><span className="slider round"></span></label>
                                 </div>
-                                <label className="settings-label">Color Principal:</label>
-                                <div className="color-presets-grid accent-grid" style={{ marginBottom: '20px' }}>
-                                    {ACCENT_COLORS.map(preset => (
-                                        <button key={preset.hex} type="button" className={`color-preset-btn accent-btn ${config.colorTema === preset.hex ? 'active' : ''}`} style={{ backgroundColor: preset.hex }} onClick={() => onUpdate({ ...config, colorTema: preset.hex })} />
-                                    ))}
-                                </div>
-                                <PremiumGate isPremium={isPremium}>
-                                    <label className="settings-label">Color de Textos:</label>
-                                    <div className="color-presets-grid text-grid" style={{ marginBottom: '15px' }}>
-                                        {TEXT_COLORS.map(preset => {
-                                            const isSafe = checkColorSafety(preset.hex, currentBgColor);
-                                            return (<button key={'tit-' + preset.hex} type="button" className={`color-preset-btn text-color-btn ${config.colorTitulo === preset.hex ? 'active' : ''} ${!isSafe ? 'disabled-contrast' : ''}`} style={{ backgroundColor: preset.hex }} onClick={() => isSafe && onUpdate({ ...config, colorTitulo: preset.hex })} />);
-                                        })}
+
+                                <label className="settings-label">Color de Marca (Acento):</label>
+                                <div className="color-picker-modern">
+                                    <input type="color" name="colorTema" value={config.colorTema || '#2563eb'} onChange={handleChange} className="native-color-input" title="Elegir color personalizado" />
+                                    <div className="color-presets-row">
+                                        {ACCENT_COLORS.map(hex => (
+                                            <button key={hex} type="button" className={`color-dot ${config.colorTema === hex ? 'active' : ''}`} style={{ backgroundColor: hex }} onClick={() => onUpdate({ ...config, colorTema: hex })} />
+                                        ))}
                                     </div>
+                                </div>
+
+                                <PremiumGate isPremium={isPremium}>
                                     <div className="settings-form-group" style={{ marginTop: '20px' }}>
-                                        <label className="settings-label">Tipografía:
+                                        <label className="settings-label">Tipografía Global:
                                             <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input select-input">
                                                 {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                                             </select>
@@ -243,7 +313,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* SECCIÓN 3: MULTIMEDIA */}
                     <div className={`accordion-item ${seccionAbierta === 'multimedia' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'multimedia' ? null : 'multimedia')}>
                             <span className="accordion-title"><SvgMedia /> Multimedia (Pro)</span>
@@ -265,7 +334,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* SECCIÓN 4: REDES */}
                     <div className={`accordion-item ${seccionAbierta === 'redes' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'redes' ? null : 'redes')}>
                             <span className="accordion-title"><SvgGlobe /> Contacto & Redes</span>
@@ -296,7 +364,6 @@ function Settings({ config, onUpdate }) {
                         )}
                     </div>
 
-                    {/* SECCIÓN 5: FUNCIONALIDADES */}
                     <div className={`accordion-item ${seccionAbierta === 'funcionalidades' ? 'active' : ''}`}>
                         <div className="accordion-header" onClick={() => setSeccionAbierta(prev => prev === 'funcionalidades' ? null : 'funcionalidades')}>
                             <span className="accordion-title"><SvgZap /> Módulos</span>

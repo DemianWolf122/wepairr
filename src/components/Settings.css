@@ -967,3 +967,32 @@ input:checked+.slider:before {
         font-size: 0.85rem;
     }
 }
+
+/* --- INYECTADO: BOTON VER VIDRIERA EN SETTINGS --- */
+.btn-view-site-settings {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-view-site-settings:hover {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btn-view-site-settings svg {
+    width: 16px;
+    height: 16px;
+}
