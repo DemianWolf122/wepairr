@@ -1,477 +1,631 @@
-.wiki-wrapper {
-    padding: 20px;
-    position: relative;
+/* CONTENEDOR PRINCIPAL */
+.wiki-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding-bottom: 50px;
+    box-sizing: border-box;
 }
 
+/* HEADER */
 .wiki-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-.wiki-header h2 {
-    color: var(--text-primary);
-    margin: 0 0 10px 0;
+.wiki-title {
     font-size: 2rem;
     font-weight: 900;
+    margin: 0 0 5px 0;
+    color: var(--text-primary);
 }
 
-.btn-new-post {
+.wiki-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.btn-create-post {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--accent-color);
-    color: #fff;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 12px 20px;
     border-radius: 12px;
-    font-weight: bold;
+    font-weight: 800;
     cursor: pointer;
-    transition: all 0.3s;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-}
-
-/* Búsqueda y Ordenamiento */
-.wiki-tools-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    border-radius: 16px;
-    margin-bottom: 30px;
-    gap: 20px;
-    flex-wrap: wrap;
-    background: var(--bg-panel-glass);
-    border: 1px solid var(--border-glass);
-}
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 250px;
-    background: var(--bg-input-glass);
-    padding: 12px 15px;
-    border-radius: 12px;
-    border: 1px solid var(--border-glass);
-}
-
-.search-box input {
-    border: none;
-    background: transparent;
-    color: var(--text-primary);
-    outline: none;
-    width: 100%;
-    font-size: 1rem;
-    font-family: inherit;
-}
-
-.sort-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* SELECTOR PREMIUM */
-.sort-select {
-    background-color: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    padding: 10px 40px 10px 15px;
-    border-radius: 10px;
-    font-weight: bold;
-    outline: none;
-    cursor: pointer;
-    font-family: inherit;
+    transition: transform 0.2s var(--ease-bounce), box-shadow 0.2s;
     font-size: 0.95rem;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px auto;
-    transition: all 0.2s;
 }
 
-.app-root.light .sort-select {
-    border-color: rgba(0, 0, 0, 0.15);
-    background-color: #ffffff;
+.btn-create-post:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
 }
 
-.wiki-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 25px;
-}
-
-.wiki-card {
-    background: var(--bg-panel-glass);
-    backdrop-filter: blur(16px);
-    border: 1px solid var(--border-glass);
-    box-shadow: var(--shadow-glass);
-    padding: 30px;
+/* CAJA DE REDACCIÓN */
+.compose-box {
+    padding: 25px;
     border-radius: 16px;
-    cursor: pointer;
     display: flex;
     flex-direction: column;
-    position: relative;
-    overflow: hidden;
-    transition: transform var(--speed-normal), border-color var(--speed-normal);
+    gap: 15px;
 }
 
-.wiki-card:hover {
-    border-color: var(--accent-color);
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-}
-
-.wiki-thumbnail {
-    height: 180px;
-    margin: -30px -30px 20px -30px;
-    background-size: cover;
-    background-position: center;
-    border-bottom: 1px solid var(--border-glass);
-}
-
-.wiki-tag {
-    background: rgba(37, 99, 235, 0.1);
-    padding: 6px 14px;
-    border-radius: 99px;
-    font-size: 0.8rem;
-    color: var(--accent-color);
-    display: inline-block;
-    align-self: flex-start;
-    margin-bottom: 15px;
-    font-weight: 800;
-    border: 1px solid rgba(37, 99, 235, 0.2);
-}
-
-.wiki-card h3 {
-    margin: 0 0 15px 0;
-    color: var(--text-primary);
-    font-size: 1.3rem;
-    line-height: 1.3;
-    font-weight: 800;
-    word-break: break-word;
-}
-
-.wiki-card-desc {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    font-size: 0.95rem;
-    margin-bottom: 25px;
-    flex: 1;
-    word-break: break-word;
-}
-
-.wiki-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    border-top: 1px solid var(--border-glass);
-    padding-top: 20px;
-}
-
-.read-more {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--accent-color);
-    font-weight: bold;
-    opacity: 0;
-    transition: all 0.3s;
-    transform: translateX(-10px);
-}
-
-.wiki-card:hover .read-more {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.btn-like {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    padding: 6px 12px;
-    border-radius: 8px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s;
-}
-
-.btn-like.liked {
-    color: var(--accent-color);
-    border-color: var(--accent-color);
-}
-
-/* Modal y Lightbox */
-.wiki-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.app-root.light .wiki-modal-overlay {
-    background-color: rgba(255, 255, 255, 0.5);
-}
-
-.wiki-modal-container {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-glass);
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
-    border-radius: 20px;
-    width: 100%;
-    max-width: 800px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.wiki-modal-header-fixed {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 30px;
-    background: var(--bg-input-glass);
-    border-bottom: 1px solid var(--border-glass);
-    flex-shrink: 0;
-}
-
-.btn-close-modal {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-glass);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.btn-close-modal:hover {
-    color: #fff;
-    background: var(--danger);
-    border-color: var(--danger);
-    transform: rotate(90deg) scale(1.1);
-}
-
-.wiki-modal-body-scroll {
-    padding: 30px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
-.modal-title {
-    margin: 0 0 10px 0;
-    font-size: 2rem;
-    font-weight: 900;
-    color: var(--text-primary);
-    word-break: break-word;
-}
-
-.modal-author {
-    color: var(--text-secondary);
-    display: block;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-glass);
-    font-weight: bold;
-}
-
-/* FIX IMÁGENES: object-fit contain asegura que jamás se corten */
-.wiki-modal-image-container {
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 25px;
-    border: 1px solid var(--border-glass);
-    background: var(--bg-input-glass);
-    position: relative;
-    cursor: zoom-in;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.wiki-modal-image-container img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
-    display: block;
-    transition: transform 0.3s;
-}
-
-.wiki-modal-image-container:hover img {
-    transform: scale(1.02);
-}
-
-.image-hover-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.3s;
-    gap: 10px;
-}
-
-.wiki-modal-image-container:hover .image-hover-overlay {
-    opacity: 1;
-}
-
-.lightbox-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 10000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    box-sizing: border-box;
-}
-
-.lightbox-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 8px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-}
-
-.btn-close-lightbox {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s;
-    z-index: 10001;
-}
-
-.btn-close-lightbox:hover {
-    background: rgba(255, 255, 255, 0.4);
-}
-
-.wiki-input {
+.compose-input {
     width: 100%;
     padding: 15px;
     border-radius: 12px;
     border: 1px solid var(--border-glass);
     background: var(--bg-input-glass);
     color: var(--text-primary);
-    font-family: inherit;
-    font-size: 1rem;
-    outline: none;
-    box-sizing: border-box;
-    resize: vertical;
-    margin-top: 10px;
-}
-
-.wiki-input:focus {
-    border-color: var(--accent-color);
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0;
+    font-size: 1.1rem;
     font-weight: bold;
-    color: var(--text-primary);
+    margin-bottom: 15px;
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
 }
 
-.upload-box {
-    border: 2px dashed var(--border-glass);
+.compose-textarea {
+    width: 100%;
+    padding: 15px;
     border-radius: 12px;
-    padding: 30px;
-    text-align: center;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+    color: var(--text-primary);
+    font-size: 1rem;
+    resize: vertical;
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+}
+
+.compose-input:focus,
+.compose-textarea:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.compose-images-grid {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.compose-image-item {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--border-glass);
+    background: var(--bg-input-glass);
+}
+
+.compose-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge-principal {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(37, 99, 235, 0.9);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 99px;
+    backdrop-filter: blur(4px);
+}
+
+.btn-remove-image {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    transition: all 0.2s;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-remove-image:hover {
+    background: var(--danger);
+    transform: scale(1.1);
+}
+
+.compose-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.compose-tools {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.compose-author {
     color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.btn-attach-image {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent-color);
+    font-weight: bold;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(37, 99, 235, 0.1);
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-attach-image:hover:not(.disabled) {
+    background: rgba(37, 99, 235, 0.2);
+}
+
+.btn-attach-image.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-submit-post {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-size: 0.95rem;
+}
+
+.btn-submit-post:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+.btn-submit-post:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* CONTROLES */
+.wiki-controls {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    background: var(--bg-input-glass);
-    margin-top: 10px;
+    gap: 15px;
 }
 
-.upload-box:hover {
+.search-wiki {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--border-glass);
+}
+
+.search-wiki input {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    width: 100%;
+    font-size: 1rem;
+    outline: none;
+    font-family: inherit;
+}
+
+.search-wiki svg {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.search-wiki:focus-within {
     border-color: var(--accent-color);
+}
+
+.wiki-categories {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+}
+
+.wiki-categories::-webkit-scrollbar {
+    display: none;
+}
+
+.cat-btn {
+    padding: 8px 18px;
+    border-radius: 99px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+    color: var(--text-secondary);
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.cat-btn:hover {
+    background: var(--bg-hover-glass);
     color: var(--text-primary);
 }
 
-.upload-preview {
-    max-height: 200px;
+.cat-btn.active {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* LISTA DE POSTS */
+.wiki-posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.wiki-empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background: var(--bg-input-glass);
+    border-radius: 16px;
+    border: 1px dashed var(--border-glass);
+}
+
+.wiki-post-card {
+    border-radius: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.wiki-post-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.post-header-click {
+    padding: 20px;
+    user-select: none;
+}
+
+.post-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.post-category {
+    color: var(--accent-color);
+    background: rgba(37, 99, 235, 0.1);
+    padding: 4px 10px;
     border-radius: 8px;
 }
 
-@media (max-width: 768px) {
+.post-author {
+    color: var(--text-primary);
+}
+
+.post-date {
+    color: var(--text-secondary);
+}
+
+.post-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.title-and-thumb {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.post-thumbnail-mini {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--border-glass);
+    position: relative;
+    background: var(--bg-input-glass);
+}
+
+.post-thumbnail-mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumbnail-count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 900;
+    font-size: 0.85rem;
+}
+
+.post-title {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.post-preview-text {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* =======================================================
+   NUEVO: MODAL DEL POST SELECCIONADO (BLUR)
+======================================================= */
+.post-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.post-modal-container {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    scrollbar-width: thin;
+    margin-top: 200px;
+    margin-bottom: 50px;
+}
+
+.btn-close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    z-index: 10;
+}
+
+.btn-close-modal:hover {
+    background: var(--danger);
+    color: white;
+    transform: scale(1.1);
+    border-color: var(--danger);
+}
+
+.post-modal-header {
+    padding: 30px 30px 20px 30px;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.post-modal-title {
+    margin: 15px 0 0 0;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    line-height: 1.3;
+    padding-right: 40px;
+    /* Espacio para el boton de cerrar */
+}
+
+.post-modal-body {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.post-modal-content {
+    color: var(--text-primary);
+    line-height: 1.8;
+    font-size: 1.1rem;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+/* IMAGENES GIGANTES DENTRO DEL MODAL */
+.post-modal-images-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.post-modal-full-img {
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+}
+
+.post-modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+}
+
+.post-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.post-action-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    padding: 10px 18px;
+    border-radius: 10px;
+}
+
+.post-action-btn:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
     .wiki-header {
         flex-direction: column;
-        gap: 20px;
-        align-items: stretch;
+        align-items: flex-start;
     }
 
-    .wiki-tools-bar {
+    .btn-create-post {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .compose-images-grid {
+        justify-content: center;
+    }
+
+    .compose-image-item {
+        width: 80px;
+        height: 80px;
+    }
+
+    .post-title {
+        font-size: 1.1rem;
+    }
+
+    .post-modal-container {
+        border-radius: 16px;
+        max-height: 95vh;
+    }
+
+    .post-modal-header {
+        padding: 20px;
+    }
+
+    .post-modal-title {
+        font-size: 1.4rem;
+    }
+
+    .post-modal-body {
+        padding: 20px;
+    }
+
+    .post-modal-content {
+        font-size: 1rem;
+    }
+
+    .post-modal-footer {
+        padding: 20px;
+    }
+
+    .title-and-thumb {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-start;
+        gap: 10px;
     }
 
-    .sort-box {
-        justify-content: space-between;
+    .post-thumbnail-mini {
+        width: 100%;
+        height: 150px;
     }
 
-    .wiki-modal-container {
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
-    }
-
-    .btn-close-lightbox {
-        top: 10px;
-        right: 10px;
+    .post-action-btn {
+        flex: 1;
+        justify-content: center;
+        font-size: 0.85rem;
     }
 }
