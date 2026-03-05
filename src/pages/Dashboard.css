@@ -1288,3 +1288,81 @@
         gap: 5px;
     }
 }
+
+/* --- INYECTADO: ESTILOS DE GESTION DE EQUIPO (ADMIN) --- */
+.btn-add-member {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    transition: transform 0.2s;
+}
+
+.btn-add-member:hover {
+    transform: translateY(-2px);
+}
+
+.add-member-form {
+    padding: 20px;
+    border-radius: 16px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.member-input {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+    color: var(--text-primary);
+    font-family: inherit;
+    outline: none;
+}
+
+.btn-submit-member {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.btn-remove-member {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-remove-member:hover {
+    background: var(--danger);
+    color: white;
+}

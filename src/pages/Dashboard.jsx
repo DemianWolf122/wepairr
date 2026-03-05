@@ -41,6 +41,7 @@ const SvgChart = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height
 const SvgSettingsConfig = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>;
 const SvgShield = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>;
 const SvgLayout = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>;
+const SvgPlusSmall = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const navigate = useNavigate();
@@ -68,21 +69,18 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
-    const [userRole, setUserRole] = useState('Super Admin');
+    // --- AUTENTICACIÓN Y ROLES (Ahora reales desde Supabase) ---
+    const [user, setUser] = useState(null);
+    const [userRole, setUserRole] = useState('Super Admin'); // Por defecto al dueño
 
-    const [tareasInternas, setTareasInternas] = useState([
-        { id: 1, text: "Comprar flux y malla desoldante", assignee: "Demian", status: "pending" },
-        { id: 2, text: "Llamar al cliente del iPhone 11 para confirmar presupuesto", assignee: "Lucila", status: "progress" },
-        { id: 3, text: "Limpiar y ordenar estación de calor principal", assignee: "Ricardo", status: "done" }
-    ]);
+    const [tareasInternas, setTareasInternas] = useState([]);
     const [nuevaTareaTxt, setNuevaTareaTxt] = useState("");
-    const [nuevoAsignado, setNuevoAsignado] = useState("Demian");
+    const [nuevoAsignado, setNuevoAsignado] = useState("Todos");
 
-    const [miembrosEquipo, setMiembrosEquipo] = useState([
-        { id: 1, nombre: 'Demian', rol: 'Super Admin', estado: 'Online', email: 'demian@wepairr.com' },
-        { id: 2, nombre: 'Lucila', rol: 'Recepción', estado: 'Online', email: 'lucila@wepairr.com' },
-        { id: 3, nombre: 'Ricardo', rol: 'Técnico Full', estado: 'Offline', email: 'ricardo@wepairr.com' }
-    ]);
+    // ESTADO PARA AÑADIR NUEVOS MIEMBROS
+    const [miembrosEquipo, setMiembrosEquipo] = useState([]);
+    const [nuevoMiembro, setNuevoMiembro] = useState({ nombre: '', email: '', rol: 'Técnico Full', especialidad: '' });
+    const [isAddingMember, setIsAddingMember] = useState(false);
 
     const [tallerConfig, setTallerConfig] = useState({
         moneda: 'ARS',
@@ -100,6 +98,38 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    // CARGAR DATOS DE SUPABASE AL INICIAR
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                setUser(session.user);
+
+                // Cargar Tareas
+                const { data: tasks } = await supabase.from('kanban_tasks').select('*').eq('user_id', session.user.id);
+                if (tasks) setTareasInternas(tasks);
+
+                // Cargar Equipo
+                const { data: team } = await supabase.from('team_members').select('*').eq('user_id', session.user.id);
+                if (team && team.length > 0) {
+                    setMiembrosEquipo(team);
+                } else {
+                    // Si está vacío, crea al dueño por defecto
+                    const me = {
+                        nombre: session.user.email.split('@')[0],
+                        email: session.user.email,
+                        rol: 'Super Admin',
+                        especialidad: 'General',
+                        estado: 'Online'
+                    };
+                    setMiembrosEquipo([{ id: Date.now(), ...me }]);
+                    supabase.from('team_members').insert([{ ...me, user_id: session.user.id }]).then();
+                }
+            }
+        };
+        fetchUserData();
     }, []);
 
     const handleLogout = async () => {
@@ -183,23 +213,62 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         setVistaActual('activos');
     };
 
-    const agregarTarea = (e) => {
+    // --- FUNCIONES KANBAN NUBE ---
+    const agregarTarea = async (e) => {
         e.preventDefault();
-        if (!nuevaTareaTxt.trim()) return;
-        setTareasInternas([{ id: Date.now(), text: nuevaTareaTxt, assignee: nuevoAsignado, status: 'pending' }, ...tareasInternas]);
+        if (!nuevaTareaTxt.trim() || !user) return;
+        const newTask = { text: nuevaTareaTxt, assignee: nuevoAsignado, status: 'pending', user_id: user.id };
+
+        // Optimistic UI
+        const tempId = Date.now();
+        setTareasInternas([{ id: tempId, ...newTask }, ...tareasInternas]);
         setNuevaTareaTxt("");
-    };
-    const moverTarea = (id, newStatus) => {
-        if (!puedeAdministrarTickets) return alert("No tienes permisos para mover tareas.");
-        setTareasInternas(tareasInternas.map(t => t.id === id ? { ...t, status: newStatus } : t));
-    };
-    const borrarTarea = (id) => {
-        if (userRole !== 'Super Admin') return alert("Solo un Super Admin puede borrar tareas.");
-        setTareasInternas(tareasInternas.filter(t => t.id !== id));
+
+        // DB
+        const { data } = await supabase.from('kanban_tasks').insert([newTask]).select();
+        if (data) {
+            setTareasInternas(prev => prev.map(t => t.id === tempId ? data[0] : t));
+        }
     };
 
-    const cambiarRolMiembro = (id, nuevoRol) => {
+    const moverTarea = async (id, newStatus) => {
+        if (!puedeAdministrarTickets) return alert("No tienes permisos para mover tareas.");
+        setTareasInternas(tareasInternas.map(t => t.id === id ? { ...t, status: newStatus } : t));
+        if (user) await supabase.from('kanban_tasks').update({ status: newStatus }).eq('id', id);
+    };
+
+    const borrarTarea = async (id) => {
+        if (userRole !== 'Super Admin') return alert("Solo un Super Admin puede borrar tareas.");
+        setTareasInternas(tareasInternas.filter(t => t.id !== id));
+        if (user) await supabase.from('kanban_tasks').delete().eq('id', id);
+    };
+
+    // --- FUNCIONES EQUIPO NUBE ---
+    const handleAddMember = async (e) => {
+        e.preventDefault();
+        if (!user) return;
+
+        const member = { ...nuevoMiembro, user_id: user.id, estado: 'Offline' };
+        setMiembrosEquipo([...miembrosEquipo, { id: Date.now(), ...member }]); // Optimistic
+        setIsAddingMember(false);
+        setNuevoMiembro({ nombre: '', email: '', rol: 'Técnico Full', especialidad: '' });
+
+        const { data } = await supabase.from('team_members').insert([member]).select();
+        if (data) {
+            setMiembrosEquipo(prev => prev.map(m => m.email === member.email ? data[0] : m));
+        }
+    };
+
+    const cambiarRolMiembro = async (id, nuevoRol) => {
         setMiembrosEquipo(miembrosEquipo.map(m => m.id === id ? { ...m, rol: nuevoRol } : m));
+        if (user) await supabase.from('team_members').update({ rol: nuevoRol }).eq('id', id);
+    };
+
+    const eliminarMiembro = async (id, nombre) => {
+        if (window.confirm(`¿Seguro que deseas eliminar a ${nombre} del taller? Perderá el acceso.`)) {
+            setMiembrosEquipo(miembrosEquipo.filter(m => m.id !== id));
+            if (user) await supabase.from('team_members').delete().eq('id', id);
+        }
     };
 
     return (
@@ -227,7 +296,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
                     </button>
 
-                    {/* BOTÓN PERMANENTE: VER VIDRIERA */}
                     <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="btn-view-site" title="Ver mi tienda pública">
                         <SvgExternal /> Ver Vidriera
                     </Link>
@@ -239,7 +307,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                         {isProfileMenuOpen && (
                             <div className="profile-dropdown-menu animate-fade-in">
                                 <div className="profile-menu-header">
-                                    <strong>Demian</strong>
+                                    <strong>{user?.email ? user.email.split('@')[0] : 'Admin'}</strong>
                                     <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>{userRole}</span>
                                 </div>
                                 <div className="profile-menu-body">
@@ -407,7 +475,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     </button>
                                 )}
 
-                                {/* BOTONES DE ACCESO RÁPIDO PARA EL TALLER */}
                                 <div style={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
                                     <button className="sub-nav-btn" onClick={() => setSeccionPrincipal('ajustes_web')} style={{ background: 'var(--bg-input-glass)', color: 'var(--text-primary)', border: '1px solid var(--border-glass)' }}>
                                         <SvgLayout /> Editor de Vidriera
@@ -502,6 +569,31 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
                         {subSeccionTaller === 'equipo' && (
                             <div className="animate-fade-in">
+
+                                {userRole === 'Super Admin' && (
+                                    <div style={{ marginBottom: '20px' }}>
+                                        <button className="btn-add-member" onClick={() => setIsAddingMember(!isAddingMember)}>
+                                            {isAddingMember ? <><SvgX /> Cancelar</> : <><SvgPlusSmall /> Añadir Miembro</>}
+                                        </button>
+
+                                        {isAddingMember && (
+                                            <form onSubmit={handleAddMember} className="add-member-form glass-effect animate-slide-up">
+                                                <div className="form-grid">
+                                                    <input type="text" placeholder="Nombre" required value={nuevoMiembro.nombre} onChange={e => setNuevoMiembro({ ...nuevoMiembro, nombre: e.target.value })} className="member-input" />
+                                                    <input type="email" placeholder="Correo (El que usa para entrar)" required value={nuevoMiembro.email} onChange={e => setNuevoMiembro({ ...nuevoMiembro, email: e.target.value })} className="member-input" />
+                                                    <input type="text" placeholder="Especialidad (Ej: Microelectrónica)" value={nuevoMiembro.especialidad} onChange={e => setNuevoMiembro({ ...nuevoMiembro, especialidad: e.target.value })} className="member-input" />
+                                                    <select value={nuevoMiembro.rol} onChange={e => setNuevoMiembro({ ...nuevoMiembro, rol: e.target.value })} className="member-input">
+                                                        <option value="Técnico Full">Técnico Full</option>
+                                                        <option value="Recepción">Recepción</option>
+                                                        <option value="Super Admin">Super Admin</option>
+                                                    </select>
+                                                </div>
+                                                <button type="submit" className="btn-submit-member">Guardar Miembro</button>
+                                            </form>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="equipo-grid">
                                     {miembrosEquipo.map(miembro => (
                                         <div className="equipo-card glass-effect" key={miembro.id}>
@@ -513,8 +605,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                             <span className="equipo-role">{miembro.rol}</span>
                                             <div className="equipo-details">
                                                 <p><strong>Email:</strong> {miembro.email}</p>
-                                                <p><strong>Estado:</strong> {miembro.estado}</p>
+                                                <p><strong>Esp:</strong> {miembro.especialidad || 'General'}</p>
                                             </div>
+                                            {userRole === 'Super Admin' && miembro.email !== user?.email && (
+                                                <button className="btn-remove-member" onClick={() => eliminarMiembro(miembro.id, miembro.nombre)}>
+                                                    <SvgTrash /> Quitar del equipo
+                                                </button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -559,7 +656,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                                                 className="role-select-input"
                                                                 value={miembro.rol}
                                                                 onChange={(e) => cambiarRolMiembro(miembro.id, e.target.value)}
-                                                                disabled={miembro.nombre === 'Demian'}
+                                                                disabled={miembro.email === user?.email}
                                                             >
                                                                 <option value="Super Admin">Super Admin</option>
                                                                 <option value="Técnico Full">Técnico Full</option>
@@ -583,13 +680,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     <div className="config-grid-2">
                                         <div className="config-input-group">
                                             <label>Prefijo Interno de Tickets</label>
-                                            <input
-                                                type="text"
-                                                value={tallerConfig.prefijoTickets}
-                                                onChange={e => setTallerConfig({ ...tallerConfig, prefijoTickets: e.target.value.toUpperCase() })}
-                                                maxLength={5}
-                                                placeholder="Ej: WEP"
-                                            />
+                                            <input type="text" value={tallerConfig.prefijoTickets} onChange={e => setTallerConfig({ ...tallerConfig, prefijoTickets: e.target.value.toUpperCase() })} maxLength={5} placeholder="Ej: WEP" />
                                             <small>Los tickets nuevos saldrán como {tallerConfig.prefijoTickets}-001</small>
                                         </div>
                                         <div className="config-input-group">
@@ -598,18 +689,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                                 <option value="ARS">Peso Argentino (ARS)</option>
                                                 <option value="USD">Dólar Estadounidense (USD)</option>
                                                 <option value="EUR">Euro (EUR)</option>
-                                                <option value="MXN">Peso Mexicano (MXN)</option>
-                                                <option value="COP">Peso Colombiano (COP)</option>
                                             </select>
-                                        </div>
-                                        <div className="config-input-group">
-                                            <label>Porcentaje de IVA / Impuestos (%)</label>
-                                            <input
-                                                type="number"
-                                                value={tallerConfig.impuesto}
-                                                onChange={e => setTallerConfig({ ...tallerConfig, impuesto: e.target.value })}
-                                                min="0" max="100"
-                                            />
                                         </div>
                                     </div>
                                     <button className="btn-save-taller-config">Guardar Preferencias</button>
