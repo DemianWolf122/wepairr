@@ -34,7 +34,9 @@ const CONFIG_INICIAL = {
   mostrarMapa: true,
   mapaUrl: '',
   mostrarFaq: true,
-  horariosAtencion: 'Lun a Vie 9:00 - 18:00hs'
+  horariosAtencion: 'Lun a Vie 9:00 - 18:00hs',
+  moneda: 'ARS',
+  impuesto: 21
 };
 
 function App() {

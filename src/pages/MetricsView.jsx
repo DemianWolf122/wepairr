@@ -9,7 +9,11 @@ const SvgDollarSign = () => <svg viewBox="0 0 24 24" width="24" height="24" stro
 const SvgDownload = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
 const SvgGlobe = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
 
-function MetricsView({ tickets }) {
+const CURRENCY_SYMBOLS = { ARS: '$', USD: 'US$', EUR: '€', BRL: 'R$', CLP: '$', MXN: '$', COP: '$', PEN: 'S/', UYU: '$U' };
+const getCurrencySymbol = (code) => CURRENCY_SYMBOLS[code] || '$';
+
+function MetricsView({ tickets, moneda = 'ARS' }) {
+    const sym = getCurrencySymbol(moneda);
     const [usdRate, setUsdRate] = useState(null);
     const [isLoadingRate, setIsLoadingRate] = useState(true);
 
@@ -43,6 +47,13 @@ function MetricsView({ tickets }) {
 
         const dispositivosMap = {};
 
+        // Mapeo de meses para gráfico de ingresos
+        const ingresosPorMesVar = { 'Ene': 0, 'Feb': 0, 'Mar': 0, 'Abr': 0, 'May': 0, 'Jun': 0, 'Jul': 0, 'Ago': 0, 'Sep': 0, 'Oct': 0, 'Nov': 0, 'Dic': 0 };
+        const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+        let tiempoTotalReparacionDias = 0;
+        let ticketsCompletadosConFecha = 0;
+
         activos.forEach(t => {
             const pres = parseFloat(t.presupuesto) || 0;
 
@@ -50,6 +61,21 @@ function MetricsView({ tickets }) {
             if (t.estado === 'Entregado') {
                 ingresosTotales += pres;
                 entregados++;
+
+                if (t.fecha) {
+                    const d = new Date(t.fecha);
+                    const mes = mesesNombres[d.getMonth()];
+                    ingresosPorMesVar[mes] += pres;
+
+                    // Simulación de tiempo de reparación: asumiendo que "Entregado" hoy o si hay fechaFin (si tuvieras)
+                    // Como no tenemos fechaFin explícita, podemos calcular días desde el ingreso hasta hoy (simplificación)
+                    const hoy = new Date();
+                    const diffTime = Math.abs(hoy - d);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    tiempoTotalReparacionDias += diffDays;
+                    ticketsCompletadosConFecha++;
+                }
+
             }
             // Dinero flotante (Aprobado o en taller)
             else if (t.estado === 'Finalizado' || t.estado === 'En Proceso') {
@@ -67,15 +93,19 @@ function MetricsView({ tickets }) {
         const totalReparaciones = entregados + enProceso + ingresados + activos.filter(t => t.estado === 'Finalizado').length;
         const tasaExito = totalReparaciones > 0 ? Math.round(((entregados + activos.filter(t => t.estado === 'Finalizado').length) / totalReparaciones) * 100) : 0;
         const ticketPromedio = entregados > 0 ? (ingresosTotales / entregados) : 0;
+        const tiempoPromedioDias = ticketsCompletadosConFecha > 0 ? Math.round(tiempoTotalReparacionDias / ticketsCompletadosConFecha) : 0;
 
         // Top 3 dispositivos
         const topDispositivos = Object.entries(dispositivosMap)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3);
 
+        const ingresosMensuales = Object.entries(ingresosPorMesVar).filter(([, val]) => val > 0);
+
         return {
             ingresosTotales, ingresosEstimados, entregados, enProceso,
-            ingresados, tasaExito, ticketPromedio, topDispositivos, totalReparaciones
+            ingresados, tasaExito, ticketPromedio, topDispositivos, totalReparaciones,
+            tiempoPromedioDias, ingresosMensuales
         };
     }, [tickets]);
 
@@ -139,7 +169,7 @@ function MetricsView({ tickets }) {
                     <div className="metric-icon"><SvgDollarSign /></div>
                     <div className="metric-data">
                         <span className="metric-label">Ingresos Reales (Caja)</span>
-                        <h3 className="metric-value">${metricas.ingresosTotales.toLocaleString()}</h3>
+                        <h3 className="metric-value">{sym}{metricas.ingresosTotales.toLocaleString()}</h3>
                         {usdRate && (
                             <p className="metric-api-sub">
                                 <SvgGlobe /> Eqv: U$D {(metricas.ingresosTotales / usdRate).toFixed(2)}
@@ -152,7 +182,7 @@ function MetricsView({ tickets }) {
                     <div className="metric-icon"><SvgTrendingUp /></div>
                     <div className="metric-data">
                         <span className="metric-label">Dinero Flotante (Por cobrar)</span>
-                        <h3 className="metric-value">${metricas.ingresosEstimados.toLocaleString()}</h3>
+                        <h3 className="metric-value">{sym}{metricas.ingresosEstimados.toLocaleString()}</h3>
                         <p className="metric-sub">Trabajos finalizados y en proceso</p>
                     </div>
                 </div>
@@ -161,7 +191,7 @@ function MetricsView({ tickets }) {
                     <div className="metric-icon"><SvgActivity /></div>
                     <div className="metric-data">
                         <span className="metric-label">Ticket Promedio</span>
-                        <h3 className="metric-value">${Math.round(metricas.ticketPromedio).toLocaleString()}</h3>
+                        <h3 className="metric-value">{sym}{Math.round(metricas.ticketPromedio).toLocaleString()}</h3>
                         <p className="metric-sub">Lo que gasta cada cliente</p>
                     </div>
                 </div>
@@ -217,6 +247,30 @@ function MetricsView({ tickets }) {
                         </div>
                     )}
                 </div>
+
+                <div className="metrics-panel glass-effect">
+                    <h3 className="panel-title">Desempeño Analítico</h3>
+                    <div className="performance-stats" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <div className="perf-item" style={{ background: 'var(--bg-input-glass)', padding: '15px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Tiempo Promedio de Reparación</span>
+                            <strong style={{ fontSize: '1.2rem', color: 'var(--text-primary)' }}>{metricas.tiempoPromedioDias} Días</strong>
+                        </div>
+                        <div className="perf-item" style={{ background: 'var(--bg-input-glass)', padding: '15px', borderRadius: '12px' }}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', display: 'block', marginBottom: '10px' }}>Ingresos Mensuales Históricos</span>
+                            {metricas.ingresosMensuales.length === 0 ? (
+                                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Sin ingresos registrados.</span>
+                            ) : (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                    {metricas.ingresosMensuales.map(([mes, monto]) => (
+                                        <div key={mes} style={{ background: 'var(--accent-color)', color: 'white', padding: '5px 10px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                            {mes}: {sym}{monto.toLocaleString()}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* WIDGET API FINANCIERO */}
@@ -230,7 +284,7 @@ function MetricsView({ tickets }) {
                         <p>Sincronizando con el servidor de divisas...</p>
                     ) : (
                         <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
-                            Cotización actual utilizada para tus métricas: <strong>1 USD = ${usdRate} ARS</strong>.
+                            Cotización actual utilizada para tus métricas: <strong>1 USD = {sym !== 'US$' ? `${usdRate} ${moneda}` : 'Moneda base'}</strong>.
                             <br />Mantener el ojo en el tipo de cambio te ayuda a ajustar tus presupuestos de repuestos importados a tiempo para no perder márgenes.
                         </p>
                     )}

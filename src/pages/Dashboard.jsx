@@ -14,8 +14,8 @@ import { TicketContext } from '../context/TicketContext';
 import './Dashboard.css';
 
 // --- SVGs GENERALES ---
-const MoonIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>;
-const SunIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>;
+const MoonIcon = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
+const SunIcon = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const SvgInbox = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></svg>;
 const SvgWrench = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>;
 const SvgTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>;
@@ -75,6 +75,8 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
     const [tareasInternas, setTareasInternas] = useState([]);
     const [nuevaTareaTxt, setNuevaTareaTxt] = useState("");
+    const [nuevaTareaDesc, setNuevaTareaDesc] = useState("");
+    const [nuevaTareaPrioridad, setNuevaTareaPrioridad] = useState("Media");
     const [nuevoAsignado, setNuevoAsignado] = useState("Todos");
 
     // ESTADO PARA AÑADIR NUEVOS MIEMBROS
@@ -83,9 +85,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [isAddingMember, setIsAddingMember] = useState(false);
 
     const [tallerConfig, setTallerConfig] = useState({
-        moneda: 'ARS',
         prefijoTickets: 'WEP',
-        impuesto: 21,
         notificarEmail: true
     });
 
@@ -217,12 +217,21 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const agregarTarea = async (e) => {
         e.preventDefault();
         if (!nuevaTareaTxt.trim() || !user) return;
-        const newTask = { text: nuevaTareaTxt, assignee: nuevoAsignado, status: 'pending', user_id: user.id };
+        const newTask = {
+            text: nuevaTareaTxt,
+            description: nuevaTareaDesc,
+            priority: nuevaTareaPrioridad,
+            assignee: nuevoAsignado,
+            status: 'pending',
+            user_id: user.id
+        };
 
         // Optimistic UI
         const tempId = Date.now();
         setTareasInternas([{ id: tempId, ...newTask }, ...tareasInternas]);
         setNuevaTareaTxt("");
+        setNuevaTareaDesc("");
+        setNuevaTareaPrioridad("Media");
 
         // DB
         const { data } = await supabase.from('kanban_tasks').insert([newTask]).select();
@@ -422,6 +431,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                         <TicketCard
                                             ticket={ticket}
                                             vista={vistaActual}
+                                            moneda={config.moneda || 'ARS'}
                                             onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null}
                                             onBudgetChange={actualizarPresupuesto}
                                             onEditTicket={editarTicket}
@@ -488,38 +498,64 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
                         {subSeccionTaller === 'tareas' && (
                             <div className="animate-fade-in">
-                                <form onSubmit={agregarTarea} className="glass-effect" style={{ padding: '20px', borderRadius: '16px', display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap', alignItems: 'center', border: '1px solid var(--border-glass)' }}>
-                                    <input
-                                        type="text"
-                                        placeholder="Escribe una nueva tarea interna..."
-                                        value={nuevaTareaTxt}
-                                        onChange={e => setNuevaTareaTxt(e.target.value)}
-                                        style={{ flex: 1, minWidth: '250px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem' }}
-                                    />
-                                    <select
-                                        value={nuevoAsignado}
-                                        onChange={e => setNuevoAsignado(e.target.value)}
-                                        style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-                                    >
-                                        <option value="Todos">Para: Todos</option>
-                                        {miembrosEquipo.map(m => (
-                                            <option key={m.id} value={m.nombre}>Para: {m.nombre}</option>
-                                        ))}
-                                    </select>
-                                    <button type="submit" style={{ padding: '12px 25px', borderRadius: '10px', border: 'none', background: 'var(--accent-color)', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s' }}>
-                                        Añadir Tarea
-                                    </button>
+                                <form onSubmit={agregarTarea} className="glass-effect" style={{ padding: '20px', borderRadius: '16px', display: 'flex', gap: '15px', marginBottom: '30px', flexDirection: 'column', border: '1px solid var(--border-glass)' }}>
+                                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Título de la tarea..."
+                                            value={nuevaTareaTxt}
+                                            onChange={e => setNuevaTareaTxt(e.target.value)}
+                                            style={{ flex: 1, minWidth: '250px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem', fontWeight: 'bold' }}
+                                        />
+                                        <select
+                                            value={nuevaTareaPrioridad}
+                                            onChange={e => setNuevaTareaPrioridad(e.target.value)}
+                                            style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}
+                                        >
+                                            <option value="Alta">Prioridad: Alta</option>
+                                            <option value="Media">Prioridad: Media</option>
+                                            <option value="Baja">Prioridad: Baja</option>
+                                        </select>
+                                        <select
+                                            value={nuevoAsignado}
+                                            onChange={e => setNuevoAsignado(e.target.value)}
+                                            style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}
+                                        >
+                                            <option value="Todos">Para: Todos</option>
+                                            {miembrosEquipo.map(m => (
+                                                <option key={m.id} value={m.nombre}>Para: {m.nombre}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                                        <textarea
+                                            placeholder="Descripción detallada (opcional)..."
+                                            value={nuevaTareaDesc}
+                                            onChange={e => setNuevaTareaDesc(e.target.value)}
+                                            style={{ flex: 1, minWidth: '300px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '0.95rem', minHeight: '50px', resize: 'vertical' }}
+                                        />
+                                        <button type="submit" style={{ padding: '15px 30px', borderRadius: '10px', border: 'none', background: 'var(--accent-color)', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s', height: '100%' }}>
+                                            + Añadir Tarea
+                                        </button>
+                                    </div>
                                 </form>
 
                                 <div className="kanban-board">
+                                    {/* COLUMNA: PENDIENTES */}
                                     <div className="kanban-col glass-effect">
                                         <h3 className="kanban-header kanban-pending">Pendientes <span className="kanban-count">{tareasInternas.filter(t => t.status === 'pending').length}</span></h3>
                                         <div className="kanban-cards">
                                             {tareasInternas.filter(t => t.status === 'pending').map(tarea => (
                                                 <div key={tarea.id} className="kanban-card">
-                                                    <p>{tarea.text}</p>
+                                                    <h4>{tarea.text}</h4>
+                                                    {tarea.description && <p>{tarea.description}</p>}
+                                                    {tarea.priority && (
+                                                        <div className="kanban-tags">
+                                                            <span className={`kanban-tag tag-${tarea.priority}`}>{tarea.priority}</span>
+                                                        </div>
+                                                    )}
                                                     <div className="kanban-card-footer">
-                                                        <span className="kanban-assignee">👤 {tarea.assignee}</span>
+                                                        <span className="kanban-assignee"><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span>
                                                         <div style={{ display: 'flex', gap: '5px' }}>
                                                             <button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button>
                                                             <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>▶</button>
@@ -529,14 +565,22 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                             ))}
                                         </div>
                                     </div>
+
+                                    {/* COLUMNA: EN PROCESO */}
                                     <div className="kanban-col glass-effect">
                                         <h3 className="kanban-header kanban-progress">En Proceso <span className="kanban-count">{tareasInternas.filter(t => t.status === 'progress').length}</span></h3>
                                         <div className="kanban-cards">
                                             {tareasInternas.filter(t => t.status === 'progress').map(tarea => (
                                                 <div key={tarea.id} className="kanban-card">
-                                                    <p>{tarea.text}</p>
+                                                    <h4>{tarea.text}</h4>
+                                                    {tarea.description && <p>{tarea.description}</p>}
+                                                    {tarea.priority && (
+                                                        <div className="kanban-tags">
+                                                            <span className={`kanban-tag tag-${tarea.priority}`}>{tarea.priority}</span>
+                                                        </div>
+                                                    )}
                                                     <div className="kanban-card-footer">
-                                                        <span className="kanban-assignee">👤 {tarea.assignee}</span>
+                                                        <span className="kanban-assignee"><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span>
                                                         <div style={{ display: 'flex', gap: '5px' }}>
                                                             <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'pending')}>◀</button>
                                                             <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'done')}>▶</button>
@@ -546,14 +590,17 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                             ))}
                                         </div>
                                     </div>
+
+                                    {/* COLUMNA: COMPLETADAS */}
                                     <div className="kanban-col glass-effect">
                                         <h3 className="kanban-header kanban-done">Completadas <span className="kanban-count">{tareasInternas.filter(t => t.status === 'done').length}</span></h3>
                                         <div className="kanban-cards">
                                             {tareasInternas.filter(t => t.status === 'done').map(tarea => (
                                                 <div key={tarea.id} className="kanban-card" style={{ opacity: 0.7 }}>
-                                                    <p style={{ textDecoration: 'line-through' }}>{tarea.text}</p>
+                                                    <h4 style={{ textDecoration: 'line-through' }}>{tarea.text}</h4>
+                                                    {tarea.description && <p style={{ textDecoration: 'line-through' }}>{tarea.description}</p>}
                                                     <div className="kanban-card-footer">
-                                                        <span className="kanban-assignee">👤 {tarea.assignee}</span>
+                                                        <span className="kanban-assignee" style={{ background: 'transparent', border: '1px solid var(--border-glass)', color: 'var(--text-secondary)' }}><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span>
                                                         <div style={{ display: 'flex', gap: '5px' }}>
                                                             <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>◀</button>
                                                             <button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button>
@@ -620,7 +667,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
                         {subSeccionTaller === 'metricas' && (
                             <div className="animate-fade-in" style={{ marginTop: '20px' }}>
-                                <MetricsView tickets={tickets} />
+                                <MetricsView tickets={tickets} moneda={config.moneda || 'ARS'} />
                             </div>
                         )}
 
@@ -685,10 +732,16 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                         </div>
                                         <div className="config-input-group">
                                             <label>Moneda Local</label>
-                                            <select value={tallerConfig.moneda} onChange={e => setTallerConfig({ ...tallerConfig, moneda: e.target.value })}>
-                                                <option value="ARS">Peso Argentino (ARS)</option>
-                                                <option value="USD">Dólar Estadounidense (USD)</option>
-                                                <option value="EUR">Euro (EUR)</option>
+                                            <select value={config.moneda || 'ARS'} onChange={e => setConfig({ ...config, moneda: e.target.value })}>
+                                                <option value="ARS">Peso Argentino (ARS $)</option>
+                                                <option value="USD">Dólar Estadounidense (USD US$)</option>
+                                                <option value="EUR">Euro (EUR €)</option>
+                                                <option value="BRL">Real Brasileño (BRL R$)</option>
+                                                <option value="CLP">Peso Chileno (CLP $)</option>
+                                                <option value="MXN">Peso Mexicano (MXN $)</option>
+                                                <option value="COP">Peso Colombiano (COP $)</option>
+                                                <option value="PEN">Sol Peruano (PEN S/)</option>
+                                                <option value="UYU">Peso Uruguayo (UYU $U)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -699,7 +752,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                     </div>
                 )}
 
-                {seccionPrincipal === 'inventario' && <InventoryView />}
+                {seccionPrincipal === 'inventario' && <InventoryView moneda={config.moneda || 'ARS'} />}
                 {seccionPrincipal === 'herramientas' && <ToolsView />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
                 {seccionPrincipal === 'ajustes_web' && <Settings config={config} onUpdate={setConfig} />}

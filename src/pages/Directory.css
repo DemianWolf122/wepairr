@@ -2,6 +2,36 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: var(--bg-main);
+}
+
+/* Nav styles for the Directory page */
+.directory-wrapper .home-nav {
+    background: var(--bg-panel-glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.home-links {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-login-nav {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    border-radius: 10px;
+    transition: all 0.2s var(--ease-premium);
+}
+
+.btn-login-nav:hover {
+    background: var(--bg-hover-glass);
+    transform: translateY(-1px);
 }
 
 .directory-content {
@@ -63,7 +93,7 @@
 
 .directory-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
     gap: 30px;
 }
 
@@ -72,12 +102,22 @@
     border-radius: 20px;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    color: var(--text-primary);
+}
+
+.tech-directory-card h3 {
+    color: var(--text-primary);
 }
 
 .tech-directory-card:hover {
     transform: translateY(-5px);
     border-color: var(--accent-color);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.app-root.dark .tech-directory-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
 }
 
 .tech-card-header {
@@ -156,7 +196,7 @@
     margin-bottom: 20px;
     display: grid;
     /* Grilla más adaptable para las nuevas tarjetas */
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
     gap: 25px;
     align-content: start;
     padding-bottom: 20px;
@@ -179,4 +219,29 @@
     }
 
     /* Una sola columna en móvil */
+}
+
+@media (max-width: 400px) {
+    .directory-header h1 {
+        font-size: 2.2rem;
+    }
+
+    .directory-header p {
+        font-size: 1rem;
+    }
+
+    .region-filter-glass {
+        padding: 10px 15px;
+        gap: 10px;
+        flex-wrap: wrap;
+        border-radius: 16px;
+    }
+
+    .tech-directory-card {
+        padding: 20px;
+    }
+
+    .directory-content {
+        padding: 25px 15px;
+    }
 }

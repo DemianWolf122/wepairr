@@ -40,7 +40,7 @@ body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: var(--bg-main);
     color: var(--text-primary);
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {
@@ -119,4 +119,25 @@ body {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* --- THEME TOGGLE (GLOBAL) --- */
+.theme-toggle-btn {
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.05);
+    border-color: var(--accent-color);
+    background: var(--bg-hover-glass);
 }

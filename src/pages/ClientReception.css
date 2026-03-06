@@ -463,3 +463,66 @@
         height: 60px;
     }
 }
+
+@media (max-width: 400px) {
+    .shop-hero {
+        padding: 50px 15px;
+    }
+
+    .shop-title {
+        font-size: 1.8rem;
+    }
+
+    .shop-desc {
+        font-size: 1rem;
+    }
+
+    .shop-cta-btn {
+        padding: 14px 25px;
+        font-size: 1rem;
+    }
+
+    .shop-secondary-btn {
+        padding: 14px 25px;
+        font-size: 1rem;
+    }
+
+    .shop-section {
+        padding: 35px 15px;
+    }
+
+    .shop-section-title {
+        font-size: 1.5rem;
+        gap: 10px;
+    }
+
+    .shop-service-card {
+        padding: 25px;
+    }
+
+    .shop-trust-badge-hero {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        flex-wrap: wrap;
+    }
+
+    .tracking-inner {
+        padding: 20px;
+    }
+
+    .shop-nav {
+        padding: 12px 15px;
+    }
+
+    .shop-footer {
+        padding: 40px 15px;
+        font-size: 0.9rem;
+    }
+
+    .floating-wa-btn-public {
+        bottom: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+    }
+}

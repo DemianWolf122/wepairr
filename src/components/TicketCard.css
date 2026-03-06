@@ -654,3 +654,58 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
 }
+
+@media (max-width: 400px) {
+    .ticket-card-soft {
+        padding: 18px;
+        gap: 14px;
+        border-radius: 18px;
+    }
+
+    .tc-device-soft {
+        font-size: 1rem;
+    }
+
+    .tc-problem-soft {
+        font-size: 0.9rem;
+        padding-left: 20px;
+    }
+
+    .tc-badge-soft {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+
+    .tc-footer-soft {
+        padding-top: 14px;
+        font-size: 0.8rem;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tc-budget-soft {
+        padding: 5px 10px;
+    }
+
+    .budget-input {
+        width: 55px;
+        font-size: 0.9rem;
+    }
+
+    .budget-currency {
+        font-size: 0.9rem;
+    }
+
+    .tc-btn-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    .tc-edit-row {
+        flex-direction: column;
+    }
+
+    .tc-body-edit {
+        padding: 12px;
+    }
+}

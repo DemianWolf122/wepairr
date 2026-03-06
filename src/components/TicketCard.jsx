@@ -19,7 +19,10 @@ const SvgX = () => <svg viewBox="0 0 24 24" width="14" height="14" stroke="curre
 const SvgTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>;
 const SvgDownload = () => <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
 
-function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicket, isDeleteMode, onDelete }) {
+const CURRENCY_SYMBOLS = { ARS: '$', USD: 'US$', EUR: '€', BRL: 'R$', CLP: '$', MXN: '$', COP: '$', PEN: 'S/', UYU: '$U' };
+const getCurrencySymbol = (code) => CURRENCY_SYMBOLS[code] || '$';
+
+function TicketCard({ ticket, vista, moneda = 'ARS', onStatusChange, onBudgetChange, onEditTicket, isDeleteMode, onDelete }) {
     const isConsulta = ticket.tipo === 'consulta';
     const [isEditing, setIsEditing] = useState(false);
 
@@ -79,7 +82,8 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
 
         const phone = ticket.cliente.telefono.replace(/[\s\-\(\)]/g, '');
         const costo = ticket.presupuesto ? ticket.presupuesto : 'a confirmar';
-        const msg = `¡Buenas noticias! Tu ${ticket.dispositivo} ya está listo. Costo: $${costo}. Te esperamos en el taller.`;
+        const sym = getCurrencySymbol(moneda);
+        const msg = `¡Buenas noticias! Tu ${ticket.dispositivo} ya está listo. Costo: ${sym}${costo}. Te esperamos en el taller.`;
 
         const win = window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         if (!win) alert("Por favor, permite las ventanas emergentes para abrir WhatsApp.");
@@ -274,7 +278,7 @@ function TicketCard({ ticket, vista, onStatusChange, onBudgetChange, onEditTicke
 
                 {vista === 'activos' && !isEditing && (
                     <div className="tc-budget-soft" onClick={e => e.stopPropagation()}>
-                        <span className="budget-currency">$</span>
+                        <span className="budget-currency">{getCurrencySymbol(moneda)}</span>
                         <input
                             type="number"
                             value={ticket.presupuesto || ''}

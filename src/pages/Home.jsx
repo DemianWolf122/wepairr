@@ -8,7 +8,12 @@ const SunIcon = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="cu
 function Home({ theme, toggleTheme }) {
     return (
         <div className="home-wrapper">
-            <nav className="home-nav glass-effect">
+            {/* Ambient decorative blobs */}
+            <div className="home-blob home-blob-1"></div>
+            <div className="home-blob home-blob-2"></div>
+            <div className="home-blob home-blob-3"></div>
+
+            <nav className="home-nav">
                 <div className="home-logo">Wepairr</div>
                 <div className="home-nav-links">
                     <button onClick={toggleTheme} className="theme-toggle-btn">
@@ -19,11 +24,12 @@ function Home({ theme, toggleTheme }) {
             </nav>
 
             <main className="home-hero">
-                <div className="hero-content animate-pop-in">
-                    <h1 className="hero-title">El ecosistema definitivo para Servicios Técnicos.</h1>
+                <div className="hero-content">
+                    <div className="hero-badge">🚀 Plataforma SaaS para Técnicos</div>
+                    <h1 className="hero-title">El ecosistema definitivo para <span className="hero-title-accent">Servicios Técnicos.</span></h1>
                     <p className="hero-subtitle">Gestiona reparaciones, controla stock, recibe clientes online y accede a esquemáticos. Todo en una sola plataforma premium.</p>
                     <div className="hero-actions">
-                        <Link to="/dashboard" className="hero-btn-primary">Ir a mi Workspace</Link>
+                        <Link to="/dashboard" className="hero-btn-primary">Ir a mi Workspace →</Link>
                         <Link to="/directorio" className="hero-btn-secondary">Buscar un Taller</Link>
                     </div>
                 </div>

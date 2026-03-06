@@ -100,26 +100,6 @@
     gap: 15px;
 }
 
-.theme-toggle-btn {
-    background: var(--bg-input-glass);
-    border: 1px solid var(--border-glass);
-    color: var(--text-primary);
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 12px;
-    transition: transform 0.2s var(--ease-bounce), background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.theme-toggle-btn:hover {
-    background: var(--bg-hover-glass);
-    transform: scale(1.05);
-    border-color: var(--accent-color);
-}
-
 /* --- DROPDOWN DE PERFIL --- */
 .profile-wrapper {
     position: relative;
@@ -155,7 +135,7 @@
     border: 1px solid var(--border-glass);
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    min-width: 240px;
+    min-width: min(240px, calc(100vw - 30px));
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -223,7 +203,6 @@
     transition: all var(--speed-normal) var(--ease-premium);
     scrollbar-width: thin;
     position: relative;
-    z-index: 1;
 }
 
 .dashboard-content.modo-editor-activo {
@@ -579,7 +558,7 @@
     overflow-y: auto;
     margin-bottom: 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
     gap: 25px;
     align-content: start;
     padding-bottom: 20px;
@@ -680,81 +659,148 @@
 ======================================================= */
 .kanban-board {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    min-height: 50vh;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
     align-items: start;
 }
 
 .kanban-col {
-    background: var(--bg-panel-glass);
+    background: var(--bg-panel);
     border: 1px solid var(--border-glass);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .kanban-header {
-    margin: 0 0 10px 0;
-    font-size: 1.1rem;
-    font-weight: 900;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-glass);
+    letter-spacing: -0.5px;
 }
 
 .kanban-pending {
     color: #ef4444;
+    border-bottom-color: rgba(239, 68, 68, 0.2);
 }
 
 .kanban-progress {
     color: #3b82f6;
+    border-bottom-color: rgba(59, 130, 246, 0.2);
 }
 
 .kanban-done {
     color: #10b981;
+    border-bottom-color: rgba(16, 185, 129, 0.2);
 }
 
 .kanban-count {
     background: var(--bg-input-glass);
-    padding: 2px 10px;
+    padding: 4px 12px;
     border-radius: 99px;
     font-size: 0.85rem;
     border: 1px solid var(--border-glass);
     color: var(--text-secondary);
+    font-weight: 600;
 }
 
 .kanban-cards {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    min-height: 100px;
 }
 
 .kanban-card {
     background: var(--bg-input-glass);
     border: 1px solid var(--border-glass);
-    padding: 15px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    gap: 15px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.kanban-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent-color);
+    border-radius: 16px 0 0 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
 .kanban-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     border-color: var(--accent-color);
+}
+
+.kanban-card:hover::before {
+    opacity: 1;
+}
+
+.kanban-card h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 700;
 }
 
 .kanban-card p {
     margin: 0;
-    color: var(--text-primary);
-    font-size: 0.95rem;
-    line-height: 1.4;
-    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.kanban-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.kanban-tag {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tag-Alta {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.tag-Media {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.tag-Baja {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .kanban-card-footer {
@@ -762,36 +808,42 @@
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid var(--border-glass);
-    padding-top: 10px;
+    padding-top: 15px;
+    margin-top: auto;
 }
 
 .kanban-assignee {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: bold;
     color: var(--accent-color);
     background: rgba(37, 99, 235, 0.1);
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .kanban-btn {
     background: var(--bg-panel);
     border: 1px solid var(--border-glass);
     color: var(--text-secondary);
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s;
+    font-size: 0.9rem;
 }
 
 .kanban-btn:hover {
     background: var(--accent-color);
     color: white;
     border-color: var(--accent-color);
+    transform: scale(1.1);
 }
 
 .btn-trash:hover {
@@ -804,7 +856,7 @@
 ======================================================= */
 .equipo-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
     gap: 20px;
 }
 
@@ -1264,7 +1316,6 @@
     .tab-btn {
         font-size: 0.75rem;
         padding: 8px 10px;
-        max-width: 85vh;
     }
 
     .custom-sort-header {
@@ -1280,7 +1331,8 @@
     }
 
     .tab-btn-action {
-        max-width: 85vh;
+        font-size: 0.9rem;
+        padding: 10px 15px;
     }
 
     .filters-group {
@@ -1320,7 +1372,7 @@
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
     gap: 15px;
 }
 

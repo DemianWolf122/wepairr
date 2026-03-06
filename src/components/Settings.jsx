@@ -21,6 +21,24 @@ const SvgInstagram = () => <svg viewBox="0 0 24 24" width="20" height="20" strok
 const SvgLayout = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>;
 const SvgEye = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
 const SvgExternal = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>;
+const SvgDollar = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>;
+const SvgLink = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>;
+const SvgHelp = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>;
+const SvgTrashSmall = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
+const SvgPlusSmall = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+const SvgX = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
+
+const CURRENCY_OPTIONS = [
+    { code: 'ARS', label: 'Peso Argentino', symbol: '$' },
+    { code: 'USD', label: 'Dólar Estadounidense', symbol: 'US$' },
+    { code: 'EUR', label: 'Euro', symbol: '€' },
+    { code: 'BRL', label: 'Real Brasileño', symbol: 'R$' },
+    { code: 'CLP', label: 'Peso Chileno', symbol: '$' },
+    { code: 'MXN', label: 'Peso Mexicano', symbol: '$' },
+    { code: 'COP', label: 'Peso Colombiano', symbol: '$' },
+    { code: 'PEN', label: 'Sol Peruano', symbol: 'S/' },
+    { code: 'UYU', label: 'Peso Uruguayo', symbol: '$U' }
+];
 
 const PremiumGate = ({ children, isPremium }) => {
     if (isPremium) return children;
@@ -51,8 +69,24 @@ const TEMPLATES = [
         config: { shopDarkMode: true, colorTema: '#10b981', colorTitulo: '#10b981', colorSubtitulo: '#a7f3d0', borderRadius: '8px', fontFamily: '"Inter", system-ui, sans-serif' }
     },
     {
-        id: 'crimson', name: 'Crimson Red', color: '#1a0505', border: '#e11d48',
+        id: 'crimson', name: 'Crimson Blood', color: '#1a0505', border: '#e11d48',
         config: { shopDarkMode: true, colorTema: '#e11d48', colorTitulo: '#ffffff', colorSubtitulo: '#fecdd3', borderRadius: '16px', fontFamily: '"Montserrat", sans-serif' }
+    },
+    {
+        id: 'ocean-breeze', name: 'Ocean Breeze', color: '#f0f9ff', border: '#0ea5e9',
+        config: { shopDarkMode: false, colorTema: '#0ea5e9', colorTitulo: '#0c4a6e', colorSubtitulo: '#0284c7', borderRadius: '20px', fontFamily: '"Inter", system-ui, sans-serif' }
+    },
+    {
+        id: 'midnight-gold', name: 'Midnight Gold', color: '#1e1b4b', border: '#f59e0b',
+        config: { shopDarkMode: true, colorTema: '#f59e0b', colorTitulo: '#fef3c7', colorSubtitulo: '#fde68a', borderRadius: '12px', fontFamily: '"Montserrat", sans-serif' }
+    },
+    {
+        id: 'forest-eco', name: 'Forest Eco', color: '#f0fdf4', border: '#16a34a',
+        config: { shopDarkMode: false, colorTema: '#16a34a', colorTitulo: '#14532d', colorSubtitulo: '#15803d', borderRadius: '16px', fontFamily: '"Helvetica Neue", Helvetica, sans-serif' }
+    },
+    {
+        id: 'pastel-dream', name: 'Pastel Dream', color: '#faf5ff', border: '#c084fc',
+        config: { shopDarkMode: false, colorTema: '#c084fc', colorTitulo: '#4c1d95', colorSubtitulo: '#7e22ce', borderRadius: '32px', fontFamily: '"Montserrat", sans-serif' }
     }
 ];
 
@@ -131,7 +165,22 @@ function Settings({ config, onUpdate }) {
     const aplicarPlantilla = (templateConfig) => {
         onUpdate({ ...config, ...templateConfig });
         setShowTemplatesModal(false);
-        setSeccionAbierta('apariencia');
+    };
+
+    // --- FAQ handlers ---
+    const handleAddFaq = () => {
+        const faqs = config.faqs || [];
+        onUpdate({ ...config, faqs: [...faqs, { pregunta: '', respuesta: '' }] });
+    };
+    const handleRemoveFaq = (idx) => {
+        const faqs = [...(config.faqs || [])];
+        faqs.splice(idx, 1);
+        onUpdate({ ...config, faqs });
+    };
+    const handleChangeFaq = (idx, field, value) => {
+        const faqs = [...(config.faqs || [])];
+        faqs[idx] = { ...faqs[idx], [field]: value };
+        onUpdate({ ...config, faqs });
     };
 
     const currentBgColor = config.shopDarkMode ? '#090e17' : '#ffffff';
@@ -244,10 +293,25 @@ function Settings({ config, onUpdate }) {
                             <span className="accordion-chevron"><SvgChevronDown /></span>
                         </div>
                         {seccionAbierta === 'plantillas' && (
-                            <div className="accordion-content" style={{ textAlign: 'center' }}>
-                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '15px' }}>Acelera tu diseño eligiendo una de nuestras combinaciones profesionales probadas.</p>
-                                <button onClick={() => setShowTemplatesModal(true)} className="btn-open-templates">
-                                    <SvgEye /> Ver Galería de Plantillas
+                            <div className="accordion-content">
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '15px' }}>Acelera tu diseño eligiendo una base prediseñada. (Aplica colores automáticamente).</p>
+                                <div className="templates-inline-grid">
+                                    {TEMPLATES.map(tpl => (
+                                        <div key={tpl.id} className="template-card-inline" style={{ background: tpl.color, borderColor: tpl.border }} onClick={() => aplicarPlantilla(tpl.config)}>
+                                            <div className="template-preview-mock">
+                                                <div className="mock-nav" style={{ borderBottom: `1px solid ${tpl.border}50` }}></div>
+                                                <div className="mock-hero">
+                                                    <div className="mock-title" style={{ background: tpl.config.colorTitulo }}></div>
+                                                    <div className="mock-subtitle" style={{ background: tpl.config.colorSubtitulo }}></div>
+                                                    <div className="mock-btn" style={{ background: tpl.config.colorTema, borderRadius: tpl.config.borderRadius }}></div>
+                                                </div>
+                                            </div>
+                                            <h4 style={{ color: tpl.config.shopDarkMode ? '#ffffff' : '#0f172a', textShadow: tpl.config.shopDarkMode ? '0 1px 2px rgba(0,0,0,0.5)' : 'none' }}>{tpl.name}</h4>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button onClick={() => setShowTemplatesModal(true)} className="btn-open-templates" style={{ marginTop: '15px' }}>
+                                    <SvgEye /> Ver en Galería Completa
                                 </button>
                             </div>
                         )}
@@ -285,11 +349,6 @@ function Settings({ config, onUpdate }) {
                         </div>
                         {seccionAbierta === 'apariencia' && (
                             <div className="accordion-content">
-                                <div className="toggle-box glass-input-effect" style={{ marginBottom: '20px' }}>
-                                    <div><strong className="toggle-title">Modo Oscuro</strong></div>
-                                    <label className="switch"><input type="checkbox" name="shopDarkMode" checked={config.shopDarkMode || false} onChange={handleChange} /><span className="slider round"></span></label>
-                                </div>
-
                                 <label className="settings-label">Color de Marca (Acento):</label>
                                 <div className="color-picker-modern">
                                     <input type="color" name="colorTema" value={config.colorTema || '#2563eb'} onChange={handleChange} className="native-color-input" title="Elegir color personalizado" />
@@ -302,7 +361,24 @@ function Settings({ config, onUpdate }) {
 
                                 <PremiumGate isPremium={isPremium}>
                                     <div className="settings-form-group" style={{ marginTop: '20px' }}>
-                                        <label className="settings-label">Tipografía Global:
+                                        <div className="color-picker-modern">
+                                            <input type="color" name="colorTitulo" value={config.colorTitulo || (config.shopDarkMode ? '#ffffff' : '#0f172a')} onChange={handleChange} className="native-color-input" />
+                                            <label className="settings-label" style={{ marginBottom: 0 }}>Color de Título</label>
+                                        </div>
+                                        <div className="color-picker-modern">
+                                            <input type="color" name="colorSubtitulo" value={config.colorSubtitulo || (config.shopDarkMode ? '#94a3b8' : '#64748b')} onChange={handleChange} className="native-color-input" />
+                                            <label className="settings-label" style={{ marginBottom: 0 }}>Color de Subtítulos</label>
+                                        </div>
+
+                                        <label className="settings-label" style={{ marginTop: '10px' }}>
+                                            Redondeo de bordes (Botones y tarjetas):
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <input type="range" min="0" max="32" value={parseInt(config.borderRadius || '16')} onChange={(e) => onUpdate({ ...config, borderRadius: `${e.target.value}px` })} style={{ flex: 1 }} />
+                                                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{config.borderRadius || '16px'}</span>
+                                            </div>
+                                        </label>
+
+                                        <label className="settings-label" style={{ marginTop: '10px' }}>Tipografía Global:
                                             <select name="fontFamily" value={config.fontFamily || FONTS[0].value} onChange={handleChange} className="settings-input select-input">
                                                 {FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                                             </select>
@@ -392,6 +468,91 @@ function Settings({ config, onUpdate }) {
                                             </div>
                                         )}
                                     </PremiumGate>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={`accordion-item ${seccionAbierta === 'moneda' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('moneda')}>
+                            <span className="accordion-title"><SvgDollar /> Moneda y Facturación</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
+                        </div>
+                        {seccionAbierta === 'moneda' && (
+                            <div className="accordion-content">
+                                <div className="settings-form-group">
+                                    <label className="settings-label">Moneda Principal:
+                                        <select name="moneda" value={config.moneda || 'ARS'} onChange={handleChange} className="settings-input select-input">
+                                            {CURRENCY_OPTIONS.map(c => (
+                                                <option key={c.code} value={c.code}>{c.label} ({c.code} {c.symbol})</option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '5px 0 15px 0' }}>
+                                        Se aplica automáticamente en Tickets, Métricas e Inventario.
+                                    </p>
+                                    <label className="settings-label">Impuesto / IVA (%):
+                                        <input type="number" name="impuesto" value={config.impuesto || 21} onChange={handleChange} className="settings-input" min={0} max={100} />
+                                    </label>
+                                    <label className="settings-label" style={{ marginTop: '10px' }}>Prefijo de Tickets:
+                                        <input type="text" name="prefijoTickets" value={config.prefijoTickets || 'WEP'} onChange={handleChange} className="settings-input" maxLength={5} placeholder="Ej: WEP" style={{ textTransform: 'uppercase' }} />
+                                    </label>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '5px 0 0 0' }}>
+                                        Los tickets se mostrarán como {config.prefijoTickets || 'WEP'}-001
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={`accordion-item ${seccionAbierta === 'seo' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('seo')}>
+                            <span className="accordion-title"><SvgLink /> SEO y URL</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
+                        </div>
+                        {seccionAbierta === 'seo' && (
+                            <div className="accordion-content">
+                                <div className="settings-form-group">
+                                    <label className="settings-label">Slug Personalizado (URL):
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+                                            <span style={{ background: 'var(--bg-input-glass)', border: '1px solid var(--border-glass)', borderRight: 'none', padding: '10px 12px', borderRadius: '10px 0 0 10px', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 'bold', whiteSpace: 'nowrap' }}>/taller/</span>
+                                            <input type="text" name="slug" value={config.slug || config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || ''} onChange={handleChange} className="settings-input" style={{ borderRadius: '0 10px 10px 0', margin: 0 }} placeholder="mi-taller" />
+                                        </div>
+                                    </label>
+                                    <label className="settings-label" style={{ marginTop: '15px' }}>Meta Descripción (SEO):
+                                        <textarea name="metaDescripcion" value={config.metaDescripcion || ''} onChange={handleChange} className="settings-input settings-textarea" maxLength={160} rows={2} placeholder="Descripción para buscadores como Google (máx 160 caracteres)" style={{ resize: 'vertical' }} />
+                                    </label>
+                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{(config.metaDescripcion || '').length}/160</span>
+                                    <div className="toggle-box glass-input-effect" style={{ marginTop: '15px' }}>
+                                        <div><strong className="toggle-title">Indexar en Google</strong><p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '3px 0 0 0' }}>Permite que Google encuentre tu vidriera</p></div>
+                                        <label className="switch"><input type="checkbox" name="indexarGoogle" checked={config.indexarGoogle !== false} onChange={handleChange} /><span className="slider round"></span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={`accordion-item ${seccionAbierta === 'faq' ? 'active' : ''}`}>
+                        <div className="accordion-header" onClick={() => toggleSeccion('faq')}>
+                            <span className="accordion-title"><SvgHelp /> Preguntas Frecuentes</span>
+                            <span className="accordion-chevron"><SvgChevronDown /></span>
+                        </div>
+                        {seccionAbierta === 'faq' && (
+                            <div className="accordion-content">
+                                <div className="settings-form-group">
+                                    {(config.faqs || []).map((faq, idx) => (
+                                        <div key={idx} className="faq-editor-item glass-input-effect" style={{ padding: '15px', borderRadius: '12px', marginBottom: '12px', border: '1px solid var(--border-glass)', position: 'relative' }}>
+                                            <button type="button" onClick={() => handleRemoveFaq(idx)} style={{ position: 'absolute', top: '8px', right: '8px', background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '4px' }} title="Eliminar pregunta"><SvgTrashSmall /></button>
+                                            <label className="settings-label" style={{ fontSize: '0.85rem' }}>Pregunta:
+                                                <input type="text" value={faq.pregunta} onChange={e => handleChangeFaq(idx, 'pregunta', e.target.value)} className="settings-input" placeholder="¿Cuánto tarda la reparación?" maxLength={100} />
+                                            </label>
+                                            <label className="settings-label" style={{ fontSize: '0.85rem', marginTop: '8px' }}>Respuesta:
+                                                <textarea value={faq.respuesta} onChange={e => handleChangeFaq(idx, 'respuesta', e.target.value)} className="settings-input settings-textarea" placeholder="Generalmente entre 24 y 72hs..." maxLength={300} rows={2} style={{ resize: 'vertical' }} />
+                                            </label>
+                                        </div>
+                                    ))}
+                                    <button type="button" onClick={handleAddFaq} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-input-glass)', border: '1px dashed var(--border-glass)', borderRadius: '10px', padding: '12px', width: '100%', justifyContent: 'center', color: 'var(--accent-color)', fontWeight: 'bold', cursor: 'pointer', fontSize: '0.9rem' }}><SvgPlusSmall /> Agregar Pregunta</button>
+                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '10px 0 0 0', textAlign: 'center' }}>Las preguntas frecuentes se mostrarán en tu vidriera pública.</p>
                                 </div>
                             </div>
                         )}

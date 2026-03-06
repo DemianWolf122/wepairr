@@ -63,7 +63,7 @@
 
 .inventory-summary {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
     gap: 20px;
     margin-bottom: 30px;
     padding: 25px;
@@ -202,7 +202,7 @@
 
 .inventory-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
     gap: 25px;
 }
 
@@ -462,6 +462,16 @@
     overflow: hidden;
 }
 
+.app-root.dark .inv-modal-container {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-root.light .inv-modal-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
 .inv-modal-header {
     display: flex;
     justify-content: space-between;
@@ -554,5 +564,37 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 5px;
+    }
+
+    .header-title h2 {
+        font-size: 1.5rem;
+    }
+
+    .search-box-inventory {
+        min-width: 0;
+    }
+
+    .inventory-card {
+        padding: 18px;
+    }
+
+    .summary-value {
+        font-size: 1.8rem;
+    }
+
+    .inventory-summary {
+        padding: 18px;
+    }
+
+    .inventory-tools-bar {
+        padding: 12px 15px;
+    }
+
+    .inv-modal-body {
+        padding: 18px;
+    }
+
+    .inv-form-row {
+        flex-direction: column;
     }
 }

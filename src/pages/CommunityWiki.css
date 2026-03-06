@@ -559,7 +559,7 @@
 
 .ifixit-results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
     gap: 20px;
 }
 
@@ -632,10 +632,22 @@
     position: relative;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
     scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
 }
 
 .ifixit-modal-container::-webkit-scrollbar {
     display: none;
+}
+
+.app-root.dark .ifixit-modal-container {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-root.light .ifixit-modal-container {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 .ifixit-modal-header {
@@ -648,8 +660,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: black;
-    color: white;
+    background: var(--text-primary);
+    color: var(--bg-main);
     padding: 6px 12px;
     border-radius: 8px;
     font-weight: bold;
@@ -691,7 +703,7 @@
 .ifixit-step-images {
     display: grid;
     gap: 15px;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
     margin-bottom: 20px;
 }
 
@@ -740,5 +752,74 @@
 
     .ifixit-results-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 400px) {
+    .wiki-title {
+        font-size: 1.5rem;
+    }
+
+    .wiki-header {
+        gap: 10px;
+    }
+
+    .btn-create-post {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 15px;
+    }
+
+    .compose-box {
+        padding: 15px;
+    }
+
+    .post-header-click {
+        padding: 15px;
+    }
+
+    .post-title {
+        font-size: 1.1rem;
+    }
+
+    .post-modal-overlay {
+        padding: 10px;
+    }
+
+    .post-modal-container {
+        border-radius: 14px;
+    }
+
+    .post-modal-header {
+        padding: 20px 20px 15px 20px;
+    }
+
+    .post-modal-title {
+        font-size: 1.3rem;
+        padding-right: 40px;
+    }
+
+    .post-modal-body {
+        padding: 15px 20px;
+    }
+
+    .post-modal-content {
+        font-size: 0.95rem;
+    }
+
+    .post-modal-footer {
+        padding: 15px 20px;
+    }
+
+    .ifixit-modal-header {
+        padding: 20px;
+    }
+
+    .ifixit-modal-body {
+        padding: 20px;
+    }
+
+    .ifixit-step-title {
+        font-size: 1.2rem;
     }
 }

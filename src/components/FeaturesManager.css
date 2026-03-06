@@ -107,3 +107,22 @@
         padding-bottom: 20px;
     }
 }
+
+@media (max-width: 400px) {
+    .feature-content-area {
+        padding: 20px;
+    }
+
+    .module-placeholder h2 {
+        font-size: 1.4rem;
+    }
+
+    .module-placeholder p {
+        font-size: 1rem;
+    }
+
+    .feature-nav-btn {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+}

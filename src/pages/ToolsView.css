@@ -729,3 +729,55 @@
         padding-bottom: 90px;
     }
 }
+
+@media (max-width: 400px) {
+    .tools-layout-modern {
+        padding: 0 10px 40px 10px;
+    }
+
+    .tools-sidebar {
+        padding: 15px;
+    }
+
+    .sidebar-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .tools-header-main h2 {
+        font-size: 1.6rem;
+    }
+
+    .category-block {
+        padding: 20px;
+    }
+
+    .category-block h3 {
+        font-size: 1.3rem;
+    }
+
+    .cat-icon-large {
+        width: 48px;
+        height: 48px;
+    }
+
+    .tool-card {
+        padding: 18px;
+    }
+
+    .tool-header h3 {
+        font-size: 1rem;
+    }
+
+    .tools-modal-header {
+        padding: 15px;
+    }
+
+    .tools-modal-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .tools-modal-body {
+        padding: 15px;
+        padding-bottom: 80px;
+    }
+}

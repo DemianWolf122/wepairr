@@ -11,6 +11,9 @@ const SvgMenu = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="cu
 const SvgMapPin = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>;
 const SvgInstagram = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>;
 
+const MoonIcon = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
+const SunIcon = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
+
 const getLuminance = (hex) => {
     if (!hex || typeof hex !== 'string') return 0;
     let c = hex.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join(''); let rgb = parseInt(c, 16); if (isNaN(rgb)) return 0;
@@ -24,10 +27,13 @@ const getContrastRatio = (hex1, hex2) => { const l1 = getLuminance(hex1), l2 = g
 function ClientReception({ config }) {
     const isPremium = config.plan === 'premium';
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [localTheme, setLocalTheme] = useState(config?.shopDarkMode ? 'dark' : 'light');
+
+    const toggleTheme = () => setLocalTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
     const shopStyles = useMemo(() => {
         const accent = config.colorTema || '#2563eb';
-        const isDarkMode = config.shopDarkMode;
+        const isDarkMode = localTheme === 'dark';
         const hasBanner = !!config.bannerUrl && isPremium;
 
         const autoBtnText = getLuminance(accent) > 0.179 ? '#000000' : '#ffffff';
@@ -54,9 +60,14 @@ function ClientReception({ config }) {
             '--shop-bg': isDarkMode ? '#090e17' : '#ffffff', '--shop-bg-secondary': isDarkMode ? '#141c2f' : '#f8fafc',
             '--shop-text': userTitleColor, '--shop-text-secondary': userSubtitleColor, '--shop-border': isDarkMode ? '#1e293b' : '#e2e8f0',
             '--shop-font': config.fontFamily || '"Inter", system-ui, sans-serif', '--shop-radius': config.borderRadius || '16px',
-            '--hero-overlay': heroOverlayStyle, '--hero-text-color': heroTextColor, '--hero-subtext-color': heroSubtextColor
+            '--hero-overlay': heroOverlayStyle, '--hero-text-color': heroTextColor, '--hero-subtext-color': heroSubtextColor,
+            '--bg-input-glass': isDarkMode ? 'rgba(30, 41, 59, 0.6)' : 'rgba(241, 245, 249, 0.8)',
+            '--border-glass': isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.8)',
+            '--text-primary': userTitleColor,
+            '--bg-hover-glass': isDarkMode ? 'rgba(30, 41, 59, 0.8)' : 'rgba(241, 245, 249, 1)',
+            '--accent-color': accent
         };
-    }, [config]);
+    }, [config, localTheme, isPremium]);
 
     const getEmbedUrl = (url) => {
         if (!url) return null;
@@ -69,9 +80,23 @@ function ClientReception({ config }) {
         <div className="public-shop-wrapper" style={shopStyles}>
             <div className="shop-nav">
                 <span className="shop-logo">{config.nombreNegocio}</span>
-                <div className="shop-nav-links"><span>Inicio</span> <span>Servicios</span></div>
+                <div className="shop-nav-links">
+                    <span>Inicio</span>
+                    <span>Servicios</span>
+                    <button type="button" onClick={toggleTheme} className="theme-toggle-btn" style={{ marginLeft: '15px' }}>
+                        {localTheme === 'dark' ? <SunIcon /> : <MoonIcon />}
+                    </button>
+                </div>
                 <div className="shop-menu-icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}><SvgMenu /></div>
-                {mobileMenuOpen && (<div className="mobile-nav-dropdown"><span>Inicio</span><span>Servicios</span></div>)}
+                {mobileMenuOpen && (
+                    <div className="mobile-nav-dropdown">
+                        <span>Inicio</span>
+                        <span>Servicios</span>
+                        <div onClick={toggleTheme} style={{ padding: '10px 15px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            {localTheme === 'dark' ? <SunIcon /> : <MoonIcon />} Alternar Tema
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="shop-hero" style={config.bannerUrl && isPremium ? { backgroundImage: `url(${config.bannerUrl})` } : {}}>

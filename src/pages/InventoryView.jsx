@@ -13,7 +13,11 @@ const SvgSave = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="cu
 const SvgX = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const SvgTrash = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>;
 
-function InventoryView() {
+const CURRENCY_SYMBOLS = { ARS: '$', USD: 'US$', EUR: '€', BRL: 'R$', CLP: '$', MXN: '$', COP: '$', PEN: 'S/', UYU: '$U' };
+const getCurrencySymbol = (code) => CURRENCY_SYMBOLS[code] || '$';
+
+function InventoryView({ moneda = 'ARS' }) {
+    const sym = getCurrencySymbol(moneda);
     const [inventario, setInventario] = useState([]);
     const [busqueda, setBusqueda] = useState('');
     const [orden, setOrden] = useState('nombre');
@@ -204,7 +208,7 @@ function InventoryView() {
                     <h2>Control de Stock</h2>
 
                     <div className="usd-badge" title="Cotización USD Actualizada">
-                        <DollarSign size={16} /> USD = ${dolarValue.toFixed(2)}
+                        <DollarSign size={16} /> USD = {sym}{dolarValue.toFixed(2)}
                     </div>
                 </div>
                 <button className="btn-add-item" onClick={() => setModalNuevo(true)}><SvgPlus /> Nuevo Artículo</button>
@@ -212,7 +216,7 @@ function InventoryView() {
 
             <div className="inventory-summary glass-effect">
                 <div className="summary-card"><h3>Artículos Totales</h3><p className="summary-value">{inventario.reduce((acc, item) => acc + item.cantidad, 0)}</p></div>
-                <div className="summary-card"><h3>Valor del Inventario (Costo)</h3><p className="summary-value">${calcularValorTotal().toLocaleString()}</p></div>
+                <div className="summary-card"><h3>Valor del Inventario (Costo)</h3><p className="summary-value">{sym}{calcularValorTotal().toLocaleString()}</p></div>
                 <div className="summary-card warning"><h3>Stock Crítico (Bajo)</h3><p className="summary-value">{inventario.filter(i => i.cantidad <= 3).length}</p></div>
             </div>
 
@@ -247,8 +251,8 @@ function InventoryView() {
                                     <input type="text" value={datosEdicion.categoria} onChange={e => setDatosEdicion({ ...datosEdicion, categoria: e.target.value })} className="inv-edit-input" />
                                 </div>
                                 <div className="inv-edit-row">
-                                    <div className="inv-form-group"><label>Costo ($)</label><input type="number" value={datosEdicion.precioCompra} onChange={e => setDatosEdicion({ ...datosEdicion, precioCompra: Number(e.target.value) })} className="inv-edit-input" /></div>
-                                    <div className="inv-form-group"><label>Venta ($)</label><input type="number" value={datosEdicion.precioVenta} onChange={e => setDatosEdicion({ ...datosEdicion, precioVenta: Number(e.target.value) })} className="inv-edit-input" /></div>
+                                    <div className="inv-form-group"><label>Costo ({sym})</label><input type="number" value={datosEdicion.precioCompra} onChange={e => setDatosEdicion({ ...datosEdicion, precioCompra: Number(e.target.value) })} className="inv-edit-input" /></div>
+                                    <div className="inv-form-group"><label>Venta ({sym})</label><input type="number" value={datosEdicion.precioVenta} onChange={e => setDatosEdicion({ ...datosEdicion, precioVenta: Number(e.target.value) })} className="inv-edit-input" /></div>
                                 </div>
                                 <div className="inv-edit-actions">
                                     <button onClick={guardarEdicion} className="btn-save-inv"><SvgSave /> Guardar</button>
@@ -261,8 +265,8 @@ function InventoryView() {
                                 <h3 className="item-name">{item.nombre}</h3>
                                 <div className="item-tags">{item.tags && item.tags.map((tag, i) => <span key={i} className="tag">{tag}</span>)}</div>
                                 <div className="item-pricing">
-                                    <div><span className="price-label">Costo</span><span className="price-value cost">${item.precioCompra.toLocaleString()}</span></div>
-                                    <div><span className="price-label">Venta</span><span className="price-value sale">${item.precioVenta.toLocaleString()}</span></div>
+                                    <div><span className="price-label">Costo</span><span className="price-value cost">{sym}{item.precioCompra.toLocaleString()}</span></div>
+                                    <div><span className="price-label">Venta</span><span className="price-value sale">{sym}{item.precioVenta.toLocaleString()}</span></div>
                                 </div>
                                 <div className="stock-controls-direct">
                                     <button onClick={() => actualizarStock(item.id, -1)}><SvgMinus /></button>
@@ -300,8 +304,8 @@ function InventoryView() {
                                 <div className="inv-form-group"><label>Categoría</label><input type="text" placeholder="Ej. Baterías" value={nuevoItem.categoria} onChange={e => setNuevoItem({ ...nuevoItem, categoria: e.target.value })} className="inv-form-input" /></div>
                             </div>
                             <div className="inv-form-row">
-                                <div className="inv-form-group"><label>Precio de Costo ($)</label><input type="number" placeholder="0" value={nuevoItem.precioCompra} onChange={e => setNuevoItem({ ...nuevoItem, precioCompra: e.target.value })} className="inv-form-input" /></div>
-                                <div className="inv-form-group"><label>Precio de Venta ($)</label><input type="number" placeholder="0" value={nuevoItem.precioVenta} onChange={e => setNuevoItem({ ...nuevoItem, precioVenta: e.target.value })} className="inv-form-input" /></div>
+                                <div className="inv-form-group"><label>Precio de Costo ({sym})</label><input type="number" placeholder="0" value={nuevoItem.precioCompra} onChange={e => setNuevoItem({ ...nuevoItem, precioCompra: e.target.value })} className="inv-form-input" /></div>
+                                <div className="inv-form-group"><label>Precio de Venta ({sym})</label><input type="number" placeholder="0" value={nuevoItem.precioVenta} onChange={e => setNuevoItem({ ...nuevoItem, precioVenta: e.target.value })} className="inv-form-input" /></div>
                             </div>
                             <div className="inv-form-group">
                                 <label>Etiquetas (Separadas por comas)</label>
