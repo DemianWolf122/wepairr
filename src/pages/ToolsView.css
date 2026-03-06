@@ -1,20 +1,178 @@
+/* =======================================================
+   LAYOUT MODERNO (SIDEBAR ESTILO VERCEL/STRIPE)
+======================================================= */
+.tools-layout-modern {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    height: calc(100vh - 120px);
+    /* Ocupa el alto de la pantalla menos el nav */
+    padding-bottom: 20px;
+    box-sizing: border-box;
+}
+
+/* --- SIDEBAR IZQUIERDO --- */
+.tools-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid var(--border-glass);
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Oculta scroll en Firefox */
+}
+
+.tools-sidebar::-webkit-scrollbar {
+    display: none;
+    /* Oculta scroll en Chrome/Safari */
+}
+
+.sidebar-header {
+    margin-bottom: 20px;
+}
+
+.sidebar-header h2 {
+    margin: 0 0 5px 0;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+}
+
+.sidebar-header p {
+    margin: 0;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    font-weight: 800;
+    background: rgba(37, 99, 235, 0.1);
+    padding: 4px 10px;
+    border-radius: 99px;
+    width: fit-content;
+}
+
+/* BUSCADOR INTEGRADO EN SIDEBAR */
+.tools-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    background: var(--bg-input-glass);
+    margin-bottom: 25px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tools-search-bar:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15);
+}
+
+.tools-search-bar input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    outline: none;
+    font-family: inherit;
+}
+
+.tools-search-bar svg {
+    color: var(--text-secondary);
+}
+
+/* MENÚ DE NAVEGACIÓN LATERAL */
+.tools-nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tool-nav-item {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.tool-nav-item:hover {
+    background: var(--bg-hover-glass);
+    color: var(--text-primary);
+}
+
+.tool-nav-item.active {
+    background: var(--bg-panel);
+    color: var(--accent-color);
+    border-color: var(--border-glass);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* --- ÁREA CENTRAL (GRILLA DE HERRAMIENTAS) --- */
+.tools-main-content {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 10px;
+    scrollbar-width: thin;
+}
+
 .tools-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 25px;
+    align-items: stretch;
+    padding-bottom: 30px;
 }
 
+.tools-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: var(--bg-input-glass);
+    border-radius: 20px;
+    border: 1px dashed var(--border-glass);
+}
+
+/* =======================================================
+   ESTILOS DE LAS TARJETAS (TOOL CARDS)
+======================================================= */
 .tool-card {
     padding: 25px;
     border-radius: 20px;
     border: 1px solid var(--border-glass);
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s var(--ease-premium), box-shadow 0.2s;
+    background: var(--bg-panel);
+}
+
+.tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border-color: var(--accent-color);
 }
 
 .tool-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 15px;
     margin-bottom: 20px;
     border-bottom: 1px solid var(--border-glass);
@@ -22,18 +180,35 @@
 }
 
 .tool-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
+}
+
+.tool-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .tool-header h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
+    font-weight: 800;
     color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.tool-cat-badge {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .tool-body {
@@ -42,40 +217,113 @@
     flex-direction: column;
 }
 
+.tool-hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 15px 0;
+    line-height: 1.4;
+}
+
+/* INPUTS GENERALES */
 .tool-input-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     margin-bottom: 15px;
 }
 
 .tool-input-group label {
-    font-size: 0.85rem;
-    font-weight: bold;
+    font-size: 0.8rem;
+    font-weight: 800;
     color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .tool-input-group input,
-.tool-input-group textarea {
-    padding: 12px;
-    border-radius: 10px;
+.tool-input-group textarea,
+.resistor-select {
+    padding: 12px 15px;
+    border-radius: 12px;
     border: 1px solid var(--border-glass);
     background: var(--bg-input-glass);
     color: var(--text-primary);
     font-family: inherit;
+    font-size: 1rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tool-input-group textarea {
+    resize: vertical;
 }
 
 .tool-input-group input:focus,
-.tool-input-group textarea:focus {
+.tool-input-group textarea:focus,
+.resistor-select:focus {
     border-color: var(--accent-color);
+    background: var(--bg-panel);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
+/* Estilo especial para Selects */
+.resistor-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px auto;
+    padding-right: 40px;
+}
+
+.grid-2-col,
+.ohm-grid,
+.resistor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* BUSCADOR DENTRO DE HERRAMIENTAS (IMEI, Datasheet) */
+.tool-search-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-input-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 8px 15px;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.tool-search-input:focus-within {
+    border-color: var(--accent-color);
+    background: var(--bg-panel);
+}
+
+.tool-search-input input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    padding: 5px 0;
+    outline: none;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.tool-search-input svg {
+    color: var(--text-secondary);
+}
+
+/* CAJA DE RESULTADOS FINALES */
 .tool-result-box {
     background: var(--bg-input-glass);
-    border-radius: 12px;
-    padding: 15px;
+    border-radius: 14px;
+    padding: 18px;
     display: flex;
     justify-content: space-between;
     margin-top: auto;
@@ -85,34 +333,120 @@
 .res-col {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .res-col span {
     font-size: 0.8rem;
     color: var(--text-secondary);
-    font-weight: bold;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 5px;
 }
 
 .res-col strong {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
 }
 
-.ohm-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+/* BOTONES DE ACCIÓN */
+.tool-action-row {
+    display: flex;
     gap: 10px;
+    margin-top: auto;
 }
 
 .btn-tool-action {
     border: none;
-    padding: 12px;
-    border-radius: 10px;
-    font-weight: bold;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.2s, filter 0.2s;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.btn-tool-action.primary {
+    background: var(--accent-color);
+    color: white;
+    flex: 2;
+}
+
+.btn-tool-action.secondary {
+    background: var(--bg-input-glass);
+    color: var(--text-primary);
+    border: 1px solid var(--border-glass);
+    flex: 1;
 }
 
 .btn-tool-action:hover {
     transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* =======================================================
+   RESPONSIVE PARA PANTALLAS (MÓVIL Y TABLET)
+======================================================= */
+@media (max-width: 1024px) {
+
+    /* Transforma el layout de flex lateral a columna */
+    .tools-layout-modern {
+        flex-direction: column;
+        height: auto;
+        gap: 20px;
+    }
+
+    /* El sidebar se convierte en un menú superior horizontal */
+    .tools-sidebar {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+        flex-direction: column;
+    }
+
+    .tools-nav-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: none;
+        /* Oculta scroll en Firefox */
+    }
+
+    .tools-nav-menu::-webkit-scrollbar {
+        display: none;
+        /* Oculta scroll en Chrome */
+    }
+
+    .tool-nav-item {
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .tools-main-content {
+        padding-right: 0;
+        overflow-y: visible;
+    }
+}
+
+@media (max-width: 600px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .resistor-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .tools-search-bar {
+        margin-bottom: 15px;
+    }
 }
