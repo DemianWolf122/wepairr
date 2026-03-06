@@ -23,8 +23,25 @@ const SvgCreditCard = () => <svg viewBox="0 0 24 24" width="24" height="24" stro
 const SvgGlobe = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
 const SvgPackage = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
 const SvgThermometer = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>;
+const SvgBarcode = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M3 5v14M7 5v14M10 5v14M14 5v14M17 5v14M21 5v14"></path></svg>;
+const SvgAlertCircle = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>;
+const SvgBriefcase = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>;
+const SvgPieChart = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>;
 
-// COMPONENTE HELPER PARA INPUTS (Reduce tamaño de código y previene errores)
+// --- DICCIONARIO DE COLORES (PSICOLOGÍA VISUAL) ---
+const COLOR_THEMES = {
+    green: { c: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+    yellow: { c: '#eab308', bg: 'rgba(234,179,8,0.1)' },
+    blue: { c: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
+    purple: { c: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
+    cyan: { c: '#06b6d4', bg: 'rgba(6,182,212,0.1)' },
+    red: { c: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
+    orange: { c: '#f97316', bg: 'rgba(249,115,22,0.1)' },
+    gray: { c: '#64748b', bg: 'rgba(100,116,139,0.1)' },
+    pink: { c: '#ec4899', bg: 'rgba(236,72,153,0.1)' }
+};
+
+// COMPONENTE HELPER PARA INPUTS
 const InputBox = ({ label, value, onChange, type = "number", placeholder = "", maxl }) => (
     <div className="tool-input-group">
         <label>{label}</label>
@@ -65,6 +82,9 @@ function ToolsView() {
     const [usdRate, setUsdRate] = useState(null); const [usdInput, setUsdInput] = useState(''); const [arsInput, setArsInput] = useState('');
     useEffect(() => { fetch('https://api.exchangerate-api.com/v4/latest/USD').then(r => r.json()).then(d => setUsdRate(d.rates.ARS)).catch(); }, []);
 
+    const handleUsdChange = (val) => { setUsdInput(val); setArsInput(val && usdRate ? (parseFloat(val) * usdRate).toFixed(2) : ''); };
+    const handleArsChange = (val) => { setArsInput(val); setUsdInput(val && usdRate ? (parseFloat(val) / usdRate).toFixed(2) : ''); };
+
     const [montoCuota, setMontoCuota] = useState(''); const [interesCuota, setInteresCuota] = useState('15'); const [cantCuotas, setCantCuotas] = useState('3');
     const totalCuotas = montoCuota ? parseFloat(montoCuota) * (1 + (parseFloat(interesCuota) / 100)) : 0;
     const valorPorCuota = cantCuotas ? totalCuotas / parseInt(cantCuotas) : 0;
@@ -104,14 +124,40 @@ function ToolsView() {
     const [cParA, setCParA] = useState(''); const [cParB, setCParB] = useState('');
     const cParalelo = (parseFloat(cParA) || 0) + (parseFloat(cParB) || 0); const cSerie = cParA && cParB ? ((cParA * cParB) / (parseFloat(cParA) + parseFloat(cParB))).toFixed(2) : 0;
 
-    const [awgInput, setAwgInput] = useState('22');
-    const awgMap = { "10": "2.588", "12": "2.052", "14": "1.628", "16": "1.291", "18": "1.024", "20": "0.812", "22": "0.645", "24": "0.511", "26": "0.404", "28": "0.320", "30": "0.254", "32": "0.203", "34": "0.160", "36": "0.127", "38": "0.101", "40": "0.080" };
+    const [hzInput, setHzInput] = useState('1000');
+    const msResult = hzInput ? (1000 / parseFloat(hzInput)).toFixed(4) : 0;
 
     const [vFuenteLed, setVFuenteLed] = useState(''); const [vCaidaLed, setVCaidaLed] = useState('2.2'); const [iMaLed, setIMaLed] = useState('20');
     const resLed = vFuenteLed && vCaidaLed && iMaLed ? ((vFuenteLed - vCaidaLed) / (iMaLed / 1000)).toFixed(0) : 0;
 
     // ==========================================
-    // ESTADOS: DIAGNÓSTICO Y HARDWARE (10)
+    // ESTADOS: HERRAMIENTAS DE TALLER (7) - INCLUYE NUEVAS
+    // ==========================================
+    const [awgInput, setAwgInput] = useState('22');
+    const awgMap = { "10": { mm: "2.58", a: "30" }, "12": { mm: "2.05", a: "20" }, "14": { mm: "1.62", a: "15" }, "16": { mm: "1.29", a: "10" }, "18": { mm: "1.02", a: "7" }, "20": { mm: "0.81", a: "5" }, "22": { mm: "0.64", a: "3" }, "24": { mm: "0.51", a: "2" }, "26": { mm: "0.40", a: "1" }, "28": { mm: "0.32", a: "0.8" } };
+
+    const [tempC, setTempC] = useState(''); const [tempF, setTempF] = useState('');
+    const handleTempC = (val) => { setTempC(val); setTempF(val ? (val * 9 / 5 + 32).toFixed(1) : ''); };
+    const handleTempF = (val) => { setTempF(val); setTempC(val ? ((val - 32) * 5 / 9).toFixed(1) : ''); };
+
+    // NUEVAS HERRAMIENTAS DE TALLER:
+    const [timer, setTimer] = useState(0); const [timerOn, setTimerOn] = useState(false);
+    useEffect(() => { let int; if (timerOn) int = setInterval(() => setTimer(t => t + 1), 1000); return () => clearInterval(int); }, [timerOn]);
+    const formatTime = (t) => { const h = Math.floor(t / 3600).toString().padStart(2, '0'), m = Math.floor((t % 3600) / 60).toString().padStart(2, '0'), s = (t % 60).toString().padStart(2, '0'); return `${h}:${m}:${s}`; };
+
+    const [mahAir, setMahAir] = useState(''); const [voltsAir, setVoltsAir] = useState('3.7');
+    const whResult = mahAir && voltsAir ? ((parseFloat(mahAir) * parseFloat(voltsAir)) / 1000).toFixed(2) : 0;
+
+    const [capCarga, setCapCarga] = useState(''); const [maCargador, setMaCargador] = useState('');
+    const tiempoCarga = capCarga && maCargador ? ((parseFloat(capCarga) / parseFloat(maCargador)) * 1.2).toFixed(1) : 0; // *1.2 para perdida de eficiencia real
+
+    const [wattsConsumo, setWattsConsumo] = useState(''); const [horasDia, setHorasDia] = useState(''); const [precioKwh, setPrecioKwh] = useState('');
+    const costoMensualLuz = wattsConsumo && horasDia && precioKwh ? ((parseFloat(wattsConsumo) * parseFloat(horasDia) * 30) / 1000 * parseFloat(precioKwh)).toFixed(2) : 0;
+
+    const [barcodeText, setBarcodeText] = useState('WEPAIRR');
+
+    // ==========================================
+    // ESTADOS: DIAGNÓSTICO HARDWARE (8)
     // ==========================================
     const [capDiseno, setCapDiseno] = useState(''); const [capActual, setCapActual] = useState('');
     const saludBateria = capDiseno && capActual ? Math.min(100, Math.max(0, (capActual / capDiseno) * 100)) : 0;
@@ -119,7 +165,7 @@ function ToolsView() {
     const [imeiQuery, setImeiQuery] = useState('');
     const checkImei = (e) => {
         e.preventDefault();
-        if (!imeiQuery.trim() || imeiQuery.length < 14) return alert("Ingresa un IMEI válido.");
+        if (!imeiQuery.trim() || imeiQuery.length < 14) return alert("Ingresa un IMEI válido (15 dígitos).");
         navigator.clipboard.writeText(imeiQuery).then(() => {
             alert("✅ IMEI copiado al portapapeles.\n\nSe abrirá IMEI.info. Solo debes darle a 'Pegar'.");
             window.open(`https://www.imei.info/`, '_blank');
@@ -142,24 +188,34 @@ function ToolsView() {
 
     const playTone = (freq) => { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.setValueAtTime(freq, ctx.currentTime); osc.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 1.5); };
 
-    const [hzInput, setHzInput] = useState('1000');
-    const msResult = hzInput ? (1000 / parseFloat(hzInput)).toFixed(4) : 0;
-
-    const [tempC, setTempC] = useState(''); const [tempF, setTempF] = useState('');
-    const handleTempC = (val) => { setTempC(val); setTempF(val ? (val * 9 / 5 + 32).toFixed(1) : ''); };
-    const handleTempF = (val) => { setTempF(val); setTempC(val ? ((val - 32) * 5 / 9).toFixed(1) : ''); };
 
     // ==========================================
-    // ESTADOS: SOFTWARE Y COMUNICACIONES (8)
+    // ESTADOS: REDES Y SISTEMAS (5) - INCLUYE NUEVAS
     // ==========================================
-    const [waNumero, setWaNumero] = useState(''); const [waMensaje, setWaMensaje] = useState('');
-    const enviarWa = () => { if (!waNumero) return alert("Ingresa un número"); window.open(`https://wa.me/${waNumero.replace(/\D/g, '')}?text=${encodeURIComponent(waMensaje)}`, '_blank'); };
-
     const [datasheetQuery, setDatasheetQuery] = useState('');
     const searchDatasheet = (e) => { e.preventDefault(); window.open(`https://search.alldatasheet.com/v2/exec/search.jsp?sSearchword=${encodeURIComponent(datasheetQuery)}`, '_blank'); };
 
     const [firmwareBrand, setFirmwareBrand] = useState('apple'); const [firmwareModel, setFirmwareModel] = useState('');
     const searchFirmware = (e) => { e.preventDefault(); if (firmwareBrand === 'apple') window.open(`https://ipsw.me/`, '_blank'); else if (firmwareBrand === 'samsung') window.open(`https://samfw.com/search/${encodeURIComponent(firmwareModel)}`, '_blank'); else window.open(`https://mifirm.net/model/${encodeURIComponent(firmwareModel.toLowerCase())}`, '_blank'); };
+
+    const [macQuery, setMacQuery] = useState('');
+    const checkMac = (e) => { e.preventDefault(); if (macQuery) window.open(`https://macvendors.com/query/${macQuery}`, '_blank'); };
+
+    // NUEVAS REDES Y SISTEMAS
+    const [myIp, setMyIp] = useState('');
+    const getIp = async () => { try { const r = await fetch('https://api.ipify.org?format=json'); const d = await r.json(); setMyIp(d.ip); } catch (e) { setMyIp('Error'); } };
+
+    const [bsodCode, setBsodCode] = useState('');
+    const searchBsod = (e) => { e.preventDefault(); if (bsodCode) window.open(`https://www.google.com/search?q=Windows+BSOD+${encodeURIComponent(bsodCode)}`, '_blank'); };
+
+    const [dataConvInput, setDataConvInput] = useState(''); const [dataConvUnit, setDataConvUnit] = useState('GB');
+    const calcDataConv = () => { const v = parseFloat(dataConvInput) || 0; if (dataConvUnit === 'GB') return `${(v * 1024).toFixed(0)} MB`; if (dataConvUnit === 'MB') return `${(v / 1024).toFixed(2)} GB`; if (dataConvUnit === 'TB') return `${(v * 1024).toFixed(0)} GB`; return '0'; };
+
+    // ==========================================
+    // ESTADOS: COMUNICACIÓN Y MARKETING (8) - INCLUYE NUEVAS
+    // ==========================================
+    const [waNumero, setWaNumero] = useState(''); const [waMensaje, setWaMensaje] = useState('');
+    const enviarWa = () => { if (!waNumero) return alert("Ingresa un número"); window.open(`https://wa.me/${waNumero.replace(/\D/g, '')}?text=${encodeURIComponent(waMensaje)}`, '_blank'); };
 
     const [qrText, setQrText] = useState('https://wepairr.com');
 
@@ -173,213 +229,264 @@ function ToolsView() {
     const [formatText, setFormatText] = useState('');
     const copyFormat = (type) => { if (!formatText) return; let f = formatText; if (type === 'bold') f = `*${f}*`; if (type === 'italic') f = `_${f}_`; if (type === 'strike') f = `~${f}~`; navigator.clipboard.writeText(f); alert("Copiado con formato WA."); };
 
-    const [macQuery, setMacQuery] = useState('');
-    const checkMac = (e) => { e.preventDefault(); if (macQuery) window.open(`https://macvendors.com/query/${macQuery}`, '_blank'); };
+    // NUEVAS COMUNICACIÓN Y MARKETING
+    const [promoType, setPromoType] = useState('descuento');
+    const getPromoText = () => { if (promoType === 'descuento') return "¡Aprovecha! 10% de descuento en cambios de pantalla. 📱✨ Envíanos un mensaje."; if (promoType === 'bateria') return "¿Tu celular se apaga rápido? 🔋 Cambiamos tu batería en el día. ¡Consultanos!"; return "Tu PC lenta tiene solución 💻 Limpieza térmica y SSD. Presupuestos sin cargo."; };
+
 
     // ==========================================
-    // ESTRUCTURA MAESTRA DE 36 HERRAMIENTAS
+    // ESTRUCTURA MAESTRA DE 46 HERRAMIENTAS
     // ==========================================
     const TOOLS_DATA = [
-        // GESTIÓN Y FINANZAS
+        // --- 1. FINANZAS Y NEGOCIO ---
         {
-            cat: 'Gestión y Finanzas', id: '1', icon: <SvgDollar />, title: 'Margen y Ganancia', desc: 'Rentabilidad neta del repuesto.', keys: 'dinero costo venta', render: () => (
-                <><InputBox label="Costo ($)" value={costo} onChange={setCosto} /><InputBox label="Venta ($)" value={venta} onChange={setVenta} /><ResultBox label="Margen" value={`${margenNeto.toFixed(1)}%`} colorClass={margenNeto < 30 ? 'text-danger' : ''} /></>
+            cat: 'Finanzas y Negocio', id: '1', colorTheme: 'green', icon: <SvgDollar />, title: 'Margen y Ganancia', desc: 'Rentabilidad neta repuestos.', keys: 'dinero costo venta', render: () => (
+                <><InputBox label="Costo ($)" value={costo} onChange={setCosto} /><InputBox label="Venta ($)" value={venta} onChange={setVenta} /><ResultBox label="Margen" value={`${margenNeto.toFixed(1)}%`} colorClass={margenNeto < 30 ? 'text-danger' : 'text-success'} /></>
             )
         },
         {
-            cat: 'Gestión y Finanzas', id: '2', icon: <SvgClock />, title: 'Mano de Obra', desc: 'Cobro por tiempo invertido.', keys: 'tiempo hora reloj', render: () => (
+            cat: 'Finanzas y Negocio', id: '2', colorTheme: 'yellow', icon: <SvgClock />, title: 'Mano de Obra', desc: 'Cobro por tiempo invertido.', keys: 'tiempo hora reloj', render: () => (
                 <><InputBox label="Tarifa/Hora ($)" value={tarifaHora} onChange={setTarifaHora} /><div className="grid-2-col"><InputBox label="Horas" value={horasTrabajo} onChange={setHorasTrabajo} /><InputBox label="Minutos" value={minutosTrabajo} onChange={setMinutosTrabajo} /></div><ResultBox label="Total" value={`$${costoManoObra.toFixed(2)}`} /></>
             )
         },
         {
-            cat: 'Gestión y Finanzas', id: '3', icon: <SvgDollar />, title: 'Calculadora de IVA', desc: 'Suma impuestos a tu tarifa.', keys: 'iva afip taxes', render: () => (
+            cat: 'Finanzas y Negocio', id: '3', colorTheme: 'green', icon: <SvgDollar />, title: 'IVA / Impuestos', desc: 'Suma % a tu tarifa.', keys: 'iva afip taxes', render: () => (
                 <><InputBox label="Neto ($)" value={precioNeto} onChange={setPrecioNeto} /><InputBox label="IVA (%)" value={porcentajeIva} onChange={setPorcentajeIva} /><ResultBox label="Bruto Final" value={`$${precioBruto.toFixed(2)}`} /></>
             )
         },
         {
-            cat: 'Gestión y Finanzas', id: '4', icon: <SvgDollar />, title: 'Descuentos', desc: 'Aplica rebajas al cliente.', keys: 'promo descuento rebaja', render: () => (
+            cat: 'Finanzas y Negocio', id: '4', colorTheme: 'yellow', icon: <SvgDollar />, title: 'Descuentos', desc: 'Aplica rebajas al cliente.', keys: 'promo descuento rebaja', render: () => (
                 <><InputBox label="Original ($)" value={precioOriginal} onChange={setPrecioOriginal} /><InputBox label="Desc. (%)" value={porcentajeDesc} onChange={setPorcentajeDesc} /><ResultBox label="Precio Final" value={`$${precioFinalDesc.toFixed(2)}`} colorClass="text-success" /></>
             )
         },
         {
-            cat: 'Gestión y Finanzas', id: '5', icon: <SvgGlobe />, title: 'Divisas en Vivo', desc: 'Cotización USD global.', keys: 'dolar euro pesos', render: () => (
-                <><p className="tool-hint">1 USD = ${usdRate || '...'} ARS</p><div className="grid-2-col"><InputBox label="USD" value={usdInput} onChange={handleTempC} /*reusando logica de update cruzado en useEffect, simplificado aqui*/ /><InputBox label="ARS" value={arsInput} onChange={handleTempF} /></div></>
+            cat: 'Finanzas y Negocio', id: '5', colorTheme: 'green', icon: <SvgGlobe />, title: 'Divisas (En Vivo)', desc: 'Cotización USD global.', keys: 'dolar euro pesos', render: () => (
+                <><p className="tool-hint">1 USD = ${usdRate || '...'} ARS</p><div className="grid-2-col"><InputBox label="USD" value={usdInput} onChange={handleUsdChange} /><InputBox label="ARS" value={arsInput} onChange={handleArsChange} /></div></>
             )
         },
         {
-            cat: 'Gestión y Finanzas', id: '6', icon: <SvgCreditCard />, title: 'Cuotas y Tarjetas', desc: 'Interés por financiamiento.', keys: 'posnet mercadopago', render: () => (
+            cat: 'Finanzas y Negocio', id: '6', colorTheme: 'yellow', icon: <SvgCreditCard />, title: 'Cuotas / Interés', desc: 'Interés por financiamiento.', keys: 'posnet mercadopago', render: () => (
                 <><InputBox label="Monto ($)" value={montoCuota} onChange={setMontoCuota} /><div className="grid-2-col"><InputBox label="Interés (%)" value={interesCuota} onChange={setInteresCuota} /><InputBox label="Cuotas" value={cantCuotas} onChange={setCantCuotas} /></div><ResultBox label="Cada Cuota" value={`$${valorPorCuota.toFixed(2)}`} /></>
             )
         },
         {
-            cat: 'Gestión y Finanzas', id: '7', icon: <SvgDollar />, title: 'Punto de Equilibrio', desc: 'Unidades para no perder.', keys: 'balance costos', render: () => (
+            cat: 'Finanzas y Negocio', id: '7', colorTheme: 'gray', icon: <SvgBriefcase />, title: 'Punto Equilibrio', desc: 'Unidades para no perder.', keys: 'balance costos', render: () => (
                 <><InputBox label="Costos Fijos ($)" value={costoFijoEq} onChange={setCostoFijoEq} /><div className="grid-2-col"><InputBox label="Precio Venta Unit." value={precioVentaEq} onChange={setPrecioVentaEq} /><InputBox label="Costo Var. Unit." value={costoVarEq} onChange={setCostoVarEq} /></div><ResultBox label="Unidades necesarias" value={puntoEquilibrio} /></>
             )
         },
         {
-            cat: 'Gestión y Finanzas', id: '8', icon: <SvgPackage />, title: 'Costo de Envío', desc: 'Cálculo de fletes.', keys: 'paquete correo', render: () => (
-                <><InputBox label="Peso (Kg)" value={pesoEnvio} onChange={setPesoEnvio} /><div className="grid-2-col"><InputBox label="Precio x Kg ($)" value={precioKg} onChange={setPrecioKg} /><InputBox label="Base ($)" value={baseEnvio} onChange={setBaseEnvio} /></div><ResultBox label="Costo Total Envío" value={`$${totalEnvio.toFixed(2)}`} /></>
+            cat: 'Finanzas y Negocio', id: '8', colorTheme: 'gray', icon: <SvgPackage />, title: 'Costo de Envío', desc: 'Cálculo de fletes.', keys: 'paquete correo logistica', render: () => (
+                <><InputBox label="Peso (Kg)" value={pesoEnvio} onChange={setPesoEnvio} /><div className="grid-2-col"><InputBox label="Precio x Kg" value={precioKg} onChange={setPrecioKg} /><InputBox label="Base ($)" value={baseEnvio} onChange={setBaseEnvio} /></div><ResultBox label="Costo Envío" value={`$${totalEnvio.toFixed(2)}`} /></>
             )
         },
 
-        // MICROELECTRÓNICA
+        // --- 2. MICROELECTRÓNICA ---
         {
-            cat: 'Microelectrónica', id: '9', icon: <SvgZap />, title: 'Ley de Ohm', desc: 'V = I x R', keys: 'voltaje corriente ohmio', render: () => (
+            cat: 'Microelectrónica', id: '9', colorTheme: 'purple', icon: <SvgZap />, title: 'Ley de Ohm', desc: 'V = I x R', keys: 'voltaje corriente ohmio', render: () => (
                 <><div className="grid-2-col"><InputBox label="V" value={ohmV} onChange={setOhmV} /><InputBox label="I" value={ohmI} onChange={setOhmI} /></div><InputBox label="R" value={ohmR} onChange={setOhmR} /><div className="tool-action-row"><button onClick={calcOhm} className="btn-tool-action primary">Calcular</button><button onClick={clrOhm} className="btn-tool-action secondary">Limpiar</button></div></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '10', icon: <SvgZap />, title: 'Ley de Watt', desc: 'P = V x I', keys: 'potencia watts', render: () => (
+            cat: 'Microelectrónica', id: '10', colorTheme: 'purple', icon: <SvgZap />, title: 'Ley de Watt', desc: 'P = V x I', keys: 'potencia watts', render: () => (
                 <><div className="grid-2-col"><InputBox label="W" value={wattP} onChange={setWattP} /><InputBox label="V" value={wattV} onChange={setWattV} /></div><InputBox label="I" value={wattI} onChange={setWattI} /><div className="tool-action-row"><button onClick={calcWatt} className="btn-tool-action primary">Calcular</button><button onClick={clrWatt} className="btn-tool-action secondary">Limpiar</button></div></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '11', icon: <SvgCpu />, title: 'Divisor de Tensión', desc: 'Caída Vout en 2 R.', keys: 'divisor caida', render: () => (
+            cat: 'Microelectrónica', id: '11', colorTheme: 'blue', icon: <SvgCpu />, title: 'Divisor de Tensión', desc: 'Caída Vout en 2 R.', keys: 'divisor caida voltaje', render: () => (
                 <><InputBox label="Vin" value={vIn} onChange={setVIn} /><div className="grid-2-col"><InputBox label="R1" value={r1} onChange={setR1} /><InputBox label="R2" value={r2} onChange={setR2} /></div><ResultBox label="V Out" value={`${vOut} V`} /></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '12', icon: <SvgCpu />, title: 'Bandas (4 Colores)', desc: 'R DIP clásica.', keys: 'resistencias colores', render: () => (
+            cat: 'Microelectrónica', id: '12', colorTheme: 'blue', icon: <SvgCpu />, title: 'Resistor 4 Bandas', desc: 'R DIP clásica THT.', keys: 'resistencias colores', render: () => (
                 <><div className="grid-2-col"><div className="tool-input-group"><label>B1</label><select value={b1} onChange={e => setB1(e.target.value)} className="resistor-select"><option value="1">Marrón</option><option value="2">Rojo</option></select></div><div className="tool-input-group"><label>B2</label><select value={b2} onChange={e => setB2(e.target.value)} className="resistor-select"><option value="0">Negro</option><option value="1">Marrón</option></select></div><div className="tool-input-group"><label>Mult</label><select value={bMult} onChange={e => setBMult(e.target.value)} className="resistor-select"><option value="100">x100</option></select></div><div className="tool-input-group"><label>Tol</label><select value={bTol} onChange={e => setBTol(e.target.value)} className="resistor-select"><option value="5">5%</option></select></div></div><ResultBox label="Valor" value={calcResColor()} /></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '13', icon: <SvgCpu />, title: 'Bandas (5 Colores)', desc: 'R de precisión.', keys: 'precision ohms', render: () => (
+            cat: 'Microelectrónica', id: '13', colorTheme: 'blue', icon: <SvgCpu />, title: 'Resistor 5 Bandas', desc: 'R de alta precisión.', keys: 'precision ohms 5', render: () => (
                 <><div className="grid-2-col"><div className="tool-input-group"><label>B1</label><select value={b5_1} onChange={e => setB5_1(e.target.value)} className="resistor-select"><option value="1">Marr</option></select></div><div className="tool-input-group"><label>B2</label><select value={b5_2} onChange={e => setB5_2(e.target.value)} className="resistor-select"><option value="0">Negro</option></select></div></div><div className="grid-2-col"><div className="tool-input-group"><label>B3</label><select value={b5_3} onChange={e => setB5_3(e.target.value)} className="resistor-select"><option value="0">Negro</option></select></div><div className="tool-input-group"><label>Mult</label><select value={b5_mult} onChange={e => setB5_Mult(e.target.value)} className="resistor-select"><option value="10">x10</option></select></div></div><ResultBox label="Valor Precisión" value={calcRes5Color()} /></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '14', icon: <SvgCpu />, title: 'Códigos SMD', desc: 'Traductor SMD (Ej: 103).', keys: 'smd placa smt', render: () => (
-                <><InputBox label="Código Impreso" value={smdCode} onChange={setSmdCode} type="text" maxl="4" /><button onClick={calcSmd} className="btn-tool-action primary">Traducir</button><ResultBox label="Valor Real" value={smdResult || '-'} /></>
+            cat: 'Microelectrónica', id: '14', colorTheme: 'purple', icon: <SvgCpu />, title: 'Códigos SMD', desc: 'Traductor impreso.', keys: 'smd placa smt', render: () => (
+                <><InputBox label="Código (Ej: 103)" value={smdCode} onChange={setSmdCode} type="text" maxl="4" /><button onClick={calcSmd} className="btn-tool-action primary">Traducir</button><ResultBox label="Valor Real" value={smdResult || '-'} /></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '15', icon: <SvgCpu />, title: 'Res Serie/Paralelo', desc: 'R Totales equivalentes.', keys: 'equivalente suma r', render: () => (
+            cat: 'Microelectrónica', id: '15', colorTheme: 'gray', icon: <SvgCpu />, title: 'Res Serie/Paralelo', desc: 'Suma de equivalentes.', keys: 'equivalente suma r', render: () => (
                 <><div className="grid-2-col"><InputBox label="R1" value={rSerieA} onChange={setRSerieA} /><InputBox label="R2" value={rSerieB} onChange={setRSerieB} /></div><div className="tool-result-box" style={{ flexDirection: 'column', gap: '10px' }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Serie:</span><strong>{rSerie} Ω</strong></div><div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Paralelo:</span><strong>{rParalelo} Ω</strong></div></div></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '16', icon: <SvgCpu />, title: 'Cap Serie/Paralelo', desc: 'Inverso a las R.', keys: 'capacitor faradios suma', render: () => (
-                <><div className="grid-2-col"><InputBox label="C1" value={cParA} onChange={setCParA} /><InputBox label="C2" value={cParB} onChange={setCParB} /></div><div className="tool-result-box" style={{ flexDirection: 'column', gap: '10px' }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Paralelo (Suma):</span><strong>{cParalelo} F</strong></div><div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Serie (Inv):</span><strong>{cSerie} F</strong></div></div></>
+            cat: 'Microelectrónica', id: '16', colorTheme: 'gray', icon: <SvgCpu />, title: 'Cap Serie/Paralelo', desc: 'Inverso a Resistencias.', keys: 'capacitor faradios suma', render: () => (
+                <><div className="grid-2-col"><InputBox label="C1" value={cParA} onChange={setCParA} /><InputBox label="C2" value={cParB} onChange={setCParB} /></div><div className="tool-result-box" style={{ flexDirection: 'column', gap: '10px' }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Paralelo (+):</span><strong>{cParalelo} F</strong></div><div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Serie (Inv):</span><strong>{cSerie} F</strong></div></div></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '17', icon: <SvgSettings />, title: 'AWG a mm', desc: 'Grosor de hilos jumper.', keys: 'hilo cobre calibre', render: () => (
-                <><div className="tool-input-group"><label>Calibre AWG</label><select value={awgInput} onChange={e => setAwgInput(e.target.value)} className="resistor-select">{Object.keys(awgMap).map(k => <option key={k} value={k}>{k} AWG</option>)}</select></div><ResultBox label="Diámetro" value={`${awgMap[awgInput]} mm`} /></>
-            )
-        },
-        {
-            cat: 'Microelectrónica', id: '18', icon: <SvgZap />, title: 'Frecuencia (Hz a ms)', desc: 'Tiempo de oscilación.', keys: 'osciloscopio onda tiempo', render: () => (
+            cat: 'Microelectrónica', id: '18', colorTheme: 'orange', icon: <SvgZap />, title: 'Oscilador Frec.', desc: 'Hz a milisegundos.', keys: 'osciloscopio onda tiempo', render: () => (
                 <><InputBox label="Frecuencia (Hz)" value={hzInput} onChange={setHzInput} /><ResultBox label="Periodo (T)" value={`${msResult} ms`} /></>
             )
         },
         {
-            cat: 'Microelectrónica', id: '19', icon: <SvgZap />, title: 'Resistencia para LED', desc: 'Protección de diodos.', keys: 'led iluminacion', render: () => (
-                <><div className="grid-2-col"><InputBox label="V Fuente" value={vFuenteLed} onChange={setVFuenteLed} /><InputBox label="V Caída LED" value={vCaidaLed} onChange={setVCaidaLed} /></div><InputBox label="Corriente (mA)" value={iMaLed} onChange={setIMaLed} /><ResultBox label="Resistencia Sugerida" value={`${resLed} Ω`} /></>
+            cat: 'Microelectrónica', id: '19', colorTheme: 'yellow', icon: <SvgZap />, title: 'Resistencia para LED', desc: 'Protección de diodos.', keys: 'led iluminacion diodo', render: () => (
+                <><div className="grid-2-col"><InputBox label="V Fuente" value={vFuenteLed} onChange={setVFuenteLed} /><InputBox label="V Caída LED" value={vCaidaLed} onChange={setVCaidaLed} /></div><InputBox label="Corriente (mA)" value={iMaLed} onChange={setIMaLed} /><ResultBox label="Res Sugerida" value={`${resLed} Ω`} /></>
             )
         },
 
-        // DIAGNÓSTICO DE HARDWARE
+        // --- 3. DIAGNÓSTICO HARDWARE ---
         {
-            cat: 'Diagnóstico de Hardware', id: '20', icon: <SvgBattery />, title: 'Salud Batería', desc: 'Desgaste real.', keys: 'mah vida iphone', render: () => (
+            cat: 'Diagnóstico Hardware', id: '20', colorTheme: 'cyan', icon: <SvgBattery />, title: 'Salud Batería', desc: 'Desgaste químico real.', keys: 'mah vida iphone', render: () => (
                 <><InputBox label="Fábrica (mAh)" value={capDiseno} onChange={setCapDiseno} /><InputBox label="Actual (mAh)" value={capActual} onChange={setCapActual} /><ResultBox label="Vida Útil" value={`${saludBateria.toFixed(1)}%`} colorClass={saludBateria < 80 ? 'text-danger' : 'text-success'} /></>
             )
         },
         {
-            cat: 'Diagnóstico de Hardware', id: '21', icon: <SvgSmartphone />, title: 'IMEI Check Global', desc: 'Blacklist mundial seguro.', keys: 'reporte banda negativa', render: () => (
-                <><form onSubmit={checkImei} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}><div className="tool-search-input"><SvgSearch /><input type="text" value={imeiQuery} onChange={e => setImeiQuery(e.target.value)} placeholder="15 dígitos..." maxLength="15" required /></div><button type="submit" className="btn-tool-action primary" style={{ background: '#e11d48' }}>Copiar y Verificar</button></form></>
+            cat: 'Diagnóstico Hardware', id: '21', colorTheme: 'red', icon: <SvgSmartphone />, title: 'IMEI Check Global', desc: 'Blacklist mundial.', keys: 'reporte banda negativa', render: () => (
+                <><form onSubmit={checkImei} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}><div className="tool-search-input"><SvgSearch /><input type="text" value={imeiQuery} onChange={e => setImeiQuery(e.target.value)} placeholder="15 dígitos..." maxLength="15" required /></div><button type="submit" className="btn-tool-action primary">Copiar y Chequear</button></form></>
             )
         },
         {
-            cat: 'Diagnóstico de Hardware', id: '22', icon: <SvgHardDrive />, title: 'GB a GiB (Discos)', desc: 'Espacio real formateado.', keys: 'ssd hdd almacenamiento', render: () => (
+            cat: 'Diagnóstico Hardware', id: '22', colorTheme: 'gray', icon: <SvgHardDrive />, title: 'GB a GiB (Discos)', desc: 'Espacio formateado.', keys: 'ssd hdd almacenamiento', render: () => (
                 <><InputBox label="Caja (GB)" value={almacenamientoGb} onChange={setAlmacenamientoGb} /><ResultBox label="Windows (GiB)" value={`${almacenamientoReal} GiB`} /></>
             )
         },
         {
-            cat: 'Diagnóstico de Hardware', id: '23', icon: <SvgMonitor />, title: 'Densidad PPI', desc: 'Píxeles por pulgada.', keys: 'pantalla resolucion display', render: () => (
+            cat: 'Diagnóstico Hardware', id: '23', colorTheme: 'cyan', icon: <SvgMonitor />, title: 'Densidad PPI', desc: 'Píxeles por pulgada.', keys: 'pantalla resolucion display', render: () => (
                 <><div className="grid-2-col"><InputBox label="X" value={resX} onChange={setResX} /><InputBox label="Y" value={resY} onChange={setResY} /></div><InputBox label="Pulgadas" value={pulgadas} onChange={setPulgadas} /><ResultBox label="Densidad" value={`${ppiTotal} PPI`} /></>
             )
         },
         {
-            cat: 'Diagnóstico de Hardware', id: '24', icon: <SvgZap />, title: 'PSU Calc', desc: 'Fuente de PC Gamer.', keys: 'watts consumo energia', render: () => (
+            cat: 'Diagnóstico Hardware', id: '24', colorTheme: 'red', icon: <SvgZap />, title: 'PSU Calc', desc: 'Fuente de PC Gamer.', keys: 'watts consumo energia', render: () => (
                 <><div className="grid-2-col"><InputBox label="TDP CPU" value={tdpCpu} onChange={setTdpCpu} /><InputBox label="TDP GPU" value={tdpGpu} onChange={setTdpGpu} /></div><ResultBox label="Fuente Mínima" value={`${psuTotal} W`} /></>
             )
         },
         {
-            cat: 'Diagnóstico de Hardware', id: '25', icon: <SvgMonitor />, title: 'Test Píxeles Muertos', desc: 'Full screen RGB.', keys: 'mancha display lcd', render: () => (
-                <><p className="tool-hint">Usa pantalla completa para buscar fugas de luz o píxeles trabados.</p><button onClick={() => setDeadPixelActive(true)} className="btn-tool-action primary">Iniciar Test</button></>
+            cat: 'Diagnóstico Hardware', id: '25', colorTheme: 'orange', icon: <SvgMonitor />, title: 'Test Píxeles Muertos', desc: 'Full screen RGB.', keys: 'mancha display lcd', render: () => (
+                <><p className="tool-hint">Busca fugas de luz o píxeles trabados.</p><button onClick={() => setDeadPixelActive(true)} className="btn-tool-action primary" style={{ marginTop: 'auto' }}>Iniciar Test RGB</button></>
             )
         },
         {
-            cat: 'Diagnóstico de Hardware', id: '26', icon: <SvgTerminal />, title: 'Test Teclado', desc: 'Códigos Keycode.', keys: 'notebook key ghost', render: () => (
-                <><input type="text" onKeyDown={e => { e.preventDefault(); setTestKey(`Key: [${e.key}] - Code: ${e.keyCode}`); }} value={testKey} placeholder="Presiona una tecla..." readOnly className="tool-input-group" style={{ padding: '15px', textAlign: 'center', fontWeight: 'bold' }} /></>
+            cat: 'Diagnóstico Hardware', id: '26', colorTheme: 'gray', icon: <SvgTerminal />, title: 'Test Teclado', desc: 'Códigos Keycode.', keys: 'notebook key ghost', render: () => (
+                <><p className="tool-hint">Presiona teclas dudosas:</p><input type="text" onKeyDown={e => { e.preventDefault(); setTestKey(`[${e.key}] - Code: ${e.keyCode}`); }} value={testKey} placeholder="Toca una tecla..." readOnly className="tool-input-group" style={{ padding: '15px', textAlign: 'center', fontWeight: 'bold', marginTop: 'auto' }} /></>
             )
         },
         {
-            cat: 'Diagnóstico de Hardware', id: '27', icon: <SvgMusic />, title: 'Test Audio Oscilador', desc: 'Generador tonos puros.', keys: 'parlante speaker sonido', render: () => (
-                <><div className="grid-2-col"><button onClick={() => playTone(200)} className="btn-tool-action secondary">200 Hz</button><button onClick={() => playTone(440)} className="btn-tool-action secondary">440 Hz</button><button onClick={() => playTone(1000)} className="btn-tool-action secondary">1 kHz</button><button onClick={() => playTone(5000)} className="btn-tool-action secondary">5 kHz</button></div></>
-            )
-        },
-        {
-            cat: 'Diagnóstico de Hardware', id: '28', icon: <SvgThermometer />, title: 'Conv. Temperaturas', desc: 'Cautín °C a °F.', keys: 'soldador calor temp', render: () => (
-                <><div className="grid-2-col"><InputBox label="°C" value={tempC} onChange={handleTempC} /><InputBox label="°F" value={tempF} onChange={handleTempF} /></div></>
+            cat: 'Diagnóstico Hardware', id: '27', colorTheme: 'purple', icon: <SvgMusic />, title: 'Test Audio (Osc)', desc: 'Generador tonos puros.', keys: 'parlante speaker sonido', render: () => (
+                <><p className="tool-hint">Prueba parlantes saturados.</p><div className="grid-2-col" style={{ marginTop: 'auto' }}><button onClick={() => playTone(200)} className="btn-tool-action secondary">200 Hz</button><button onClick={() => playTone(1000)} className="btn-tool-action secondary">1 kHz</button></div></>
             )
         },
 
-        // SOFTWARE Y UTILIDADES
+        // --- 4. HERRAMIENTAS DE TALLER ---
         {
-            cat: 'Software y Utilidades', id: '29', icon: <SvgMessage />, title: 'WA Directo', desc: 'Chat sin agendar.', keys: 'whatsapp mensaje', render: () => (
+            cat: 'Herramientas de Taller', id: '33', colorTheme: 'pink', icon: <SvgClock />, title: 'Cronómetro Taller', desc: 'Mide tiempo de trabajo.', keys: 'hora reloj timer', render: () => (
+                <><ResultBox label="Transcurrido" value={formatTime(timer)} colorClass="text-primary" /><div className="grid-2-col" style={{ marginTop: '10px' }}><button onClick={() => setTimerOn(!timerOn)} className={`btn-tool-action ${timerOn ? 'secondary' : 'primary'}`}>{timerOn ? 'Pausar' : 'Iniciar'}</button><button onClick={() => { setTimerOn(false); setTimer(0); }} className="btn-tool-action secondary">Reset</button></div></>
+            )
+        },
+        {
+            cat: 'Herramientas de Taller', id: '17_b', colorTheme: 'gray', icon: <SvgSettings />, title: 'AWG a Amperes', desc: 'Corriente Max Cable.', keys: 'hilo cobre calibre awg', render: () => (
+                <><div className="tool-input-group"><label>Calibre AWG</label><select value={awgInput} onChange={e => setAwgInput(e.target.value)} className="resistor-select">{Object.keys(awgMap).map(k => <option key={k} value={k}>{k} AWG</option>)}</select></div><div className="grid-2-col"><ResultBox label="Grosor" value={`${awgMap[awgInput]?.mm}mm`} /><ResultBox label="Soporta" value={`${awgMap[awgInput]?.a}A`} /></div></>
+            )
+        },
+        {
+            cat: 'Herramientas de Taller', id: '28', colorTheme: 'red', icon: <SvgThermometer />, title: 'Conv. Temperaturas', desc: 'Cautín °C a °F.', keys: 'soldador calor temp', render: () => (
+                <><div className="grid-2-col"><InputBox label="°C" value={tempC} onChange={handleTempC} /><InputBox label="°F" value={tempF} onChange={handleTempF} /></div></>
+            )
+        },
+        {
+            cat: 'Herramientas de Taller', id: '36', colorTheme: 'yellow', icon: <SvgBattery />, title: 'mAh a Wh (Vuelos)', desc: 'Límites batería TSA.', keys: 'avion viaje capacidad', render: () => (
+                <><div className="grid-2-col"><InputBox label="mAh" value={mahAir} onChange={setMahAir} /><InputBox label="Volts" value={voltsAir} onChange={setVoltsAir} /></div><ResultBox label="Energía" value={`${whResult} Wh`} /></>
+            )
+        },
+        {
+            cat: 'Herramientas de Taller', id: '37', colorTheme: 'cyan', icon: <SvgClock />, title: 'Tiempo de Carga', desc: 'Horas hasta 100%.', keys: 'bateria cargador lento', render: () => (
+                <><div className="grid-2-col"><InputBox label="Bat (mAh)" value={capCarga} onChange={setCapCarga} /><InputBox label="Cargador (mA)" value={maCargador} onChange={setMaCargador} /></div><ResultBox label="Tiempo Est." value={`${tiempoCarga} Hrs`} /></>
+            )
+        },
+        {
+            cat: 'Herramientas de Taller', id: '39', colorTheme: 'orange', icon: <SvgZap />, title: 'Consumo Eléctrico', desc: 'Gasto luz equipos.', keys: 'kw kwh dinero facturacion', render: () => (
+                <><div className="grid-2-col"><InputBox label="Watts" value={wattsConsumo} onChange={setWattsConsumo} /><InputBox label="Horas/Día" value={horasDia} onChange={setHorasDia} /></div><InputBox label="Precio KWh ($)" value={precioKwh} onChange={setPrecioKwh} /><ResultBox label="Costo Mensual" value={`$${costoMensualLuz}`} /></>
+            )
+        },
+
+        // --- 5. REDES Y SISTEMAS ---
+        {
+            cat: 'Redes y Sistemas', id: '28_b', colorTheme: 'blue', icon: <SvgSettings />, title: 'Datasheets', desc: 'Buscador oficial PDFs.', keys: 'integrado chip boardview', render: () => (
+                <><form onSubmit={searchDatasheet} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: 'auto' }}><div className="tool-search-input"><SvgSearch /><input type="text" value={datasheetQuery} onChange={e => setDatasheetQuery(e.target.value)} required /></div><button type="submit" className="btn-tool-action primary">Buscar PDF</button></form></>
+            )
+        },
+        {
+            cat: 'Redes y Sistemas', id: '29_b', colorTheme: 'orange', icon: <SvgHardDrive />, title: 'Firmwares / ROMs', desc: 'Sistemas de fábrica.', keys: 'flasheo odin ipsw', render: () => (
+                <><form onSubmit={searchFirmware} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}><div className="tool-input-group"><select value={firmwareBrand} onChange={e => setFirmwareBrand(e.target.value)} className="resistor-select"><option value="apple">Apple</option><option value="samsung">Samsung</option><option value="xiaomi">Xiaomi</option></select></div>{firmwareBrand !== 'apple' && <InputBox label="Modelo" value={firmwareModel} onChange={setFirmwareModel} type="text" />}<button type="submit" className="btn-tool-action primary" style={{ marginTop: 'auto' }}>Buscar ROM</button></form></>
+            )
+        },
+        {
+            cat: 'Redes y Sistemas', id: '30_b', colorTheme: 'cyan', icon: <SvgWifi />, title: 'Verificador IP', desc: 'IP Pública actual.', keys: 'red internet router', render: () => (
+                <><ResultBox label="Tu IP Pública" value={myIp || '0.0.0.0'} /><button onClick={getIp} className="btn-tool-action secondary" style={{ marginTop: '10px' }}>Obtener IP</button></>
+            )
+        },
+        {
+            cat: 'Redes y Sistemas', id: '31_b', colorTheme: 'gray', icon: <SvgTerminal />, title: 'MAC OUI Lookup', desc: 'Fabricante placa red.', keys: 'ip mac address router', render: () => (
+                <><form onSubmit={checkMac} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}><div className="tool-search-input"><SvgSearch /><input type="text" value={macQuery} onChange={e => setMacQuery(e.target.value)} placeholder="00:1A:2B..." required /></div><button type="submit" className="btn-tool-action primary">Identificar Marca</button></form></>
+            )
+        },
+        {
+            cat: 'Redes y Sistemas', id: '32_b', colorTheme: 'red', icon: <SvgAlertCircle />, title: 'Buscador BSOD', desc: 'Pantallazos Azules.', keys: 'windows error crash', render: () => (
+                <><form onSubmit={searchBsod} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}><div className="tool-search-input"><SvgSearch /><input type="text" value={bsodCode} onChange={e => setBsodCode(e.target.value)} placeholder="0x0000007B..." required /></div><button type="submit" className="btn-tool-action primary">Buscar en Google</button></form></>
+            )
+        },
+        {
+            cat: 'Redes y Sistemas', id: '38_b', colorTheme: 'purple', icon: <SvgHardDrive />, title: 'Conversor Datos', desc: 'GB a MB/TB.', keys: 'peso archivo gigas', render: () => (
+                <><div className="grid-2-col"><InputBox label="Cantidad" value={dataConvInput} onChange={setDataConvInput} /><div className="tool-input-group"><label>Unidad</label><select value={dataConvUnit} onChange={e => setDataConvUnit(e.target.value)} className="resistor-select"><option value="MB">MB</option><option value="GB">GB</option><option value="TB">TB</option></select></div></div><ResultBox label="Equivalencia" value={calcDataConv()} /></>
+            )
+        },
+
+        // --- 6. COMUNICACIÓN Y MARKETING ---
+        {
+            cat: 'Comunicación y Marketing', id: '40', colorTheme: 'green', icon: <SvgMessage />, title: 'WA Directo', desc: 'Chat sin agendar.', keys: 'whatsapp mensaje', render: () => (
                 <><InputBox label="Número" value={waNumero} onChange={setWaNumero} type="text" /><div className="tool-input-group"><textarea rows="2" value={waMensaje} onChange={e => setWaMensaje(e.target.value)} placeholder="Mensaje..."></textarea></div><button onClick={enviarWa} className="btn-tool-action" style={{ background: '#25D366', color: 'white' }}>Abrir Chat</button></>
             )
         },
         {
-            cat: 'Software y Utilidades', id: '30', icon: <SvgSettings />, title: 'Datasheets', desc: 'Buscador oficial PDFs.', keys: 'integrado chip boardview', render: () => (
-                <><form onSubmit={searchDatasheet} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}><div className="tool-search-input"><SvgSearch /><input type="text" value={datasheetQuery} onChange={e => setDatasheetQuery(e.target.value)} required /></div><button type="submit" className="btn-tool-action primary">Buscar PDF</button></form></>
-            )
-        },
-        {
-            cat: 'Software y Utilidades', id: '31', icon: <SvgHardDrive />, title: 'Firmwares / ROMs', desc: 'Sistemas de fábrica.', keys: 'flasheo odin ipsw', render: () => (
-                <><form onSubmit={searchFirmware} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}><div className="tool-input-group"><select value={firmwareBrand} onChange={e => setFirmwareBrand(e.target.value)} className="resistor-select"><option value="apple">Apple</option><option value="samsung">Samsung</option><option value="xiaomi">Xiaomi</option></select></div>{firmwareBrand !== 'apple' && <InputBox label="Modelo" value={firmwareModel} onChange={setFirmwareModel} type="text" />}<button type="submit" className="btn-tool-action primary">Buscar ROM</button></form></>
-            )
-        },
-        {
-            cat: 'Software y Utilidades', id: '32', icon: <SvgWifi />, title: 'Generador QR', desc: 'Crea códigos.', keys: 'link escanear', render: () => (
+            cat: 'Comunicación y Marketing', id: '41', colorTheme: 'cyan', icon: <SvgWifi />, title: 'Generador QR', desc: 'Links para clientes.', keys: 'link escanear wifi', render: () => (
                 <><InputBox label="Texto o URL" value={qrText} onChange={setQrText} type="text" /><div style={{ display: 'flex', justifyContent: 'center', padding: '10px', background: 'white', borderRadius: '12px' }}><QRCodeCanvas value={qrText || ' '} size={100} /></div></>
             )
         },
         {
-            cat: 'Software y Utilidades', id: '33', icon: <SvgMessage />, title: 'Garantías Legales', desc: 'Plantillas de texto.', keys: 'terminos cliente ticket', render: () => (
+            cat: 'Comunicación y Marketing', id: '42', colorTheme: 'gray', icon: <SvgMessage />, title: 'Garantías Legales', desc: 'Plantillas de texto.', keys: 'terminos cliente ticket', render: () => (
                 <><div className="tool-input-group"><select value={warrantyType} onChange={e => setWarrantyType(e.target.value)} className="resistor-select" style={{ marginBottom: '10px' }}><option value="pantalla">Pantallas</option><option value="bateria">Baterías</option><option value="placa">Placas Base</option></select></div><div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', background: 'var(--bg-input-glass)', padding: '10px', borderRadius: '8px', marginBottom: '10px', height: '80px', overflowY: 'auto' }}>{warrantyTexts[warrantyType]}</div><button onClick={copyWarranty} className="btn-tool-action secondary">Copiar Texto Legal</button></>
             )
         },
         {
-            cat: 'Software y Utilidades', id: '34', icon: <SvgKey />, title: 'Generador Claves', desc: 'Routers y cuentas.', keys: 'password seguridad wifi', render: () => (
+            cat: 'Comunicación y Marketing', id: '43', colorTheme: 'red', icon: <SvgKey />, title: 'Generador Claves', desc: 'Seguridad Routers.', keys: 'password wifi wpa', render: () => (
                 <><div className="tool-search-input" style={{ marginBottom: '10px', justifyContent: 'center', fontWeight: 'bold', letterSpacing: '1px' }}>{genPassword || '...'}</div><button onClick={generatePass} className="btn-tool-action primary">Generar Segura</button></>
             )
         },
         {
-            cat: 'Software y Utilidades', id: '35', icon: <SvgMessage />, title: 'Formato WhatsApp', desc: 'Copia texto enriquecido.', keys: 'texto cursiva negrita', render: () => (
+            cat: 'Comunicación y Marketing', id: '44', colorTheme: 'green', icon: <SvgMessage />, title: 'Formato WhatsApp', desc: 'Copia texto enriquecido.', keys: 'texto cursiva negrita', render: () => (
                 <><InputBox label="Texto" value={formatText} onChange={setFormatText} type="text" /><div className="grid-2-col"><button onClick={() => copyFormat('bold')} className="btn-tool-action secondary">Negrita</button><button onClick={() => copyFormat('strike')} className="btn-tool-action secondary">Tachado</button></div></>
             )
         },
         {
-            cat: 'Software y Utilidades', id: '36', icon: <SvgSettings />, title: 'MAC OUI Lookup', desc: 'Fabricante de placa red.', keys: 'ip mac address router', render: () => (
-                <><form onSubmit={checkMac} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}><div className="tool-search-input"><SvgSearch /><input type="text" value={macQuery} onChange={e => setMacQuery(e.target.value)} placeholder="00:1A:2B..." required /></div><button type="submit" className="btn-tool-action primary">Identificar Marca</button></form></>
+            cat: 'Comunicación y Marketing', id: '45', colorTheme: 'pink', icon: <SvgMessage />, title: 'Promos Sociales', desc: 'Textos de Marketing.', keys: 'instagram facebook promocion', render: () => (
+                <><div className="tool-input-group"><select value={promoType} onChange={e => setPromoType(e.target.value)} className="resistor-select" style={{ marginBottom: '10px' }}><option value="descuento">Promo Pantallas</option><option value="bateria">Promo Baterías</option><option value="pc">Promo PC</option></select></div><div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', background: 'var(--bg-input-glass)', padding: '10px', borderRadius: '8px', marginBottom: '10px', height: '80px' }}>{getPromoText()}</div><button onClick={() => { navigator.clipboard.writeText(getPromoText()); alert("Copiado!") }} className="btn-tool-action primary">Copiar para Redes</button></>
+            )
+        },
+        {
+            cat: 'Comunicación y Marketing', id: '46', colorTheme: 'gray', icon: <SvgBarcode />, title: 'Gen. Código Barras', desc: 'Para etiquetas.', keys: 'barcode impresora etiqueta', render: () => (
+                <><InputBox label="ID Equipo / Ticket" value={barcodeText} onChange={setBarcodeText} type="text" /><div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', background: 'white', padding: '10px', borderRadius: '8px' }}><img src={`https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(barcodeText || 'WEPAIRR')}&code=Code128&dpi=96`} alt="Barcode" style={{ maxWidth: '100%' }} /></div></>
             )
         }
     ];
 
     // ==========================================
-    // RENDERIZADO CON SIDEBAR MODERNO (GRID DE BLOQUES -> MODAL GLASS)
+    // RENDERIZADO VISUAL
     // ==========================================
-
-    // Categorías únicas
     const categoryNames = [...new Set(TOOLS_DATA.map(t => t.cat))];
 
     const herramientasFiltradas = TOOLS_DATA.filter(tool => {
-        if (!busqueda) return true;
-        const query = busqueda.toLowerCase();
-        return tool.title.toLowerCase().includes(query) || tool.keys.includes(query) || tool.cat.toLowerCase().includes(query);
+        if (busqueda.trim() !== '') {
+            const query = busqueda.toLowerCase();
+            return tool.title.toLowerCase().includes(query) || tool.keys.includes(query) || tool.cat.toLowerCase().includes(query);
+        }
+        return activeCategoryModal === 'Todas' || !activeCategoryModal || tool.cat === activeCategoryModal;
     });
 
     const isSearching = busqueda.trim() !== '';
@@ -387,12 +494,21 @@ function ToolsView() {
     return (
         <div className="tools-layout-modern animate-fade-in">
 
-            {/* VISTA 1: BLOQUES DE CATEGORÍAS (CUANDO NO HAY BÚSQUEDA NI MODAL) */}
+            {/* PIXEL TEST EN PANTALLA COMPLETA */}
+            {deadPixelActive && (
+                <div onClick={() => setPixelColorIdx((pixelColorIdx + 1) % pixelColors.length)} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 999999, background: pixelColors[pixelColorIdx], cursor: 'crosshair' }}>
+                    <div style={{ background: 'rgba(0,0,0,0.7)', color: 'white', padding: '10px 20px', position: 'absolute', top: 20, left: 20, borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', backdropFilter: 'blur(5px)' }} onClick={(e) => { e.stopPropagation(); setDeadPixelActive(false) }}>
+                        Salir del Test (Click aquí)
+                    </div>
+                </div>
+            )}
+
+            {/* VISTA 1: DASHBOARD DE CATEGORIAS (BLOQUES) */}
             {!isSearching && !activeCategoryModal && (
                 <div className="categories-dashboard animate-fade-in">
                     <header className="tools-header-main">
                         <h2 style={{ fontSize: '2.5rem', margin: '0 0 10px 0', color: 'var(--text-primary)', fontWeight: '900', letterSpacing: '-1px' }}>Caja de Herramientas</h2>
-                        <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '1.1rem' }}>36 Utilidades avanzadas para el taller moderno.</p>
+                        <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '1.1rem' }}>46 Utilidades avanzadas para el taller moderno.</p>
 
                         <div className="tools-search-bar glass-effect" style={{ maxWidth: '600px', marginTop: '20px' }}>
                             <SvgSearch />
@@ -401,12 +517,18 @@ function ToolsView() {
                     </header>
 
                     <div className="categories-grid">
-                        {categoryNames.map(cat => {
+                        {categoryNames.map((cat, idx) => {
                             const count = TOOLS_DATA.filter(t => t.cat === cat).length;
+                            // Asignamos un color base predefinido a cada bloque para que se vean increíbles
+                            const blockColors = ['green', 'purple', 'cyan', 'gray', 'red', 'pink'];
+                            const theme = COLOR_THEMES[blockColors[idx % blockColors.length]];
+
                             return (
-                                <div key={cat} className="category-block glass-effect" onClick={() => setActiveCategoryModal(cat)}>
+                                <div key={cat} className="category-block glass-effect" style={{ '--hover-border': theme.c }} onClick={() => setActiveCategoryModal(cat)}>
                                     <div className="cat-block-header">
-                                        <div className="cat-icon-large"><SvgSettings /></div>
+                                        <div className="cat-icon-large" style={{ color: theme.c, background: theme.bg }}>
+                                            <SvgSettings />
+                                        </div>
                                         <span className="cat-count-badge">{count} Herramientas</span>
                                     </div>
                                     <h3>{cat}</h3>
@@ -418,7 +540,7 @@ function ToolsView() {
                 </div>
             )}
 
-            {/* VISTA 2: RESULTADOS DE BÚSQUEDA DIRECTA */}
+            {/* VISTA 2: RESULTADOS DE BÚSQUEDA */}
             {isSearching && (
                 <div className="search-results-dashboard animate-fade-in">
                     <div className="tools-search-bar glass-effect" style={{ marginBottom: '30px' }}>
@@ -432,9 +554,11 @@ function ToolsView() {
                             <div className="tools-empty-state">No se encontraron herramientas. Intenta con otros términos.</div>
                         ) : (
                             herramientasFiltradas.map(tool => (
-                                <div key={tool.id} className="tool-card glass-effect">
+                                <div key={tool.id} className="tool-card glass-effect" style={{ borderColor: COLOR_THEMES[tool.colorTheme]?.c }}>
                                     <div className="tool-header">
-                                        <div className="tool-icon" style={{ color: 'var(--accent-color)', background: 'rgba(37,99,235,0.1)' }}>{tool.icon}</div>
+                                        <div className="tool-icon" style={{ color: COLOR_THEMES[tool.colorTheme]?.c, background: COLOR_THEMES[tool.colorTheme]?.bg }}>
+                                            {tool.icon}
+                                        </div>
                                         <div className="tool-header-text">
                                             <h3>{tool.title}</h3>
                                             <span className="tool-cat-badge">{tool.cat}</span>
@@ -448,7 +572,7 @@ function ToolsView() {
                 </div>
             )}
 
-            {/* VISTA 3: MODAL DE CATEGORÍA (ESTILO GLASSMORPHISM PREMIUM) */}
+            {/* VISTA 3: MODAL INMERSIVO DE SUITE ELEGIDA */}
             {activeCategoryModal && !isSearching && (
                 <div className="tools-modal-overlay animate-fade-in" onClick={() => setActiveCategoryModal(null)}>
                     <div className="tools-modal-container glass-effect animate-scale-in" onClick={e => e.stopPropagation()}>
@@ -464,9 +588,11 @@ function ToolsView() {
                         <div className="tools-modal-body">
                             <div className="tools-grid">
                                 {TOOLS_DATA.filter(t => t.cat === activeCategoryModal).map(tool => (
-                                    <div key={tool.id} className="tool-card inside-modal">
+                                    <div key={tool.id} className="tool-card inside-modal" style={{ borderColor: COLOR_THEMES[tool.colorTheme]?.c }}>
                                         <div className="tool-header">
-                                            <div className="tool-icon" style={{ color: 'var(--accent-color)', background: 'rgba(37,99,235,0.1)' }}>{tool.icon}</div>
+                                            <div className="tool-icon" style={{ color: COLOR_THEMES[tool.colorTheme]?.c, background: COLOR_THEMES[tool.colorTheme]?.bg }}>
+                                                {tool.icon}
+                                            </div>
                                             <div className="tool-header-text">
                                                 <h3>{tool.title}</h3>
                                                 <p className="tool-hint" style={{ margin: 0 }}>{tool.desc}</p>
