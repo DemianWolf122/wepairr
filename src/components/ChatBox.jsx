@@ -20,10 +20,13 @@ function ChatBox() {
     useEffect(() => { scrollToBottom(); }, [messages]);
 
     const fetchGeminiReceptionist = async (userText, history) => {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!apiKey) return "El chat está en mantenimiento (Falta API Key). Por favor comunícate por WhatsApp.";
+        // FIX: Limpieza de la API key
+        const rawKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (!rawKey) return "El chat está en mantenimiento (Falta API Key). Por favor comunícate por WhatsApp.";
+        const apiKey = rawKey.trim().replace(/['"]/g, '');
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        // FIX: Sufijo -latest obligatorio
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
         const systemPrompt = `Eres la recepcionista amigable del taller de reparación Wepairr. 
         Tu objetivo es obtener 4 datos del cliente, paso a paso, sin ser un robot frío:
@@ -35,7 +38,6 @@ function ChatBox() {
         IMPORTANTE: Cuando ya tengas los 4 datos claros, tu ÚLTIMA palabra en el mensaje DEBE SER EXACTAMENTE ESTE FORMATO: 
         [TICKET_READY: NombreDelCliente | Telefono | Equipo | Falla]`;
 
-        // FIX CRÍTICO: Eliminar el primer mensaje para evitar error de Google API
         const formattedHistory = [];
         for (let i = 0; i < history.length; i++) {
             if (i === 0 && history[i].sender === 'ai') continue;
@@ -52,7 +54,7 @@ function ChatBox() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // FIX CRÍTICO: Debe ser system_instruction con guion bajo
+                    // FIX: Formato guion bajo exacto
                     system_instruction: { parts: [{ text: systemPrompt }] },
                     contents: formattedHistory
                 })
@@ -85,7 +87,6 @@ function ChatBox() {
 
         let aiResponseText = await fetchGeminiReceptionist(currentInput, currentHistory);
 
-        // DETECTAMOS SI LA IA RECOLECTÓ TODOS LOS DATOS
         const ticketMatch = aiResponseText.match(/\[TICKET_READY:\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\]/);
 
         if (ticketMatch && !ticketCreated) {

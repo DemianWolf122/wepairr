@@ -25,24 +25,21 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
 
     // LLAMADA A LA API REAL DE GEMINI (100% CORREGIDA)
     const fetchGeminiResponse = async (userText, history) => {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!apiKey) return "⚠️ Error: Falta configurar la variable de entorno `VITE_GEMINI_API_KEY` en tu archivo .env.";
+        // FIX: Limpiamos la API Key de espacios o comillas accidentales
+        const rawKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (!rawKey) return "⚠️ Error: Falta configurar la variable de entorno `VITE_GEMINI_API_KEY` en tu archivo .env. Asegúrate de reiniciar el servidor.";
+        const apiKey = rawKey.trim().replace(/['"]/g, '');
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        // FIX: Añadimos "-latest" obligatoriamente para la versión v1beta
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
-        const systemPrompt = "Eres Wepairr Copilot, un Ingeniero Electrónico Senior especializado en reparación de hardware (celulares, PCs, GPUs). Conoces de esquemáticos, boardviews (ZXW, XinZhiZao), líneas de voltaje y soldadura SMD/BGA. Responde de forma altamente técnica pero concisa a los técnicos.";
+        const systemPrompt = "Eres Wepairr Copilot, un Ingeniero Electrónico Senior especializado en reparación de hardware (celulares, PCs, GPUs). Conoces de esquemáticos, boardviews (ZXW, XinZhiZao), líneas de voltaje y soldadura SMD/BGA. Responde de forma altamente técnica pero concisa a los técnicos. Si te preguntan algo fuera de reparación, responde normalmente pero enfocado a tecnología.";
 
-        // FIX CRÍTICO: Filtramos el mensaje inicial de saludo para que la API no falle (La API exige empezar siempre con un usuario)
-        const formattedHistory = [];
-        for (let i = 0; i < history.length; i++) {
-            if (i === 0 && history[i].sender === 'ai') continue; // Omite el saludo inicial
-            formattedHistory.push({
-                role: history[i].sender === 'user' ? 'user' : 'model',
-                parts: [{ text: history[i].text }]
-            });
-        }
+        const formattedHistory = history.filter(m => m.sender === 'user' || m.sender === 'ai').map(m => ({
+            role: m.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: m.text }]
+        }));
 
-        // Agregamos el mensaje actual del usuario
         formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
 
         try {
@@ -50,7 +47,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // FIX CRÍTICO: Debe ser system_instruction con guion bajo
+                    // FIX CRÍTICO: Debe ser con guion bajo (system_instruction)
                     system_instruction: { parts: [{ text: systemPrompt }] },
                     contents: formattedHistory
                 })
@@ -59,8 +56,8 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
             const data = await response.json();
 
             if (!response.ok) {
-                console.error("Error detallado de Google API:", data);
-                return `⚠️ Error de Google API: ${data.error?.message || 'Error desconocido. Revisa la consola.'}`;
+                console.error("Error devuelto por Gemini:", data);
+                return `⚠️ Error de Google API: ${data.error?.message || 'Revisa la consola (F12) para más detalles.'}`;
             }
 
             return data.candidates[0].content.parts[0].text;
@@ -73,7 +70,6 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     const processAgenticAction = async (input, currentHistory) => {
         const text = input.toLowerCase();
 
-        // 1. INTENTOS LOCALES (Acciones Agénticas)
         if (text.includes('cambiar tema') || text.includes('modo oscuro') || text.includes('modo claro')) {
             if (toggleTheme) { toggleTheme(); return { text: "¡Hecho! He cambiado el tema visual de tu taller.", actionExecuted: true }; }
         }
@@ -85,13 +81,12 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
             const match = text.match(/crear ticket para (.*?) con (.*?) que (.*)/);
             if (match && match[1] && match[2] && match[3]) {
                 if (agregarTicketManual) {
-                    agregarTicketManual({ cliente: { nombre: match[1], telefono: 'Ingresado por IA', email: '' }, dispositivo: match[2], problema: match[3], presupuestoInicial: '0' });
+                    agregarTicketManual({ cliente: { nombre: match[1], telefono: 'Ingresado por IA' }, dispositivo: match[2], problema: match[3], presupuestoInicial: '0' });
                     return { text: `Ticket creado para ${match[1]} (${match[2]}). Búscalo en Activos.`, actionExecuted: true };
                 }
             }
         }
 
-        // 2. SI NO ES UNA ACCIÓN LOCAL, SE LO PASAMOS A LA IA DE GOOGLE
         const aiResponseText = await fetchGeminiResponse(input, currentHistory);
         return { text: aiResponseText, actionExecuted: false };
     };
