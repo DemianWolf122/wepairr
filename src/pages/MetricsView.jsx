@@ -23,8 +23,8 @@ function MetricsView({ tickets, moneda = 'ARS' }) {
             try {
                 const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
                 const data = await response.json();
-                if (data && data.rates && data.rates.ARS) {
-                    setUsdRate(data.rates.ARS);
+                if (data && data.rates && data.rates[moneda]) {
+                    setUsdRate(data.rates[moneda]);
                 }
             } catch (error) {
                 console.error("Error al obtener cotización API:", error);

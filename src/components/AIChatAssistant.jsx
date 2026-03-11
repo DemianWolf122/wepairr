@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { TicketContext } from '../context/TicketContext';
-import { supabase } from '../supabaseClient';
+import { executeAgentAction } from '../utils/AgentActionDispatcher';
 import './AIChatAssistant.css';
 
-// --- SVGs Premium ---
 const SvgSparkles = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>;
 const SvgSend = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>;
 const SvgX = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2.5" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
@@ -14,28 +13,24 @@ const SvgMic = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="cur
 function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { text: "¡Hola! Soy tu asistente personal Wepairr. Puedes escribirme o usar el **micrófono** para dictarme órdenes. ¿Qué automatizamos hoy?", sender: 'ai' }
+        { text: "Sistemas Online. Wepairr Copilot listo para gestionar tickets, inventario, clientes y finanzas. ¿Qué deseas hacer?", sender: 'ai' }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [isListening, setIsListening] = useState(false);
 
-    // CONTEXTO GLOBAL DE LA APP
     const { tickets, agregarTicketManual, actualizarEstadoTicket } = useContext(TicketContext);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     useEffect(() => { if (isOpen) scrollToBottom(); }, [messages, isOpen]);
 
-    // ==========================================
-    // RECONOCIMIENTO DE VOZ NATIVO (Web Speech API)
-    // ==========================================
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
     if (recognition) {
         recognition.continuous = false;
-        recognition.lang = 'es-ES'; // Detecta el español
+        recognition.lang = 'es-ES';
         recognition.interimResults = false;
 
         recognition.onresult = (event) => {
@@ -48,43 +43,59 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     }
 
     const toggleListening = () => {
-        if (!recognition) return alert("Tu navegador no soporta entrada de voz.");
-        if (isListening) {
-            recognition.stop();
-            setIsListening(false);
-        } else {
-            recognition.start();
-            setIsListening(true);
-        }
+        if (!recognition) return alert("Tu navegador no soporta entrada de voz nativa.");
+        if (isListening) { recognition.stop(); setIsListening(false); }
+        else { recognition.start(); setIsListening(true); }
     };
 
-    // ==========================================
-    // API GEMINI (CON INYECCIÓN DE CONTEXTO REAL)
-    // ==========================================
     const fetchGeminiResponse = async (userText, history) => {
         const rawKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!rawKey) return "⚠️ Error: Falta configurar la variable `VITE_GEMINI_API_KEY` en tu .env.";
+        if (!rawKey) return "⚠️ Error: Falta API Key en tu .env.";
         const apiKey = rawKey.trim().replace(/['"]/g, '');
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-        // Le pasamos a la IA un resumen de la realidad del taller
         const ticketsResumen = tickets.map(t => `ID:${t.id} | Cliente:${t.cliente.nombre} | Falla:${t.problema} | Estado:${t.estado}`).join('\n');
 
-        const systemPrompt = `Eres Wepairr Copilot, un Sistema Operativo IA para Técnicos.
-        DATOS ACTUALES DEL TALLER:
-        - Moneda actual: ${config?.moneda || 'No definida'}
-        - Nombre Taller: ${config?.nombreNegocio || 'No definido'}
-        - Tickets Activos:
-        ${ticketsResumen || 'No hay tickets'}
+        // EL PROMPT MAESTRO (DICCIONARIO DE FUNCIONES COMPLETAS)
+        const systemPrompt = `Eres Wepairr Copilot, el Sistema Operativo IA y Asistente Maestro del taller de reparaciones.
+        DATOS ACTUALES: Moneda: ${config?.moneda} | Nombre Taller: ${config?.nombreNegocio}.
+        TICKETS EN SISTEMA:\n${ticketsResumen || 'No hay tickets activos'}
 
-        TIENES PERMISOS DE ADMINISTRADOR. Si el técnico te pide una acción, DEBES responder amablemente y añadir EXACTAMENTE al final de tu mensaje el comando oculto correspondiente:
-        - Cambiar tema a oscuro/claro: [ACTION_UI_THEME: dark] o [ACTION_UI_THEME: light]
-        - Cambiar moneda global (Ej USD, EUR, ARS): [ACTION_CONFIG_CURRENCY: USD]
-        - Cambiar nombre del negocio: [ACTION_CONFIG_NAME: "Nuevo Nombre"]
-        - Crear un ticket nuevo: [ACTION_TICKET_CREATE: Nombre | Teléfono | Equipo | Falla]
-        - Mover un ticket (Ej. a Entregado): [ACTION_TICKET_MOVE: ID_TICKET | NuevoEstado]
-        
-        Si te preguntan por electrónica (esquemas, cortos, microsoldadura), responde como Ingeniero Senior sin usar comandos.`;
+        Tienes permisos de Administrador Nivel Dios. Si el técnico te pide que ejecutes una acción, modifiques el sistema o gestiones algo, DEBES responder amablemente y añadir EXACTAMENTE al final de tu mensaje el comando oculto correspondiente de la siguiente lista:
+
+        [COMANDOS UI/CONFIGURACIÓN]
+        - Tema: [ACTION_UI_THEME: dark/light]
+        - Renombrar Taller: [ACTION_CONFIG_NAME: "Nombre"]
+        - Cambiar Moneda: [ACTION_CONFIG_CURRENCY: USD/EUR/ARS/MXN/etc]
+
+        [COMANDOS DE TICKETS]
+        - Ingresar Equipo: [ACTION_TICKET_CREATE: Nombre | Teléfono | Dispositivo | Falla]
+        - Mover Ticket (Ej a Terminado): [ACTION_TICKET_MOVE: ID | NuevoEstado]
+        - Asignar Presupuesto: [ACTION_TICKET_PRICE: ID | Monto]
+        - Añadir Nota Secreta: [ACTION_TICKET_NOTE: ID | "Nota"]
+        - Fijar Garantía: [ACTION_TICKET_WARRANTY: ID | "Tiempo"]
+        - Generar/Exportar PDF: [ACTION_TICKET_EXPORT_PDF: ID]
+
+        [COMANDOS DE CLIENTES]
+        - Enviar WhatsApp: [ACTION_CLIENT_WA: Teléfono | "Mensaje"]
+        - Llamar por Teléfono: [ACTION_CLIENT_CALL: Teléfono]
+
+        [COMANDOS DE INVENTARIO]
+        - Añadir Stock: [ACTION_INV_ADD: NombreRepuesto | Cantidad | Costo | Venta]
+        - Descontar Repuesto Usado: [ACTION_INV_DECREASE: NombreRepuesto | Cantidad]
+        - Marcar Defectuoso/Garantía: [ACTION_INV_MARK_RMA: NombreRepuesto | "Motivo"]
+        - Calcular qué comprar: [ACTION_INV_LOW_STOCK]
+
+        [COMANDOS DE FINANZAS]
+        - Registrar un Gasto: [ACTION_FINANCE_EXPENSE: Monto | "Concepto"]
+        - Registrar Venta/Ingreso Extra: [ACTION_FINANCE_INCOME: Monto | "Concepto"]
+        - Cierre Diario de Caja: [ACTION_FINANCE_DAILY_CLOSE]
+
+        EJEMPLO DE INTERACCIÓN:
+        Técnico: "Cobré 20 mil por vender un cargador."
+        Tu respuesta: "Excelente, he anotado ese ingreso extra en la caja. [ACTION_FINANCE_INCOME: 20000 | Venta de cargador]"
+
+        Si el técnico pregunta algo técnico de electrónica, placas base o esquemas, explícaselo como un Ingeniero Senior con nivel avanzado de micro-soldadura. No uses comandos para explicaciones técnicas.`;
 
         let transcript = `[SISTEMA]:\n${systemPrompt}\n\n[CHAT]:\n`;
         history.forEach(m => { transcript += `${m.sender === 'user' ? 'Técnico' : 'Copilot'}: ${m.text}\n`; });
@@ -100,66 +111,31 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
             if (!response.ok) return `⚠️ Error de API: ${data.error?.message}`;
             return data.candidates[0].content.parts[0].text;
         } catch (error) {
-            return "Lo siento, falló la conexión satelital.";
+            return "Lo siento, falló la conexión con los servidores de Google.";
         }
     };
 
-    // ==========================================
-    // ACTION DISPATCHER (EL CEREBRO EJECUTOR)
-    // ==========================================
     const processAgenticAction = async (input, currentHistory) => {
         let aiResponseText = await fetchGeminiResponse(input, currentHistory);
         let actionExecuted = false;
+        let finalOutput = aiResponseText;
 
-        // BUSCADOR DE MÚLTIPLES COMANDOS (Regex Global)
+        const appContext = { theme, toggleTheme, config, setConfig, tickets, agregarTicketManual, actualizarEstadoTicket };
+
+        // REGEX MAESTRO para capturar [ACTION_...: ...]
         const actionRegex = /\[ACTION_([A-Z_]+)(?:\s*:\s*(.*?))?\]/g;
         let match;
 
         while ((match = actionRegex.exec(aiResponseText)) !== null) {
             const actionType = match[1];
-            const payload = match[2] ? match[2].split('|').map(s => s.trim().replace(/^"|"$/g, '')) : []; // Quita comillas
+            const payload = match[2] ? match[2].split('|').map(s => s.trim()) : [];
 
             actionExecuted = true;
-
-            try {
-                switch (actionType) {
-                    case 'UI_THEME':
-                        if (payload[0] === 'dark' && theme !== 'dark') toggleTheme();
-                        else if (payload[0] === 'light' && theme !== 'light') toggleTheme();
-                        break;
-                    case 'CONFIG_CURRENCY':
-                        // Modifica la moneda global EXACTAMENTE como lo pide App.jsx
-                        if (setConfig) setConfig(p => ({ ...p, moneda: payload[0] }));
-                        break;
-                    case 'CONFIG_NAME':
-                        if (setConfig) setConfig(p => ({ ...p, nombreNegocio: payload[0] }));
-                        break;
-                    case 'TICKET_CREATE':
-                        if (agregarTicketManual && payload.length >= 4) {
-                            agregarTicketManual({ cliente: { nombre: payload[0], telefono: payload[1], email: '' }, dispositivo: payload[2], problema: payload[3], presupuestoInicial: '0' });
-                        }
-                        break;
-                    case 'TICKET_MOVE':
-                        // Ejemplo: [ACTION_TICKET_MOVE: 102 | Terminado]
-                        if (actualizarEstadoTicket && payload.length >= 2) {
-                            actualizarEstadoTicket(payload[0], payload[1]);
-                        }
-                        break;
-                    default:
-                        console.log("Comando reconocido pero aún no implementado en Frontend:", actionType, payload);
-                }
-            } catch (err) {
-                console.error("Error ejecutando acción de IA:", err);
-            }
+            const result = await executeAgentAction(actionType, payload, appContext);
+            finalOutput = finalOutput.replace(match[0], `\n\n> 🤖 *${result.message}*`);
         }
 
-        // Limpiamos los comandos feos del texto final que verá el usuario
-        const cleanText = aiResponseText.replace(/\[ACTION_[A-Z_]+(?:.*?)\]/g, '').trim();
-
-        // Si el modelo solo devolvió el comando y se quedó sin texto, le damos una respuesta por defecto.
-        const finalOutput = cleanText === "" ? "¡Orden ejecutada correctamente en el sistema!" : cleanText;
-
-        return { text: finalOutput, actionExecuted };
+        return { text: finalOutput.trim(), actionExecuted };
     };
 
     const handleSend = async (e) => {
@@ -197,7 +173,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                             <SvgBot />
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                 <span>Wepairr Copilot</span>
-                                <span style={{ fontSize: '0.65rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>MODO DIOS ACTIVO</span>
+                                <span style={{ fontSize: '0.65rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>SISTEMA OPERATIVO IA ACTIVO</span>
                             </div>
                         </div>
                         <button className="ai-close-btn" onClick={() => setIsOpen(false)}><SvgX /></button>
@@ -207,7 +183,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                         {messages.map((msg, index) => (
                             <div key={index} className={`ai-message-wrapper ${msg.sender}`}>
                                 <div className={`ai-message ${msg.sender} ${msg.isAction ? 'message-action' : ''}`}>
-                                    {msg.isAction && <div className="action-indicator"><SvgAction /> ACCIÓN EJECUTADA EN EL SISTEMA</div>}
+                                    {msg.isAction && <div className="action-indicator"><SvgAction /> EJECUTADO EN SISTEMA</div>}
                                     <div dangerouslySetInnerHTML={renderText(msg.text)} />
                                 </div>
                             </div>
@@ -222,20 +198,10 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
 
                     <form className="ai-chat-footer" onSubmit={handleSend}>
                         <div className="ai-input-pill">
-                            <button
-                                type="button"
-                                className={`ai-mic-btn ${isListening ? 'listening' : ''}`}
-                                onClick={toggleListening}
-                                title="Dictar por Voz"
-                            >
+                            <button type="button" className={`ai-mic-btn ${isListening ? 'listening' : ''}`} onClick={toggleListening} title="Dictar por Voz">
                                 <SvgMic />
                             </button>
-                            <input
-                                type="text"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                placeholder={isListening ? "Escuchando..." : "Ej: Cambia mi moneda a EUR"}
-                            />
+                            <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder={isListening ? "Te escucho..." : "Ej: Descontá 2 módulos de A50..."} />
                             <button type="submit" className="ai-submit-btn" disabled={!inputValue.trim() || isTyping}>
                                 <SvgSend />
                             </button>

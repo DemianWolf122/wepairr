@@ -753,7 +753,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 )}
 
                 {seccionPrincipal === 'inventario' && <InventoryView moneda={config.moneda || 'ARS'} />}
-                {seccionPrincipal === 'herramientas' && <ToolsView />}
+                {seccionPrincipal === 'herramientas' && <ToolsView moneda={config.moneda || 'ARS'} />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
                 {seccionPrincipal === 'ajustes_web' && <Settings config={config} onUpdate={setConfig} />}
 
