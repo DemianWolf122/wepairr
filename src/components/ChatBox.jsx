@@ -1,88 +1,143 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { TicketContext } from '../context/TicketContext';
+import './AIChatAssistant.css'; // Reutilizamos los hermosos estilos del Copilot
 
-function ChatBox({ onProcesarMensaje }) {
-    // Estado para el texto que el técnico está escribiendo
-    const [inputTexto, setInputTexto] = useState('');
+const SvgSend = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>;
+const SvgBot = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>;
 
-    // Estado para guardar la charla en pantalla
-    const [historial, setHistorial] = useState([
-        { actor: 'ia', texto: '¡Hola! Soy Wepairr. ¿Qué equipo ingresó hoy al taller?' }
+function ChatBox() {
+    const [messages, setMessages] = useState([
+        { text: "¡Hola! Soy el asistente virtual del taller. ¿Qué problema tiene tu equipo? Cuéntame y te abriremos una orden de revisión.", sender: 'ai' }
     ]);
+    const [inputValue, setInputValue] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const [ticketCreated, setTicketCreated] = useState(false); // Para no crear 2 veces
 
-    // Función que se ejecuta al apretar "Enviar"
-    const manejarEnvio = (e) => {
-        e.preventDefault(); // Evita que la página se recargue
+    // Nos conectamos al contexto del taller para enviarle los tickets al inbox del técnico
+    const { agregarTicketManual } = useContext(TicketContext);
+    const messagesEndRef = useRef(null);
 
-        if (inputTexto.trim() === '') return; // No envía mensajes vacíos
+    const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    useEffect(() => { scrollToBottom(); }, [messages]);
 
-        // 1. Agregamos lo que escribió el técnico al historial del chat
-        const nuevoMensaje = { actor: 'tecnico', texto: inputTexto };
-        setHistorial(prev => [...prev, nuevoMensaje]);
+    const fetchGeminiReceptionist = async (userText, history) => {
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (!apiKey) return "El chat está en mantenimiento (Falta API Key). Por favor comunícate por WhatsApp.";
 
-        // 2. Le mandamos el texto al componente padre (App.jsx) para que vea si hay que crear un ticket
-        onProcesarMensaje(inputTexto);
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-        // 3. Limpiamos la caja de texto
-        setInputTexto('');
+        // PROMPT ESTRICTO DE LA RECEPCIONISTA (EXTRAE DATOS Y CREA TICKET)
+        const systemPrompt = `Eres la recepcionista amigable del taller de reparación Wepairr. 
+        Tu objetivo es obtener 4 datos del cliente, paso a paso, sin ser un robot frío:
+        1. Su Nombre.
+        2. Su Teléfono de contacto.
+        3. Qué Equipo tiene (ej: iPhone 13, PC).
+        4. Cuál es la falla.
+        Haz preguntas conversacionales. Si ya te dio un dato, no lo vuelvas a pedir.
+        IMPORTANTE: Cuando ya tengas los 4 datos claros, tu ÚLTIMA palabra en el mensaje DEBE SER EXACTAMENTE ESTE FORMATO: 
+        [TICKET_READY: NombreDelCliente | Telefono | Equipo | Falla]`;
+
+        const formattedHistory = history.map(m => ({
+            role: m.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: m.text }]
+        }));
+        formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    system_instruction: { parts: { text: systemPrompt } },
+                    contents: formattedHistory
+                })
+            });
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        } catch (error) {
+            return "Hubo un error de conexión, intenta nuevamente.";
+        }
+    };
+
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if (!inputValue.trim() || ticketCreated) return;
+
+        const userMsg = { text: inputValue, sender: 'user' };
+        const currentHistory = [...messages];
+        setMessages(prev => [...prev, userMsg]);
+        const currentInput = inputValue;
+        setInputValue('');
+        setIsTyping(true);
+
+        let aiResponseText = await fetchGeminiReceptionist(currentInput, currentHistory);
+
+        // DETECTAMOS SI LA IA RECOLECTÓ TODOS LOS DATOS PARA CREAR EL TICKET
+        const ticketMatch = aiResponseText.match(/\[TICKET_READY:\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\]/);
+
+        if (ticketMatch && !ticketCreated) {
+            const [, nombre, telefono, equipo, falla] = ticketMatch;
+
+            // Enviamos el ticket al INBOX (tipo: 'consulta')
+            if (agregarTicketManual) {
+                agregarTicketManual({
+                    cliente: { nombre: nombre.trim(), telefono: telefono.trim(), email: '' },
+                    dispositivo: equipo.trim(),
+                    problema: falla.trim(),
+                    presupuestoInicial: '0',
+                    tipo: 'consulta' // Entra a la pestaña INBOX del Dashboard
+                });
+                setTicketCreated(true);
+            }
+
+            // Limpiamos el texto crudo del bot para que el cliente no vea los corchetes
+            aiResponseText = aiResponseText.replace(/\[TICKET_READY:.*?\]/, "").trim();
+            if (aiResponseText === "") {
+                aiResponseText = "¡Perfecto! Acabo de enviar tu solicitud a los técnicos. Se comunicarán contigo al número que me dejaste en breve. ¡Gracias por confiar en Wepairr!";
+            }
+        }
+
+        setMessages(prev => [...prev, { text: aiResponseText, sender: 'ai' }]);
+        setIsTyping(false);
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            backgroundColor: '#1a1a1a',
-            borderRadius: '8px',
-            border: '1px solid #333',
-            overflow: 'hidden'
-        }}>
-            {/* Zona de mensajes (Historial) */}
-            <div style={{ flex: 1, padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {historial.map((msg, index) => (
-                    <div key={index} style={{
-                        alignSelf: msg.actor === 'tecnico' ? 'flex-end' : 'flex-start',
-                        backgroundColor: msg.actor === 'tecnico' ? '#42a5f5' : '#333',
-                        color: 'white',
-                        padding: '10px 14px',
-                        borderRadius: '8px',
-                        maxWidth: '80%'
-                    }}>
-                        <strong style={{ fontSize: '0.8em', display: 'block', marginBottom: '4px', opacity: 0.8 }}>
-                            {msg.actor === 'tecnico' ? 'Vos' : 'Wepairr IA'}
-                        </strong>
-                        {msg.texto}
+        <div className="client-chat-container glass-effect" style={{ height: '500px', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden' }}>
+            <div className="ai-chat-header" style={{ borderRadius: 0 }}>
+                <div className="ai-header-info">
+                    <div className="ai-status-dot"></div>
+                    <SvgBot />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span>Atención al Cliente IA</span>
+                        <span style={{ fontSize: '0.65rem', color: 'var(--success)', fontWeight: 'bold' }}>EN LÍNEA</span>
                     </div>
-                ))}
+                </div>
             </div>
 
-            {/* Zona del Input (Donde escribe el técnico) */}
-            <form onSubmit={manejarEnvio} style={{ display: 'flex', padding: '10px', borderTop: '1px solid #333', backgroundColor: '#0f0f0f' }}>
-                <input
-                    type="text"
-                    value={inputTexto}
-                    onChange={(e) => setInputTexto(e.target.value)}
-                    placeholder="Ej: Ingresó un Moto G20 con pantalla rota..."
-                    style={{
-                        flex: 1,
-                        padding: '10px',
-                        borderRadius: '4px',
-                        border: '1px solid #444',
-                        backgroundColor: '#222',
-                        color: 'white'
-                    }}
-                />
-                <button type="submit" style={{
-                    marginLeft: '10px',
-                    padding: '10px 20px',
-                    backgroundColor: '#66bb6a',
-                    color: 'black',
-                    fontWeight: 'bold',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                }}>
-                    Enviar
-                </button>
+            <div className="ai-chat-body" style={{ flex: 1, padding: '20px' }}>
+                {messages.map((msg, index) => (
+                    <div key={index} className={`ai-message-wrapper ${msg.sender}`}>
+                        <div className={`ai-message ${msg.sender}`} dangerouslySetInnerHTML={{ __html: msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') }} />
+                    </div>
+                ))}
+                {isTyping && (
+                    <div className="ai-message-wrapper ai">
+                        <div className="ai-message ai typing-indicator"><span></span><span></span><span></span></div>
+                    </div>
+                )}
+                {ticketCreated && (
+                    <div style={{ textAlign: 'center', margin: '20px 0', color: 'var(--success)', fontWeight: 'bold', fontSize: '0.9rem', padding: '10px', background: 'var(--bg-panel)', borderRadius: '10px', border: '1px solid var(--success)' }}>
+                        ✅ Ticket Enviado Exitosamente al Taller.
+                    </div>
+                )}
+                <div ref={messagesEndRef} />
+            </div>
+
+            <form className="ai-chat-footer" onSubmit={handleSend} style={{ background: 'var(--bg-panel)' }}>
+                <div className="ai-input-pill">
+                    <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder={ticketCreated ? "Ticket finalizado" : "Escribe tu respuesta..."} disabled={ticketCreated || isTyping} />
+                    <button type="submit" className="ai-submit-btn" disabled={!inputValue.trim() || isTyping || ticketCreated}><SvgSend /></button>
+                </div>
             </form>
         </div>
     );

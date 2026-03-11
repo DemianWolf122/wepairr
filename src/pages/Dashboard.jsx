@@ -759,7 +759,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
             </main>
 
-            <AIChatAssistant />
+            <AIChatAssistant config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />
         </div>
     );
 }
