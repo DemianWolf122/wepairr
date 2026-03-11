@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { TicketContext } from '../context/TicketContext';
-import './AIChatAssistant.css'; // Reutilizamos los hermosos estilos del Copilot
+import './AIChatAssistant.css';
 
 const SvgSend = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>;
 const SvgBot = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>;
@@ -11,9 +11,8 @@ function ChatBox() {
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    const [ticketCreated, setTicketCreated] = useState(false); // Para no crear 2 veces
+    const [ticketCreated, setTicketCreated] = useState(false);
 
-    // Nos conectamos al contexto del taller para enviarle los tickets al inbox del técnico
     const { agregarTicketManual } = useContext(TicketContext);
     const messagesEndRef = useRef(null);
 
@@ -26,7 +25,6 @@ function ChatBox() {
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-        // PROMPT ESTRICTO DE LA RECEPCIONISTA (EXTRAE DATOS Y CREA TICKET)
         const systemPrompt = `Eres la recepcionista amigable del taller de reparación Wepairr. 
         Tu objetivo es obtener 4 datos del cliente, paso a paso, sin ser un robot frío:
         1. Su Nombre.
@@ -37,10 +35,16 @@ function ChatBox() {
         IMPORTANTE: Cuando ya tengas los 4 datos claros, tu ÚLTIMA palabra en el mensaje DEBE SER EXACTAMENTE ESTE FORMATO: 
         [TICKET_READY: NombreDelCliente | Telefono | Equipo | Falla]`;
 
-        const formattedHistory = history.map(m => ({
-            role: m.sender === 'user' ? 'user' : 'model',
-            parts: [{ text: m.text }]
-        }));
+        // FIX CRÍTICO: Eliminar el primer mensaje para evitar error de Google API
+        const formattedHistory = [];
+        for (let i = 0; i < history.length; i++) {
+            if (i === 0 && history[i].sender === 'ai') continue;
+            formattedHistory.push({
+                role: history[i].sender === 'user' ? 'user' : 'model',
+                parts: [{ text: history[i].text }]
+            });
+        }
+
         formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
 
         try {
@@ -48,13 +52,22 @@ function ChatBox() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    system_instruction: { parts: { text: systemPrompt } },
+                    // FIX CRÍTICO: Debe ser system_instruction con guion bajo
+                    system_instruction: { parts: [{ text: systemPrompt }] },
                     contents: formattedHistory
                 })
             });
+
             const data = await response.json();
+
+            if (!response.ok) {
+                console.error("Error de Google API:", data);
+                return "Disculpa, tuvimos un micro-corte en nuestra línea de atención. ¿Me repites lo último?";
+            }
+
             return data.candidates[0].content.parts[0].text;
         } catch (error) {
+            console.error("Error de red en recepcionista:", error);
             return "Hubo un error de conexión, intenta nuevamente.";
         }
     };
@@ -72,25 +85,23 @@ function ChatBox() {
 
         let aiResponseText = await fetchGeminiReceptionist(currentInput, currentHistory);
 
-        // DETECTAMOS SI LA IA RECOLECTÓ TODOS LOS DATOS PARA CREAR EL TICKET
+        // DETECTAMOS SI LA IA RECOLECTÓ TODOS LOS DATOS
         const ticketMatch = aiResponseText.match(/\[TICKET_READY:\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\]/);
 
         if (ticketMatch && !ticketCreated) {
             const [, nombre, telefono, equipo, falla] = ticketMatch;
 
-            // Enviamos el ticket al INBOX (tipo: 'consulta')
             if (agregarTicketManual) {
                 agregarTicketManual({
                     cliente: { nombre: nombre.trim(), telefono: telefono.trim(), email: '' },
                     dispositivo: equipo.trim(),
                     problema: falla.trim(),
                     presupuestoInicial: '0',
-                    tipo: 'consulta' // Entra a la pestaña INBOX del Dashboard
+                    tipo: 'consulta'
                 });
                 setTicketCreated(true);
             }
 
-            // Limpiamos el texto crudo del bot para que el cliente no vea los corchetes
             aiResponseText = aiResponseText.replace(/\[TICKET_READY:.*?\]/, "").trim();
             if (aiResponseText === "") {
                 aiResponseText = "¡Perfecto! Acabo de enviar tu solicitud a los técnicos. Se comunicarán contigo al número que me dejaste en breve. ¡Gracias por confiar en Wepairr!";

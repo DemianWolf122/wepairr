@@ -23,21 +23,26 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     useEffect(() => { if (isOpen) scrollToBottom(); }, [messages, isOpen]);
 
-    // LLAMADA A LA API REAL DE GEMINI
-    // LLAMADA A LA API REAL DE GEMINI (CORREGIDA)
+    // LLAMADA A LA API REAL DE GEMINI (100% CORREGIDA)
     const fetchGeminiResponse = async (userText, history) => {
         const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!apiKey) return "⚠️ Error: Falta configurar la variable de entorno `VITE_GEMINI_API_KEY` en tu archivo .env. Asegúrate de reiniciar el servidor.";
+        if (!apiKey) return "⚠️ Error: Falta configurar la variable de entorno `VITE_GEMINI_API_KEY` en tu archivo .env.";
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-        const systemPrompt = "Eres Wepairr Copilot, un Ingeniero Electrónico Senior especializado en reparación de hardware (celulares, PCs, GPUs). Conoces de esquemáticos, boardviews (ZXW, XinZhiZao), líneas de voltaje y soldadura SMD/BGA. Responde de forma altamente técnica pero concisa a los técnicos. Si te preguntan algo fuera de reparación, responde normalmente pero enfocado a tecnología.";
+        const systemPrompt = "Eres Wepairr Copilot, un Ingeniero Electrónico Senior especializado en reparación de hardware (celulares, PCs, GPUs). Conoces de esquemáticos, boardviews (ZXW, XinZhiZao), líneas de voltaje y soldadura SMD/BGA. Responde de forma altamente técnica pero concisa a los técnicos.";
 
-        const formattedHistory = history.filter(m => m.sender === 'user' || m.sender === 'ai').map(m => ({
-            role: m.sender === 'user' ? 'user' : 'model',
-            parts: [{ text: m.text }]
-        }));
+        // FIX CRÍTICO: Filtramos el mensaje inicial de saludo para que la API no falle (La API exige empezar siempre con un usuario)
+        const formattedHistory = [];
+        for (let i = 0; i < history.length; i++) {
+            if (i === 0 && history[i].sender === 'ai') continue; // Omite el saludo inicial
+            formattedHistory.push({
+                role: history[i].sender === 'user' ? 'user' : 'model',
+                parts: [{ text: history[i].text }]
+            });
+        }
 
+        // Agregamos el mensaje actual del usuario
         formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
 
         try {
@@ -45,18 +50,17 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // FIX: systemInstruction requiere camelCase y un array en parts
-                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    // FIX CRÍTICO: Debe ser system_instruction con guion bajo
+                    system_instruction: { parts: [{ text: systemPrompt }] },
                     contents: formattedHistory
                 })
             });
 
             const data = await response.json();
 
-            // Manejo de errores de la API en pantalla
             if (!response.ok) {
-                console.error("Error devuelto por Gemini:", data);
-                return `⚠️ Error de Google API: ${data.error?.message || 'Revisa la consola (F12) para más detalles.'}`;
+                console.error("Error detallado de Google API:", data);
+                return `⚠️ Error de Google API: ${data.error?.message || 'Error desconocido. Revisa la consola.'}`;
             }
 
             return data.candidates[0].content.parts[0].text;
@@ -81,7 +85,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
             const match = text.match(/crear ticket para (.*?) con (.*?) que (.*)/);
             if (match && match[1] && match[2] && match[3]) {
                 if (agregarTicketManual) {
-                    agregarTicketManual({ cliente: { nombre: match[1], telefono: 'Ingresado por IA' }, dispositivo: match[2], problema: match[3], presupuestoInicial: '0' });
+                    agregarTicketManual({ cliente: { nombre: match[1], telefono: 'Ingresado por IA', email: '' }, dispositivo: match[2], problema: match[3], presupuestoInicial: '0' });
                     return { text: `Ticket creado para ${match[1]} (${match[2]}). Búscalo en Activos.`, actionExecuted: true };
                 }
             }
@@ -97,7 +101,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
         if (!inputValue.trim()) return;
 
         const userMsg = { text: inputValue, sender: 'user' };
-        const currentHistory = [...messages]; // Guardamos historial
+        const currentHistory = [...messages];
         setMessages(prev => [...prev, userMsg]);
         const currentInput = inputValue;
         setInputValue('');
@@ -109,7 +113,6 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
         setIsTyping(false);
     };
 
-    // Renderiza saltos de línea y negritas Markdown
     const renderText = (txt) => {
         return { __html: txt.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>') };
     };
