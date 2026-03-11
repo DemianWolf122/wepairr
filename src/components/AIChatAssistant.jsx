@@ -23,33 +23,30 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     useEffect(() => { if (isOpen) scrollToBottom(); }, [messages, isOpen]);
 
-    // LLAMADA A LA API REAL DE GEMINI (100% CORREGIDA)
+    // API BLINDADA: Inyección de Transcripción (Adaptada al nuevo modelo 2.5 Flash)
     const fetchGeminiResponse = async (userText, history) => {
-        // FIX: Limpiamos la API Key de espacios o comillas accidentales
         const rawKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!rawKey) return "⚠️ Error: Falta configurar la variable de entorno `VITE_GEMINI_API_KEY` en tu archivo .env. Asegúrate de reiniciar el servidor.";
+        if (!rawKey) return "⚠️ Error: Falta configurar la variable `VITE_GEMINI_API_KEY` en tu archivo .env. Asegúrate de reiniciar el servidor.";
         const apiKey = rawKey.trim().replace(/['"]/g, '');
 
-        // FIX: Añadimos "-latest" obligatoriamente para la versión v1beta
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        // FIX CRÍTICO DE MODELO: Actualizado a gemini-2.5-flash según tu panel de Google AI Studio
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         const systemPrompt = "Eres Wepairr Copilot, un Ingeniero Electrónico Senior especializado en reparación de hardware (celulares, PCs, GPUs). Conoces de esquemáticos, boardviews (ZXW, XinZhiZao), líneas de voltaje y soldadura SMD/BGA. Responde de forma altamente técnica pero concisa a los técnicos. Si te preguntan algo fuera de reparación, responde normalmente pero enfocado a tecnología.";
 
-        const formattedHistory = history.filter(m => m.sender === 'user' || m.sender === 'ai').map(m => ({
-            role: m.sender === 'user' ? 'user' : 'model',
-            parts: [{ text: m.text }]
-        }));
-
-        formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
+        // Empaquetamos todo en un solo texto gigante para evitar problemas de esquemas con el nuevo modelo
+        let transcript = `[INSTRUCCIONES DE SISTEMA OBLIGATORIAS]:\n${systemPrompt}\n\n[HISTORIAL DE CHAT]:\n`;
+        history.forEach(m => {
+            transcript += `${m.sender === 'user' ? 'Técnico' : 'Copilot'}: ${m.text}\n`;
+        });
+        transcript += `Técnico: ${userText}\nCopilot:`;
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // FIX CRÍTICO: Debe ser con guion bajo (system_instruction)
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: formattedHistory
+                    contents: [{ role: 'user', parts: [{ text: transcript }] }]
                 })
             });
 
@@ -57,6 +54,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
 
             if (!response.ok) {
                 console.error("Error devuelto por Gemini:", data);
+                // Si por alguna razón el 2.5 falla, te avisará si es que Google te pide usar el 2.0
                 return `⚠️ Error de Google API: ${data.error?.message || 'Revisa la consola (F12) para más detalles.'}`;
             }
 
@@ -126,7 +124,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                             <SvgBot />
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                 <span>Wepairr Copilot</span>
-                                <span style={{ fontSize: '0.65rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>LLM ACTIVO</span>
+                                <span style={{ fontSize: '0.65rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>LLM 2.5 ACTIVO</span>
                             </div>
                         </div>
                         <button className="ai-close-btn" onClick={() => setIsOpen(false)}><SvgX /></button>

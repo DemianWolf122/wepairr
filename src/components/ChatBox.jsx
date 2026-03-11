@@ -19,14 +19,14 @@ function ChatBox() {
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     useEffect(() => { scrollToBottom(); }, [messages]);
 
+    // API BLINDADA: Inyección de Transcripción (Adaptada al nuevo modelo 2.5 Flash)
     const fetchGeminiReceptionist = async (userText, history) => {
-        // FIX: Limpieza de la API key
         const rawKey = import.meta.env.VITE_GEMINI_API_KEY;
         if (!rawKey) return "El chat está en mantenimiento (Falta API Key). Por favor comunícate por WhatsApp.";
         const apiKey = rawKey.trim().replace(/['"]/g, '');
 
-        // FIX: Sufijo -latest obligatorio
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        // FIX CRÍTICO DE MODELO: Actualizado a gemini-2.5-flash
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         const systemPrompt = `Eres la recepcionista amigable del taller de reparación Wepairr. 
         Tu objetivo es obtener 4 datos del cliente, paso a paso, sin ser un robot frío:
@@ -38,25 +38,18 @@ function ChatBox() {
         IMPORTANTE: Cuando ya tengas los 4 datos claros, tu ÚLTIMA palabra en el mensaje DEBE SER EXACTAMENTE ESTE FORMATO: 
         [TICKET_READY: NombreDelCliente | Telefono | Equipo | Falla]`;
 
-        const formattedHistory = [];
-        for (let i = 0; i < history.length; i++) {
-            if (i === 0 && history[i].sender === 'ai') continue;
-            formattedHistory.push({
-                role: history[i].sender === 'user' ? 'user' : 'model',
-                parts: [{ text: history[i].text }]
-            });
-        }
-
-        formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
+        let transcript = `[INSTRUCCIONES DE SISTEMA]:\n${systemPrompt}\n\n[HISTORIAL DE CHAT]:\n`;
+        history.forEach(m => {
+            transcript += `${m.sender === 'user' ? 'Cliente' : 'Recepcionista'}: ${m.text}\n`;
+        });
+        transcript += `Cliente: ${userText}\nRecepcionista:`;
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // FIX: Formato guion bajo exacto
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: formattedHistory
+                    contents: [{ role: 'user', parts: [{ text: transcript }] }]
                 })
             });
 
@@ -64,12 +57,13 @@ function ChatBox() {
 
             if (!response.ok) {
                 console.error("Error de Google API:", data);
-                return "Disculpa, tuvimos un micro-corte en nuestra línea de atención. ¿Me repites lo último?";
+                // Por si el nombre 2.5 está fallando o restringido temporalmente
+                return `Disculpa, tuvimos un micro-corte. (Error: ${data.error?.message})`;
             }
 
             return data.candidates[0].content.parts[0].text;
         } catch (error) {
-            console.error("Error de red en recepcionista:", error);
+            console.error("Error de red:", error);
             return "Hubo un error de conexión, intenta nuevamente.";
         }
     };
