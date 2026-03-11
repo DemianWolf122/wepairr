@@ -19,7 +19,15 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     const [isTyping, setIsTyping] = useState(false);
     const [isListening, setIsListening] = useState(false);
 
-    const { tickets, agregarTicketManual, actualizarEstadoTicket } = useContext(TicketContext);
+    // FIX 1: Importamos TODAS las funciones necesarias del TicketContext
+    const { 
+        tickets, 
+        agregarTicketManual, 
+        actualizarEstadoTicket, 
+        actualizarPresupuesto, 
+        editarTicket 
+    } = useContext(TicketContext);
+    
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -56,7 +64,6 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
 
         const ticketsResumen = tickets.map(t => `ID:${t.id} | Cliente:${t.cliente.nombre} | Falla:${t.problema} | Estado:${t.estado}`).join('\n');
 
-        // EL PROMPT MAESTRO (DICCIONARIO DE FUNCIONES COMPLETAS)
         const systemPrompt = `Eres Wepairr Copilot, el Sistema Operativo IA y Asistente Maestro del taller de reparaciones.
         DATOS ACTUALES: Moneda: ${config?.moneda} | Nombre Taller: ${config?.nombreNegocio}.
         TICKETS EN SISTEMA:\n${ticketsResumen || 'No hay tickets activos'}
@@ -120,9 +127,13 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
         let actionExecuted = false;
         let finalOutput = aiResponseText;
 
-        const appContext = { theme, toggleTheme, config, setConfig, tickets, agregarTicketManual, actualizarEstadoTicket };
+        // FIX 1B: Agregamos actualizarPresupuesto y editarTicket al objeto appContext
+        const appContext = { 
+            theme, toggleTheme, config, setConfig, 
+            tickets, agregarTicketManual, actualizarEstadoTicket, 
+            actualizarPresupuesto, editarTicket 
+        };
 
-        // REGEX MAESTRO para capturar [ACTION_...: ...]
         const actionRegex = /\[ACTION_([A-Z_]+)(?:\s*:\s*(.*?))?\]/g;
         let match;
 

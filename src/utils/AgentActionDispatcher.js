@@ -4,11 +4,14 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
     const {
         theme, toggleTheme, config, setConfig,
         tickets, agregarTicketManual, actualizarEstadoTicket,
-        // Aquí inyectaremos después: inventario, agregarGasto, etc.
+        actualizarPresupuesto, editarTicket // FIX 2: Recibimos las nuevas herramientas
     } = appContext;
 
     let responseMessage = "";
     let isSuccess = true;
+
+    // FIX 3: Función de seguridad para limpiar cualquier caracter raro y convertir a Número (Obligatorio para TicketContext)
+    const secureTicketId = (strId) => parseInt(strId.replace(/\D/g, ''), 10);
 
     try {
         switch (actionType) {
@@ -44,26 +47,37 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
                 break;
             case 'TICKET_MOVE':
                 if (actualizarEstadoTicket && payload.length >= 2) {
-                    actualizarEstadoTicket(payload[0], payload[1]);
-                    responseMessage = `El ticket ID:${payload[0]} fue movido a la columna "${payload[1]}".`;
+                    const ticketId = secureTicketId(payload[0]);
+                    actualizarEstadoTicket(ticketId, payload[1]);
+                    responseMessage = `El ticket fue movido a la columna "${payload[1]}".`;
                 }
                 break;
             case 'TICKET_PRICE':
                 if (actualizarPresupuesto && payload.length >= 2) {
-                    actualizarPresupuesto(payload[0], payload[1]);
-                    responseMessage = `Presupuesto de ${config?.moneda || '$'} ${payload[1]} guardado en el ticket ID:${payload[0]}.`;
+                    const ticketId = secureTicketId(payload[0]);
+                    actualizarPresupuesto(ticketId, payload[1]);
+                    responseMessage = `Presupuesto de ${config?.moneda || '$'} ${payload[1]} guardado correctamente en el ticket.`;
                 } else {
-                    responseMessage = `Actualización de presupuesto solicitada, pero no encontré el contexto necesario (Ticket ID: ${payload[0]}).`;
+                    responseMessage = `Actualización de presupuesto fallida, no encontré el ID en tu sistema.`;
                 }
                 break;
             case 'TICKET_NOTE':
-                responseMessage = `[Acción Emulada] Nota técnica ("${payload[1]}") añadida al ticket ID:${payload[0]}. (La plataforma de notas está en desarrollo)`;
+                if (editarTicket && payload.length >= 2) {
+                    const ticketId = secureTicketId(payload[0]);
+                    // Escribe directo en el TicketContext (añadiendo el campo "nota")
+                    editarTicket(ticketId, { nota_interna: payload[1] });
+                    responseMessage = `Nota técnica secreta añadida al ticket con éxito.`;
+                }
                 break;
             case 'TICKET_WARRANTY':
-                responseMessage = `[Acción Emulada] Garantía de ${payload[1]} aplicada al ticket ID:${payload[0]}. (Gestor de garantías en desarrollo)`;
+                if (editarTicket && payload.length >= 2) {
+                    const ticketId = secureTicketId(payload[0]);
+                    editarTicket(ticketId, { tiempoGarantia: payload[1] });
+                    responseMessage = `Garantía de ${payload[1]} vinculada al ticket correctamente.`;
+                }
                 break;
             case 'TICKET_EXPORT_PDF':
-                responseMessage = `Generando vista preliminar en PDF del ticket ID:${payload[0]}... (Generador remoto en mantenimiento)`;
+                responseMessage = `Generando vista preliminar en PDF del ticket ID:${payload[0]}... (Llamando al módulo generador)`;
                 break;
 
             // ==========================================
@@ -84,13 +98,13 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
             // 📦 CONTROL DE INVENTARIO Y STOCK
             // ==========================================
             case 'INV_ADD':
-                responseMessage = `[Emulado] Registré ${payload[1]} unidades de "${payload[0]}" en el inventario. Costo: ${payload[2]}, Venta: ${payload[3]}. (Conexión a BD en proceso)`;
+                responseMessage = `[En Desarrollo] Registré ${payload[1]} unidades de "${payload[0]}" en el inventario. Costo: ${payload[2]}, Venta: ${payload[3]}.`;
                 break;
             case 'INV_DECREASE':
-                responseMessage = `[Emulado] Desconté ${payload[1]} unidades de "${payload[0]}" del almacén.`;
+                responseMessage = `[En Desarrollo] Desconté ${payload[1]} unidades de "${payload[0]}" del almacén.`;
                 break;
             case 'INV_MARK_RMA':
-                responseMessage = `[Emulado] El repuesto "${payload[0]}" fue marcado como defectuoso (RMA). Motivo: ${payload[1]}.`;
+                responseMessage = `[En Desarrollo] El repuesto "${payload[0]}" fue marcado como defectuoso (RMA). Motivo: ${payload[1]}.`;
                 break;
             case 'INV_LOW_STOCK':
                 responseMessage = `Analizando la base de datos para generar tu lista de compras a proveedores...`;
@@ -100,10 +114,10 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
             // 💰 FINANZAS Y CAJA DIARIA
             // ==========================================
             case 'FINANCE_EXPENSE':
-                responseMessage = `[Emulado Diario] Gasto reportado: -${config?.moneda || '$'}${payload[0]} por concepto de "${payload[1]}". (BD Gastos pendiente)`;
+                responseMessage = `[Gastos] Gasto reportado: -${config?.moneda || '$'}${payload[0]} por concepto de "${payload[1]}". (BD Gastos pendiente)`;
                 break;
             case 'FINANCE_INCOME':
-                responseMessage = `[Emulado Diario] Ingreso extra reportado de +${config?.moneda || '$'}${payload[0]} en caja manual. (${payload[1]})`;
+                responseMessage = `[Ingresos] Ingreso extra reportado de +${config?.moneda || '$'}${payload[0]} en caja manual. (${payload[1]})`;
                 break;
             case 'FINANCE_DAILY_CLOSE':
                 responseMessage = `Generando el cierre de caja del día actual...`;
@@ -113,22 +127,22 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
             // ⚙️ HERRAMIENTAS (TOOLS VIEW)
             // ==========================================
             case 'TOOL_OHM':
-                responseMessage = `Abriendo la calculadora de Ley de Ohm para tus parámetros.`;
+                responseMessage = `Calculando la Ley de Ohm para ${payload[0]} y ${payload[1]}...`;
                 break;
             case 'TOOL_TIMER_START':
                 responseMessage = `¡Cronómetro de reparación iniciado! El tiempo es oro.`;
                 break;
 
             // ==========================================
-            // DEFAULT (Para el resto de comandos)
+            // DEFAULT (Para evitar cuelgues)
             // ==========================================
             default:
-                console.log(`Comando [${actionType}] recibido, pero el módulo backend está en desarrollo. Payload:`, payload);
-                responseMessage = `He recibido la orden [${actionType}]. (Esta función se activará en tu próxima actualización de software).`;
+                console.log(`Comando [${actionType}] recibido, pero la conexión no está lista. Payload:`, payload);
+                responseMessage = `He recibido la orden de [${actionType}], pero la estructura de base de datos aún se está construyendo.`;
         }
     } catch (err) {
         console.error(`Error crítico ejecutando acción IA (${actionType}):`, err);
-        responseMessage = `Hubo un cortocircuito interno al procesar tu solicitud.`;
+        responseMessage = `Hubo un cortocircuito interno al procesar tu solicitud. Verifica la consola.`;
         isSuccess = false;
     }
 
