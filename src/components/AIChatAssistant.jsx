@@ -24,21 +24,20 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     useEffect(() => { if (isOpen) scrollToBottom(); }, [messages, isOpen]);
 
     // LLAMADA A LA API REAL DE GEMINI
+    // LLAMADA A LA API REAL DE GEMINI (CORREGIDA)
     const fetchGeminiResponse = async (userText, history) => {
         const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!apiKey) return "⚠️ Error: Falta configurar la variable de entorno `VITE_GEMINI_API_KEY` en tu archivo .env. Obtén tu clave gratuita en Google AI Studio.";
+        if (!apiKey) return "⚠️ Error: Falta configurar la variable de entorno `VITE_GEMINI_API_KEY` en tu archivo .env. Asegúrate de reiniciar el servidor.";
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         const systemPrompt = "Eres Wepairr Copilot, un Ingeniero Electrónico Senior especializado en reparación de hardware (celulares, PCs, GPUs). Conoces de esquemáticos, boardviews (ZXW, XinZhiZao), líneas de voltaje y soldadura SMD/BGA. Responde de forma altamente técnica pero concisa a los técnicos. Si te preguntan algo fuera de reparación, responde normalmente pero enfocado a tecnología.";
 
-        // Formatear historial para Gemini
         const formattedHistory = history.filter(m => m.sender === 'user' || m.sender === 'ai').map(m => ({
             role: m.sender === 'user' ? 'user' : 'model',
             parts: [{ text: m.text }]
         }));
 
-        // Agregamos el mensaje actual
         formattedHistory.push({ role: 'user', parts: [{ text: userText }] });
 
         try {
@@ -46,15 +45,24 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    system_instruction: { parts: { text: systemPrompt } },
+                    // FIX: systemInstruction requiere camelCase y un array en parts
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
                     contents: formattedHistory
                 })
             });
+
             const data = await response.json();
+
+            // Manejo de errores de la API en pantalla
+            if (!response.ok) {
+                console.error("Error devuelto por Gemini:", data);
+                return `⚠️ Error de Google API: ${data.error?.message || 'Revisa la consola (F12) para más detalles.'}`;
+            }
+
             return data.candidates[0].content.parts[0].text;
         } catch (error) {
-            console.error("Error Gemini API:", error);
-            return "Lo siento, mis servidores neuronales están caídos. Revisa la consola para más detalles.";
+            console.error("Error de Red:", error);
+            return "Lo siento, mis servidores neuronales están caídos (Error de red).";
         }
     };
 
