@@ -20,14 +20,14 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     const [isListening, setIsListening] = useState(false);
 
     // FIX 1: Importamos TODAS las funciones necesarias del TicketContext
-    const { 
-        tickets, 
-        agregarTicketManual, 
-        actualizarEstadoTicket, 
-        actualizarPresupuesto, 
-        editarTicket 
+    const {
+        tickets,
+        agregarTicketManual,
+        actualizarEstadoTicket,
+        actualizarPresupuesto,
+        editarTicket
     } = useContext(TicketContext);
-    
+
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -115,10 +115,18 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                 body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: transcript }] }] })
             });
             const data = await response.json();
-            if (!response.ok) return `⚠️ Error de API: ${data.error?.message}`;
+
+            // EL ESCUDO: Si el error es 429 (Límite superado)
+            if (!response.ok) {
+                if (response.status === 429) {
+                    return "¡Uf! He analizado demasiados equipos por hoy y mis circuitos necesitan enfriarse 🥵. El límite de la red neuronal se alcanzó por seguridad. Volveré a estar operativo mañana. ¡Mientras tanto, podés seguir usando todas las herramientas de la plataforma de forma manual!";
+                }
+                return `⚠️ Error de conexión: ${data.error?.message}`;
+            }
+
             return data.candidates[0].content.parts[0].text;
         } catch (error) {
-            return "Lo siento, falló la conexión con los servidores de Google.";
+            return "Lo siento, falló la conexión con la red satelital. Revisa tu internet.";
         }
     };
 
@@ -128,10 +136,10 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
         let finalOutput = aiResponseText;
 
         // FIX 1B: Agregamos actualizarPresupuesto y editarTicket al objeto appContext
-        const appContext = { 
-            theme, toggleTheme, config, setConfig, 
-            tickets, agregarTicketManual, actualizarEstadoTicket, 
-            actualizarPresupuesto, editarTicket 
+        const appContext = {
+            theme, toggleTheme, config, setConfig,
+            tickets, agregarTicketManual, actualizarEstadoTicket,
+            actualizarPresupuesto, editarTicket
         };
 
         const actionRegex = /\[ACTION_([A-Z_]+)(?:\s*:\s*(.*?))?\]/g;
