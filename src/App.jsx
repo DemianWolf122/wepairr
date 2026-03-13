@@ -10,6 +10,15 @@ import Directory from './pages/Directory';
 import Login from './pages/Login';
 import { TicketProvider } from './context/TicketContext';
 import './index.css';
+import Dashboard from './pages/Dashboard';
+import StatusTracking from './pages/StatusTracking';
+import InventoryView from './pages/InventoryView';
+import ClientReception from './pages/ClientReception';
+import Directory from './pages/Directory';
+import MetricsView from './pages/MetricsView';
+import ToolsView from './pages/ToolsView';
+import CommunityWiki from './pages/CommunityWiki';
+import Settings from './components/Settings';
 
 const CONFIG_INICIAL = {
   plan: 'premium',
