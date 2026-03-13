@@ -4,7 +4,8 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
     const {
         theme, toggleTheme, config, setConfig,
         tickets, agregarTicketManual, actualizarEstadoTicket,
-        actualizarPresupuesto, editarTicket // FIX 2: Recibimos las nuevas herramientas
+        actualizarPresupuesto, editarTicket, // FIX 2: Recibimos las nuevas herramientas
+        navigate // 🚀 NUEVO: El poder de viajar entre páginas
     } = appContext;
 
     let responseMessage = "";
@@ -15,6 +16,20 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
 
     try {
         switch (actionType) {
+            // ==========================================
+            // 🚀 NAVEGACIÓN AUTÓNOMA DE LA IA
+            // ==========================================
+            case 'NAVIGATE':
+                if (navigate && payload.length > 0) {
+                    const ruta = payload[0].replace(/['"]/g, '').trim();
+                    navigate(ruta);
+                    responseMessage = `Te he redirigido a la pantalla solicitada.`;
+                } else {
+                    responseMessage = `No pude encontrar la ruta especificada.`;
+                    isSuccess = false;
+                }
+                break;
+
             // ==========================================
             // 🎨 INTERFAZ Y AJUSTES VISUALES
             // ==========================================
@@ -127,9 +142,11 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
             // ⚙️ HERRAMIENTAS (TOOLS VIEW)
             // ==========================================
             case 'TOOL_OHM':
+                if (navigate) navigate('/tools'); // Te lleva a herramientas si lo pedís
                 responseMessage = `Calculando la Ley de Ohm para ${payload[0]} y ${payload[1]}...`;
                 break;
             case 'TOOL_TIMER_START':
+                if (navigate) navigate('/tools'); // Te lleva a herramientas si lo pedís
                 responseMessage = `¡Cronómetro de reparación iniciado! El tiempo es oro.`;
                 break;
 
