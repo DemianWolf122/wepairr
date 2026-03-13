@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useContext } from 'react';
+import { TicketContext } from '../context/TicketContext'; // 🚀 NUEVO: Importamos el contexto real de los tickets
 import './ClientReception.css';
 
 const SvgBuilding = () => <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path></svg>;
@@ -28,6 +29,12 @@ function ClientReception({ config }) {
     const isPremium = config.plan === 'premium';
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [localTheme, setLocalTheme] = useState(config?.shopDarkMode ? 'dark' : 'light');
+
+    // 🚀 NUEVOS ESTADOS PARA EL TRACKING REAL
+    const { tickets } = useContext(TicketContext);
+    const [trackingId, setTrackingId] = useState('');
+    const [foundTicket, setFoundTicket] = useState(null);
+    const [searchError, setSearchError] = useState('');
 
     const toggleTheme = () => setLocalTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
@@ -74,6 +81,39 @@ function ClientReception({ config }) {
         if (url.includes('youtube.com/watch?v=')) return url.replace('watch?v=', 'embed/');
         if (url.includes('youtu.be/')) return url.replace('youtu.be/', 'youtube.com/embed/');
         return url;
+    };
+
+    // 🚀 LÓGICA DE BÚSQUEDA DE TICKET REAL
+    const handleSearchTicket = (e) => {
+        e.preventDefault();
+        setSearchError('');
+        setFoundTicket(null);
+
+        if (!trackingId.trim()) return;
+
+        // Limpiamos la entrada por si escribieron un # y lo pasamos a número
+        const targetId = parseInt(trackingId.replace(/\D/g, ''), 10);
+
+        // Buscamos en el contexto real de la aplicación
+        const ticket = tickets.find(t => t.id === targetId);
+
+        if (ticket && !ticket.borrado) {
+            setFoundTicket(ticket);
+        } else {
+            setSearchError('No encontramos ningún equipo activo con ese número de orden.');
+        }
+    };
+
+    // Función auxiliar para determinar el color del estado
+    const getStatusColor = (estado) => {
+        switch (estado?.toLowerCase()) {
+            case 'ingresado': return '#3b82f6'; // Azul
+            case 'en revisión': return '#f59e0b'; // Amarillo
+            case 'presupuestado': return '#8b5cf6'; // Morado
+            case 'reparado': return '#10b981'; // Verde
+            case 'entregado': return '#64748b'; // Gris
+            default: return 'var(--shop-accent)';
+        }
     };
 
     return (
@@ -124,15 +164,50 @@ function ClientReception({ config }) {
                 </div>
             </div>
 
+            {/* 🚀 MÓDULO DE TRACKING REAL */}
             {config.mostrarTracking && (
                 <div className="shop-section shop-section-tracking">
-                    <div className="tracking-inner glass-effect">
+                    <div className="tracking-inner glass-effect" style={{ transition: 'all 0.3s ease' }}>
                         <h3 style={{ margin: '0 0 10px 0', fontSize: '1.5rem', color: 'var(--shop-text)' }}>Seguimiento de Equipo</h3>
-                        <p style={{ fontSize: '1rem', color: 'var(--shop-text-secondary)', marginBottom: '20px' }}>Ingresá tu N° de orden para ver el estado.</p>
-                        <div className="tracking-input-group">
-                            <input type="text" placeholder="#12345" />
-                            <button className="shop-cta-btn">Buscar</button>
-                        </div>
+                        <p style={{ fontSize: '1rem', color: 'var(--shop-text-secondary)', marginBottom: '20px' }}>Ingresá tu N° de orden para ver el estado actual.</p>
+
+                        <form onSubmit={handleSearchTicket} className="tracking-input-group">
+                            <input
+                                type="text"
+                                placeholder="Ej: 171042..."
+                                value={trackingId}
+                                onChange={(e) => setTrackingId(e.target.value)}
+                            />
+                            <button type="submit" className="shop-cta-btn">Buscar</button>
+                        </form>
+
+                        {/* Mensaje de Error */}
+                        {searchError && (
+                            <div style={{ marginTop: '15px', color: '#ef4444', fontWeight: 'bold', padding: '10px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px' }}>
+                                {searchError}
+                            </div>
+                        )}
+
+                        {/* Tarjeta de Resultado Exitoso */}
+                        {foundTicket && (
+                            <div className="animate-pop-in" style={{ marginTop: '20px', padding: '20px', background: 'var(--shop-bg-secondary)', borderRadius: '12px', border: '1px solid var(--shop-border)', textAlign: 'left' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', borderBottom: '1px solid var(--shop-border)', paddingBottom: '10px' }}>
+                                    <h4 style={{ margin: 0, color: 'var(--shop-text)', fontSize: '1.2rem' }}>{foundTicket.dispositivo}</h4>
+                                    <span style={{ background: getStatusColor(foundTicket.estado), color: '#fff', padding: '5px 12px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                                        {foundTicket.estado}
+                                    </span>
+                                </div>
+                                <div style={{ display: 'grid', gap: '10px', color: 'var(--shop-text-secondary)', fontSize: '0.95rem' }}>
+                                    <p style={{ margin: 0 }}><strong>Falla reportada:</strong> {foundTicket.problema}</p>
+                                    <p style={{ margin: 0 }}><strong>Fecha de ingreso:</strong> {new Date(foundTicket.fecha).toLocaleDateString()}</p>
+                                    {foundTicket.presupuesto && foundTicket.presupuesto !== '0' && (
+                                        <p style={{ margin: '10px 0 0 0', fontSize: '1.1rem', color: 'var(--shop-text)' }}>
+                                            <strong>Presupuesto:</strong> {config.moneda || '$'} {foundTicket.presupuesto}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

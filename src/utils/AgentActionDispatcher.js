@@ -4,28 +4,33 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
     const {
         theme, toggleTheme, config, setConfig,
         tickets, agregarTicketManual, actualizarEstadoTicket,
-        actualizarPresupuesto, editarTicket, // FIX 2: Recibimos las nuevas herramientas
-        navigate // 🚀 NUEVO: El poder de viajar entre páginas
+        actualizarPresupuesto, editarTicket,
+        navigate, setSeccionPrincipal // 🚀 NUEVO: Traemos el cambiador de pestañas
     } = appContext;
 
     let responseMessage = "";
     let isSuccess = true;
 
-    // FIX 3: Función de seguridad para limpiar cualquier caracter raro y convertir a Número (Obligatorio para TicketContext)
     const secureTicketId = (strId) => parseInt(strId.replace(/\D/g, ''), 10);
 
     try {
         switch (actionType) {
             // ==========================================
-            // 🚀 NAVEGACIÓN AUTÓNOMA DE LA IA
+            // 🚀 NAVEGACIÓN INTELIGENTE
             // ==========================================
             case 'NAVIGATE':
-                if (navigate && payload.length > 0) {
-                    const ruta = payload[0].replace(/['"]/g, '').trim();
-                    navigate(ruta);
-                    responseMessage = `Te he redirigido a la pantalla solicitada.`;
+                if (payload.length > 0) {
+                    const destino = payload[0].replace(/['"]/g, '').trim();
+                    // Si empieza con barra (ej: /directory), usamos React Router
+                    if (destino.startsWith('/')) {
+                        if (navigate) navigate(destino);
+                    } else {
+                        // Si no, cambiamos la pestaña interna del Dashboard
+                        if (setSeccionPrincipal) setSeccionPrincipal(destino);
+                    }
+                    responseMessage = `Te he llevado a la sección solicitada.`;
                 } else {
-                    responseMessage = `No pude encontrar la ruta especificada.`;
+                    responseMessage = `No pude encontrar la ruta.`;
                     isSuccess = false;
                 }
                 break;
@@ -79,7 +84,6 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
             case 'TICKET_NOTE':
                 if (editarTicket && payload.length >= 2) {
                     const ticketId = secureTicketId(payload[0]);
-                    // Escribe directo en el TicketContext (añadiendo el campo "nota")
                     editarTicket(ticketId, { nota_interna: payload[1] });
                     responseMessage = `Nota técnica secreta añadida al ticket con éxito.`;
                 }
@@ -142,11 +146,11 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
             // ⚙️ HERRAMIENTAS (TOOLS VIEW)
             // ==========================================
             case 'TOOL_OHM':
-                if (navigate) navigate('/tools'); // Te lleva a herramientas si lo pedís
+                if (setSeccionPrincipal) setSeccionPrincipal('herramientas');
                 responseMessage = `Calculando la Ley de Ohm para ${payload[0]} y ${payload[1]}...`;
                 break;
             case 'TOOL_TIMER_START':
-                if (navigate) navigate('/tools'); // Te lleva a herramientas si lo pedís
+                if (setSeccionPrincipal) setSeccionPrincipal('herramientas');
                 responseMessage = `¡Cronómetro de reparación iniciado! El tiempo es oro.`;
                 break;
 

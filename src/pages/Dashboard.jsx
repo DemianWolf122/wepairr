@@ -320,8 +320,9 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>{userRole}</span>
                                 </div>
                                 <div className="profile-menu-body">
+                                    {/* 🚀 NUEVO: Botón para abrir el perfil */}
                                     <button onClick={() => { cambiarSeccion('ajustes_web'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
-                                        <SvgLayout /> Editor de Vidriera Web
+                                        <SvgUserCircle /> Mi Perfil y Ajustes
                                     </button>
                                     <button onClick={handleLogout} className="profile-menu-item text-danger" style={{ borderTop: '1px solid var(--border-glass)' }}>
                                         <SvgLogout /> Cerrar Sesión
@@ -755,11 +756,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 {seccionPrincipal === 'inventario' && <InventoryView moneda={config.moneda || 'ARS'} />}
                 {seccionPrincipal === 'herramientas' && <ToolsView moneda={config.moneda || 'ARS'} />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
-                {seccionPrincipal === 'ajustes_web' && <Settings config={config} onUpdate={setConfig} />}
+                {/* 🚀 NUEVO: Configuraciones actualizadas para Editor y Perfil */}
+                {seccionPrincipal === 'ajustes_web' && <Settings config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />}
 
             </main>
 
-            <AIChatAssistant config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />
+            {/* 🚀 NUEVO: Pasamos setSeccionPrincipal a J.A.R.V.I.S */}
+            <AIChatAssistant config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} setSeccionPrincipal={setSeccionPrincipal} />
         </div>
     );
 }

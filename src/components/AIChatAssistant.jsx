@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom'; // 🚀 NUEVO
 import { TicketContext } from '../context/TicketContext';
 import { executeAgentAction } from '../utils/AgentActionDispatcher';
 import './AIChatAssistant.css';
@@ -10,7 +11,9 @@ const SvgBot = () => <svg viewBox="0 0 24 24" width="20" height="20" stroke="cur
 const SvgAction = () => <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>;
 const SvgMic = () => <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>;
 
-function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
+// 🚀 NUEVO: Agregamos setSeccionPrincipal a los props
+function AIChatAssistant({ config, setConfig, theme, toggleTheme, setSeccionPrincipal }) {
+    const navigate = useNavigate(); // 🚀 NUEVO
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
         { text: "Sistemas Online. Wepairr Copilot listo para gestionar tickets, inventario, clientes y finanzas. ¿Qué deseas hacer?", sender: 'ai' }
@@ -19,7 +22,6 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
     const [isTyping, setIsTyping] = useState(false);
     const [isListening, setIsListening] = useState(false);
 
-    // FIX 1: Importamos TODAS las funciones necesarias del TicketContext
     const {
         tickets,
         agregarTicketManual,
@@ -58,17 +60,32 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
 
     const fetchGeminiResponse = async (userText, history) => {
         const rawKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!rawKey) return "⚠️ Error: Falta API Key en tu .env.";
+
+        if (!rawKey) {
+            console.error("🔴 ALERTA DE DESARROLLADOR: Falta la variable VITE_GEMINI_API_KEY en el entorno de Vercel.");
+            return "🔧 Mis sistemas neuronales están en mantenimiento preventivo. Estaré de vuelta en breve.";
+        }
+
         const apiKey = rawKey.trim().replace(/['"]/g, '');
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         const ticketsResumen = tickets.map(t => `ID:${t.id} | Cliente:${t.cliente.nombre} | Falla:${t.problema} | Estado:${t.estado}`).join('\n');
 
+        // 🚀 NUEVO: Le enseñamos los comandos de navegación por Wepairr
         const systemPrompt = `Eres Wepairr Copilot, el Sistema Operativo IA y Asistente Maestro del taller de reparaciones.
         DATOS ACTUALES: Moneda: ${config?.moneda} | Nombre Taller: ${config?.nombreNegocio}.
         TICKETS EN SISTEMA:\n${ticketsResumen || 'No hay tickets activos'}
 
-        Tienes permisos de Administrador Nivel Dios. Si el técnico te pide que ejecutes una acción, modifiques el sistema o gestiones algo, DEBES responder amablemente y añadir EXACTAMENTE al final de tu mensaje el comando oculto correspondiente de la siguiente lista:
+        Tienes permisos de Administrador Nivel Dios. Si el técnico te pide que ejecutes una acción o navegue por la página, DEBES responder amablemente y añadir EXACTAMENTE al final de tu mensaje el comando oculto correspondiente de la siguiente lista:
+
+        [COMANDOS DE NAVEGACIÓN DE PESTAÑAS (CRÍTICO)]
+        Si te pide ir a herramientas: [ACTION_NAVIGATE: herramientas]
+        Si te pide ir al inventario/stock: [ACTION_NAVIGATE: inventario]
+        Si te pide ir a gestión de taller/equipo/métricas: [ACTION_NAVIGATE: gestion_taller]
+        Si te pide ir a los tickets/dashboard: [ACTION_NAVIGATE: gestion_tickets]
+        Si te pide ir a ajustes/perfil/vidriera: [ACTION_NAVIGATE: ajustes_web]
+        Si te pide ir a la comunidad: [ACTION_NAVIGATE: comunidad]
+        Si te pide ir a su página pública/directorio: [ACTION_NAVIGATE: /directory]
 
         [COMANDOS UI/CONFIGURACIÓN]
         - Tema: [ACTION_UI_THEME: dark/light]
@@ -81,28 +98,13 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
         - Asignar Presupuesto: [ACTION_TICKET_PRICE: ID | Monto]
         - Añadir Nota Secreta: [ACTION_TICKET_NOTE: ID | "Nota"]
         - Fijar Garantía: [ACTION_TICKET_WARRANTY: ID | "Tiempo"]
-        - Generar/Exportar PDF: [ACTION_TICKET_EXPORT_PDF: ID]
+        - Generar PDF: [ACTION_TICKET_EXPORT_PDF: ID]
 
         [COMANDOS DE CLIENTES]
         - Enviar WhatsApp: [ACTION_CLIENT_WA: Teléfono | "Mensaje"]
         - Llamar por Teléfono: [ACTION_CLIENT_CALL: Teléfono]
 
-        [COMANDOS DE INVENTARIO]
-        - Añadir Stock: [ACTION_INV_ADD: NombreRepuesto | Cantidad | Costo | Venta]
-        - Descontar Repuesto Usado: [ACTION_INV_DECREASE: NombreRepuesto | Cantidad]
-        - Marcar Defectuoso/Garantía: [ACTION_INV_MARK_RMA: NombreRepuesto | "Motivo"]
-        - Calcular qué comprar: [ACTION_INV_LOW_STOCK]
-
-        [COMANDOS DE FINANZAS]
-        - Registrar un Gasto: [ACTION_FINANCE_EXPENSE: Monto | "Concepto"]
-        - Registrar Venta/Ingreso Extra: [ACTION_FINANCE_INCOME: Monto | "Concepto"]
-        - Cierre Diario de Caja: [ACTION_FINANCE_DAILY_CLOSE]
-
-        EJEMPLO DE INTERACCIÓN:
-        Técnico: "Cobré 20 mil por vender un cargador."
-        Tu respuesta: "Excelente, he anotado ese ingreso extra en la caja. [ACTION_FINANCE_INCOME: 20000 | Venta de cargador]"
-
-        Si el técnico pregunta algo técnico de electrónica, placas base o esquemas, explícaselo como un Ingeniero Senior con nivel avanzado de micro-soldadura. No uses comandos para explicaciones técnicas.`;
+        Si el técnico pregunta algo técnico de electrónica, explícalo como un Ingeniero Senior con nivel avanzado de micro-soldadura. No uses comandos de navegación para explicar electrónica.`;
 
         let transcript = `[SISTEMA]:\n${systemPrompt}\n\n[CHAT]:\n`;
         history.forEach(m => { transcript += `${m.sender === 'user' ? 'Técnico' : 'Copilot'}: ${m.text}\n`; });
@@ -116,10 +118,9 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
             });
             const data = await response.json();
 
-            // EL ESCUDO: Si el error es 429 (Límite superado)
             if (!response.ok) {
                 if (response.status === 429) {
-                    return "¡Uf! He analizado demasiados equipos por hoy y mis circuitos necesitan enfriarse 🥵. El límite de la red neuronal se alcanzó por seguridad. Volveré a estar operativo mañana. ¡Mientras tanto, podés seguir usando todas las herramientas de la plataforma de forma manual!";
+                    return "¡Uf! He analizado demasiados equipos por hoy y mis circuitos necesitan enfriarse 🥵. El límite de la red neuronal se alcanzó por seguridad. Volveré a estar operativo mañana.";
                 }
                 return `⚠️ Error de conexión: ${data.error?.message}`;
             }
@@ -135,11 +136,12 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
         let actionExecuted = false;
         let finalOutput = aiResponseText;
 
-        // FIX 1B: Agregamos actualizarPresupuesto y editarTicket al objeto appContext
+        // 🚀 NUEVO: Empaquetamos setSeccionPrincipal y navigate al Cerebro
         const appContext = {
             theme, toggleTheme, config, setConfig,
             tickets, agregarTicketManual, actualizarEstadoTicket,
-            actualizarPresupuesto, editarTicket
+            actualizarPresupuesto, editarTicket,
+            navigate, setSeccionPrincipal
         };
 
         const actionRegex = /\[ACTION_([A-Z_]+)(?:\s*:\s*(.*?))?\]/g;
@@ -220,7 +222,7 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme }) {
                             <button type="button" className={`ai-mic-btn ${isListening ? 'listening' : ''}`} onClick={toggleListening} title="Dictar por Voz">
                                 <SvgMic />
                             </button>
-                            <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder={isListening ? "Te escucho..." : "Ej: Descontá 2 módulos de A50..."} />
+                            <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder={isListening ? "Te escucho..." : "Ej: Llevame a mis herramientas..."} />
                             <button type="submit" className="ai-submit-btn" disabled={!inputValue.trim() || isTyping}>
                                 <SvgSend />
                             </button>
