@@ -41,6 +41,7 @@ const SvgChart = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height
 const SvgSettingsConfig = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg>;
 const SvgShield = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>;
 const SvgLayout = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>;
+const SvgGlobe = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>;
 const SvgPlusSmall = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
 
 function Dashboard({ config, setConfig, theme, toggleTheme }) {
@@ -69,9 +70,9 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
 
     const { tickets, actualizarEstadoTicket, actualizarPresupuesto, moverAPapelera, restaurarTicket, eliminarDefinitivamente, convertirATicket, editarTicket } = useContext(TicketContext);
 
-    // --- AUTENTICACIÓN Y ROLES (Ahora reales desde Supabase) ---
+    // --- AUTENTICACIÓN Y ROLES ---
     const [user, setUser] = useState(null);
-    const [userRole, setUserRole] = useState('Super Admin'); // Por defecto al dueño
+    const [userRole, setUserRole] = useState('Super Admin');
 
     const [tareasInternas, setTareasInternas] = useState([]);
     const [nuevaTareaTxt, setNuevaTareaTxt] = useState("");
@@ -79,7 +80,6 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
     const [nuevaTareaPrioridad, setNuevaTareaPrioridad] = useState("Media");
     const [nuevoAsignado, setNuevoAsignado] = useState("Todos");
 
-    // ESTADO PARA AÑADIR NUEVOS MIEMBROS
     const [miembrosEquipo, setMiembrosEquipo] = useState([]);
     const [nuevoMiembro, setNuevoMiembro] = useState({ nombre: '', email: '', rol: 'Técnico Full', especialidad: '' });
     const [isAddingMember, setIsAddingMember] = useState(false);
@@ -107,23 +107,14 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
             if (session?.user) {
                 setUser(session.user);
 
-                // Cargar Tareas
                 const { data: tasks } = await supabase.from('kanban_tasks').select('*').eq('user_id', session.user.id);
                 if (tasks) setTareasInternas(tasks);
 
-                // Cargar Equipo
                 const { data: team } = await supabase.from('team_members').select('*').eq('user_id', session.user.id);
                 if (team && team.length > 0) {
                     setMiembrosEquipo(team);
                 } else {
-                    // Si está vacío, crea al dueño por defecto
-                    const me = {
-                        nombre: session.user.email.split('@')[0],
-                        email: session.user.email,
-                        rol: 'Super Admin',
-                        especialidad: 'General',
-                        estado: 'Online'
-                    };
+                    const me = { nombre: session.user.email.split('@')[0], email: session.user.email, rol: 'Super Admin', especialidad: 'General', estado: 'Online' };
                     setMiembrosEquipo([{ id: Date.now(), ...me }]);
                     supabase.from('team_members').insert([{ ...me, user_id: session.user.id }]).then();
                 }
@@ -213,31 +204,16 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         setVistaActual('activos');
     };
 
-    // --- FUNCIONES KANBAN NUBE ---
     const agregarTarea = async (e) => {
         e.preventDefault();
         if (!nuevaTareaTxt.trim() || !user) return;
-        const newTask = {
-            text: nuevaTareaTxt,
-            description: nuevaTareaDesc,
-            priority: nuevaTareaPrioridad,
-            assignee: nuevoAsignado,
-            status: 'pending',
-            user_id: user.id
-        };
-
-        // Optimistic UI
+        const newTask = { text: nuevaTareaTxt, description: nuevaTareaDesc, priority: nuevaTareaPrioridad, assignee: nuevoAsignado, status: 'pending', user_id: user.id };
         const tempId = Date.now();
         setTareasInternas([{ id: tempId, ...newTask }, ...tareasInternas]);
-        setNuevaTareaTxt("");
-        setNuevaTareaDesc("");
-        setNuevaTareaPrioridad("Media");
+        setNuevaTareaTxt(""); setNuevaTareaDesc(""); setNuevaTareaPrioridad("Media");
 
-        // DB
         const { data } = await supabase.from('kanban_tasks').insert([newTask]).select();
-        if (data) {
-            setTareasInternas(prev => prev.map(t => t.id === tempId ? data[0] : t));
-        }
+        if (data) setTareasInternas(prev => prev.map(t => t.id === tempId ? data[0] : t));
     };
 
     const moverTarea = async (id, newStatus) => {
@@ -252,20 +228,15 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
         if (user) await supabase.from('kanban_tasks').delete().eq('id', id);
     };
 
-    // --- FUNCIONES EQUIPO NUBE ---
     const handleAddMember = async (e) => {
         e.preventDefault();
         if (!user) return;
-
         const member = { ...nuevoMiembro, user_id: user.id, estado: 'Offline' };
-        setMiembrosEquipo([...miembrosEquipo, { id: Date.now(), ...member }]); // Optimistic
-        setIsAddingMember(false);
-        setNuevoMiembro({ nombre: '', email: '', rol: 'Técnico Full', especialidad: '' });
+        setMiembrosEquipo([...miembrosEquipo, { id: Date.now(), ...member }]);
+        setIsAddingMember(false); setNuevoMiembro({ nombre: '', email: '', rol: 'Técnico Full', especialidad: '' });
 
         const { data } = await supabase.from('team_members').insert([member]).select();
-        if (data) {
-            setMiembrosEquipo(prev => prev.map(m => m.email === member.email ? data[0] : m));
-        }
+        if (data) setMiembrosEquipo(prev => prev.map(m => m.email === member.email ? data[0] : m));
     };
 
     const cambiarRolMiembro = async (id, nuevoRol) => {
@@ -320,9 +291,12 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                     <span style={{ fontSize: '0.8rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>{userRole}</span>
                                 </div>
                                 <div className="profile-menu-body">
-                                    {/* 🚀 NUEVO: Botón para abrir el perfil */}
-                                    <button onClick={() => { cambiarSeccion('ajustes_web'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
-                                        <SvgUserCircle /> Mi Perfil y Ajustes
+                                    {/* 🚀 NUEVO: ACCESOS DIRECTOS SEPARADOS */}
+                                    <button onClick={() => { cambiarSeccion('ajustes_perfil'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
+                                        <SvgSettingsConfig /> Mi Cuenta y Perfil
+                                    </button>
+                                    <button onClick={() => { cambiarSeccion('ajustes_vidriera'); setIsProfileMenuOpen(false); }} className="profile-menu-item">
+                                        <SvgGlobe /> Editor de Vidriera
                                     </button>
                                     <button onClick={handleLogout} className="profile-menu-item text-danger" style={{ borderTop: '1px solid var(--border-glass)' }}>
                                         <SvgLogout /> Cerrar Sesión
@@ -334,7 +308,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                 </div>
             </nav>
 
-            <main className={`dashboard-content ${seccionPrincipal === 'ajustes_web' ? 'modo-editor-activo' : ''}`}>
+            <main className={`dashboard-content ${seccionPrincipal.startsWith('ajustes_') ? 'modo-editor-activo' : ''}`}>
 
                 {seccionPrincipal === 'gestion_tickets' && vistaActual !== 'nuevo' && userRole === 'Super Admin' && (
                     <button
@@ -429,16 +403,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                 {ticketsMostrados.length === 0 && <p className="ticket-list-empty">No se encontraron tickets con estos filtros.</p>}
                                 {ticketsMostrados.map(ticket => (
                                     <div key={ticket.id} className="ticket-item-wrapper">
-                                        <TicketCard
-                                            ticket={ticket}
-                                            vista={vistaActual}
-                                            moneda={config.moneda || 'ARS'}
-                                            onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null}
-                                            onBudgetChange={actualizarPresupuesto}
-                                            onEditTicket={editarTicket}
-                                            isDeleteMode={isDeleteMode}
-                                            onDelete={() => handleDeleteAction(ticket.id)}
-                                        />
+                                        <TicketCard ticket={ticket} vista={vistaActual} moneda={config.moneda || 'ARS'} onStatusChange={(id) => vistaActual === 'activos' ? ciclarEstado(id, ticket.estado) : null} onBudgetChange={actualizarPresupuesto} onEditTicket={editarTicket} isDeleteMode={isDeleteMode} onDelete={() => handleDeleteAction(ticket.id)} />
                                         {!isDeleteMode && vistaActual === 'inbox' && (
                                             <div className="ticket-actions-absolute ticket-actions-inbox">
                                                 <button onClick={() => convertirATicket(ticket.id)} className="action-btn btn-green">Aceptar</button>
@@ -447,9 +412,7 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                                         )}
                                         {!isDeleteMode && vistaActual === 'papelera' && userRole === 'Super Admin' && (
                                             <div className="ticket-actions-absolute ticket-actions-trash">
-                                                <button onClick={() => restaurarTicket(ticket.id)} className="btn-restore-premium">
-                                                    <SvgRefresh /> Restaurar
-                                                </button>
+                                                <button onClick={() => restaurarTicket(ticket.id)} className="btn-restore-premium"><SvgRefresh /> Restaurar</button>
                                             </div>
                                         )}
                                     </div>
@@ -468,26 +431,13 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             </div>
 
                             <div className="gestion-sub-nav" style={{ width: '100%', overflowX: 'auto', flexWrap: 'nowrap' }}>
-                                <button className={`sub-nav-btn ${subSeccionTaller === 'tareas' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('tareas')}>
-                                    <SvgSubTickets /> Tareas (Kanban)
-                                </button>
-                                <button className={`sub-nav-btn ${subSeccionTaller === 'equipo' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('equipo')}>
-                                    <SvgUserCircle /> Mi Equipo
-                                </button>
-                                <button className={`sub-nav-btn ${subSeccionTaller === 'metricas' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('metricas')}>
-                                    <SvgChart /> Métricas (BI)
-                                </button>
-                                <button className={`sub-nav-btn ${subSeccionTaller === 'funcionalidades' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('funcionalidades')}>
-                                    <SvgSubFeatures /> Módulos
-                                </button>
-                                {userRole === 'Super Admin' && (
-                                    <button className={`sub-nav-btn ${subSeccionTaller === 'configuracion_taller' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('configuracion_taller')}>
-                                        <SvgSettingsConfig /> Config. del Taller
-                                    </button>
-                                )}
+                                <button className={`sub-nav-btn ${subSeccionTaller === 'tareas' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('tareas')}><SvgSubTickets /> Tareas (Kanban)</button>
+                                <button className={`sub-nav-btn ${subSeccionTaller === 'equipo' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('equipo')}><SvgUserCircle /> Mi Equipo</button>
+                                <button className={`sub-nav-btn ${subSeccionTaller === 'metricas' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('metricas')}><SvgChart /> Métricas (BI)</button>
+                                <button className={`sub-nav-btn ${subSeccionTaller === 'funcionalidades' ? 'active' : ''}`} onClick={() => setSubSeccionTaller('funcionalidades')}><SvgSubFeatures /> Módulos</button>
 
                                 <div style={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
-                                    <button className="sub-nav-btn" onClick={() => setSeccionPrincipal('ajustes_web')} style={{ background: 'var(--bg-input-glass)', color: 'var(--text-primary)', border: '1px solid var(--border-glass)' }}>
+                                    <button className="sub-nav-btn" onClick={() => setSeccionPrincipal('ajustes_vidriera')} style={{ background: 'var(--bg-input-glass)', color: 'var(--text-primary)', border: '1px solid var(--border-glass)' }}>
                                         <SvgLayout /> Editor de Vidriera
                                     </button>
                                     <Link to={`/taller/${config.nombreNegocio?.toLowerCase().replace(/\s+/g, '-') || 'tu-local'}`} target="_blank" className="sub-nav-btn" style={{ background: 'var(--success)', color: 'white' }}>
@@ -501,267 +451,65 @@ function Dashboard({ config, setConfig, theme, toggleTheme }) {
                             <div className="animate-fade-in">
                                 <form onSubmit={agregarTarea} className="glass-effect" style={{ padding: '20px', borderRadius: '16px', display: 'flex', gap: '15px', marginBottom: '30px', flexDirection: 'column', border: '1px solid var(--border-glass)' }}>
                                     <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                                        <input
-                                            type="text"
-                                            placeholder="Título de la tarea..."
-                                            value={nuevaTareaTxt}
-                                            onChange={e => setNuevaTareaTxt(e.target.value)}
-                                            style={{ flex: 1, minWidth: '250px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem', fontWeight: 'bold' }}
-                                        />
-                                        <select
-                                            value={nuevaTareaPrioridad}
-                                            onChange={e => setNuevaTareaPrioridad(e.target.value)}
-                                            style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-                                        >
-                                            <option value="Alta">Prioridad: Alta</option>
-                                            <option value="Media">Prioridad: Media</option>
-                                            <option value="Baja">Prioridad: Baja</option>
-                                        </select>
-                                        <select
-                                            value={nuevoAsignado}
-                                            onChange={e => setNuevoAsignado(e.target.value)}
-                                            style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-                                        >
-                                            <option value="Todos">Para: Todos</option>
-                                            {miembrosEquipo.map(m => (
-                                                <option key={m.id} value={m.nombre}>Para: {m.nombre}</option>
-                                            ))}
-                                        </select>
+                                        <input type="text" placeholder="Título de la tarea..." value={nuevaTareaTxt} onChange={e => setNuevaTareaTxt(e.target.value)} style={{ flex: 1, minWidth: '250px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '1rem', fontWeight: 'bold' }} />
+                                        <select value={nuevaTareaPrioridad} onChange={e => setNuevaTareaPrioridad(e.target.value)} style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}><option value="Alta">Prioridad: Alta</option><option value="Media">Prioridad: Media</option><option value="Baja">Prioridad: Baja</option></select>
+                                        <select value={nuevoAsignado} onChange={e => setNuevoAsignado(e.target.value)} style={{ padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontWeight: 'bold', cursor: 'pointer' }}><option value="Todos">Para: Todos</option>{miembrosEquipo.map(m => (<option key={m.id} value={m.nombre}>Para: {m.nombre}</option>))}</select>
                                     </div>
                                     <div style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                                        <textarea
-                                            placeholder="Descripción detallada (opcional)..."
-                                            value={nuevaTareaDesc}
-                                            onChange={e => setNuevaTareaDesc(e.target.value)}
-                                            style={{ flex: 1, minWidth: '300px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '0.95rem', minHeight: '50px', resize: 'vertical' }}
-                                        />
-                                        <button type="submit" style={{ padding: '15px 30px', borderRadius: '10px', border: 'none', background: 'var(--accent-color)', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s', height: '100%' }}>
-                                            + Añadir Tarea
-                                        </button>
+                                        <textarea placeholder="Descripción detallada (opcional)..." value={nuevaTareaDesc} onChange={e => setNuevaTareaDesc(e.target.value)} style={{ flex: 1, minWidth: '300px', padding: '12px 15px', borderRadius: '10px', border: '1px solid var(--border-glass)', background: 'var(--bg-input-glass)', color: 'var(--text-primary)', outline: 'none', fontSize: '0.95rem', minHeight: '50px', resize: 'vertical' }} />
+                                        <button type="submit" style={{ padding: '15px 30px', borderRadius: '10px', border: 'none', background: 'var(--accent-color)', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem', transition: 'transform 0.2s', height: '100%' }}>+ Añadir Tarea</button>
                                     </div>
                                 </form>
 
                                 <div className="kanban-board">
-                                    {/* COLUMNA: PENDIENTES */}
-                                    <div className="kanban-col glass-effect">
-                                        <h3 className="kanban-header kanban-pending">Pendientes <span className="kanban-count">{tareasInternas.filter(t => t.status === 'pending').length}</span></h3>
-                                        <div className="kanban-cards">
-                                            {tareasInternas.filter(t => t.status === 'pending').map(tarea => (
-                                                <div key={tarea.id} className="kanban-card">
-                                                    <h4>{tarea.text}</h4>
-                                                    {tarea.description && <p>{tarea.description}</p>}
-                                                    {tarea.priority && (
-                                                        <div className="kanban-tags">
-                                                            <span className={`kanban-tag tag-${tarea.priority}`}>{tarea.priority}</span>
-                                                        </div>
-                                                    )}
-                                                    <div className="kanban-card-footer">
-                                                        <span className="kanban-assignee"><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span>
-                                                        <div style={{ display: 'flex', gap: '5px' }}>
-                                                            <button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button>
-                                                            <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>▶</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* COLUMNA: EN PROCESO */}
-                                    <div className="kanban-col glass-effect">
-                                        <h3 className="kanban-header kanban-progress">En Proceso <span className="kanban-count">{tareasInternas.filter(t => t.status === 'progress').length}</span></h3>
-                                        <div className="kanban-cards">
-                                            {tareasInternas.filter(t => t.status === 'progress').map(tarea => (
-                                                <div key={tarea.id} className="kanban-card">
-                                                    <h4>{tarea.text}</h4>
-                                                    {tarea.description && <p>{tarea.description}</p>}
-                                                    {tarea.priority && (
-                                                        <div className="kanban-tags">
-                                                            <span className={`kanban-tag tag-${tarea.priority}`}>{tarea.priority}</span>
-                                                        </div>
-                                                    )}
-                                                    <div className="kanban-card-footer">
-                                                        <span className="kanban-assignee"><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span>
-                                                        <div style={{ display: 'flex', gap: '5px' }}>
-                                                            <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'pending')}>◀</button>
-                                                            <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'done')}>▶</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* COLUMNA: COMPLETADAS */}
-                                    <div className="kanban-col glass-effect">
-                                        <h3 className="kanban-header kanban-done">Completadas <span className="kanban-count">{tareasInternas.filter(t => t.status === 'done').length}</span></h3>
-                                        <div className="kanban-cards">
-                                            {tareasInternas.filter(t => t.status === 'done').map(tarea => (
-                                                <div key={tarea.id} className="kanban-card" style={{ opacity: 0.7 }}>
-                                                    <h4 style={{ textDecoration: 'line-through' }}>{tarea.text}</h4>
-                                                    {tarea.description && <p style={{ textDecoration: 'line-through' }}>{tarea.description}</p>}
-                                                    <div className="kanban-card-footer">
-                                                        <span className="kanban-assignee" style={{ background: 'transparent', border: '1px solid var(--border-glass)', color: 'var(--text-secondary)' }}><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span>
-                                                        <div style={{ display: 'flex', gap: '5px' }}>
-                                                            <button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>◀</button>
-                                                            <button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                    <div className="kanban-col glass-effect"><h3 className="kanban-header kanban-pending">Pendientes <span className="kanban-count">{tareasInternas.filter(t => t.status === 'pending').length}</span></h3><div className="kanban-cards">{tareasInternas.filter(t => t.status === 'pending').map(tarea => (<div key={tarea.id} className="kanban-card"><h4>{tarea.text}</h4>{tarea.description && <p>{tarea.description}</p>}{tarea.priority && (<div className="kanban-tags"><span className={`kanban-tag tag-${tarea.priority}`}>{tarea.priority}</span></div>)}<div className="kanban-card-footer"><span className="kanban-assignee"><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span><div style={{ display: 'flex', gap: '5px' }}><button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button><button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>▶</button></div></div></div>))}</div></div>
+                                    <div className="kanban-col glass-effect"><h3 className="kanban-header kanban-progress">En Proceso <span className="kanban-count">{tareasInternas.filter(t => t.status === 'progress').length}</span></h3><div className="kanban-cards">{tareasInternas.filter(t => t.status === 'progress').map(tarea => (<div key={tarea.id} className="kanban-card"><h4>{tarea.text}</h4>{tarea.description && <p>{tarea.description}</p>}{tarea.priority && (<div className="kanban-tags"><span className={`kanban-tag tag-${tarea.priority}`}>{tarea.priority}</span></div>)}<div className="kanban-card-footer"><span className="kanban-assignee"><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span><div style={{ display: 'flex', gap: '5px' }}><button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'pending')}>◀</button><button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'done')}>▶</button></div></div></div>))}</div></div>
+                                    <div className="kanban-col glass-effect"><h3 className="kanban-header kanban-done">Completadas <span className="kanban-count">{tareasInternas.filter(t => t.status === 'done').length}</span></h3><div className="kanban-cards">{tareasInternas.filter(t => t.status === 'done').map(tarea => (<div key={tarea.id} className="kanban-card" style={{ opacity: 0.7 }}><h4 style={{ textDecoration: 'line-through' }}>{tarea.text}</h4>{tarea.description && <p style={{ textDecoration: 'line-through' }}>{tarea.description}</p>}<div className="kanban-card-footer"><span className="kanban-assignee" style={{ background: 'transparent', border: '1px solid var(--border-glass)', color: 'var(--text-secondary)' }}><SvgUserCircle width="16" height="16" /> {tarea.assignee}</span><div style={{ display: 'flex', gap: '5px' }}><button className="kanban-btn btn-move" onClick={() => moverTarea(tarea.id, 'progress')}>◀</button><button className="kanban-btn btn-trash" onClick={() => borrarTarea(tarea.id)}><SvgTrash /></button></div></div></div>))}</div></div>
                                 </div>
                             </div>
                         )}
 
                         {subSeccionTaller === 'equipo' && (
                             <div className="animate-fade-in">
-
                                 {userRole === 'Super Admin' && (
                                     <div style={{ marginBottom: '20px' }}>
-                                        <button className="btn-add-member" onClick={() => setIsAddingMember(!isAddingMember)}>
-                                            {isAddingMember ? <><SvgX /> Cancelar</> : <><SvgPlusSmall /> Añadir Miembro</>}
-                                        </button>
-
+                                        <button className="btn-add-member" onClick={() => setIsAddingMember(!isAddingMember)}>{isAddingMember ? <><SvgX /> Cancelar</> : <><SvgPlusSmall /> Añadir Miembro</>}</button>
                                         {isAddingMember && (
                                             <form onSubmit={handleAddMember} className="add-member-form glass-effect animate-slide-up">
-                                                <div className="form-grid">
-                                                    <input type="text" placeholder="Nombre" required value={nuevoMiembro.nombre} onChange={e => setNuevoMiembro({ ...nuevoMiembro, nombre: e.target.value })} className="member-input" />
-                                                    <input type="email" placeholder="Correo (El que usa para entrar)" required value={nuevoMiembro.email} onChange={e => setNuevoMiembro({ ...nuevoMiembro, email: e.target.value })} className="member-input" />
-                                                    <input type="text" placeholder="Especialidad (Ej: Microelectrónica)" value={nuevoMiembro.especialidad} onChange={e => setNuevoMiembro({ ...nuevoMiembro, especialidad: e.target.value })} className="member-input" />
-                                                    <select value={nuevoMiembro.rol} onChange={e => setNuevoMiembro({ ...nuevoMiembro, rol: e.target.value })} className="member-input">
-                                                        <option value="Técnico Full">Técnico Full</option>
-                                                        <option value="Recepción">Recepción</option>
-                                                        <option value="Super Admin">Super Admin</option>
-                                                    </select>
-                                                </div>
+                                                <div className="form-grid"><input type="text" placeholder="Nombre" required value={nuevoMiembro.nombre} onChange={e => setNuevoMiembro({ ...nuevoMiembro, nombre: e.target.value })} className="member-input" /><input type="email" placeholder="Correo (El que usa para entrar)" required value={nuevoMiembro.email} onChange={e => setNuevoMiembro({ ...nuevoMiembro, email: e.target.value })} className="member-input" /><input type="text" placeholder="Especialidad (Ej: Microelectrónica)" value={nuevoMiembro.especialidad} onChange={e => setNuevoMiembro({ ...nuevoMiembro, especialidad: e.target.value })} className="member-input" /><select value={nuevoMiembro.rol} onChange={e => setNuevoMiembro({ ...nuevoMiembro, rol: e.target.value })} className="member-input"><option value="Técnico Full">Técnico Full</option><option value="Recepción">Recepción</option><option value="Super Admin">Super Admin</option></select></div>
                                                 <button type="submit" className="btn-submit-member">Guardar Miembro</button>
                                             </form>
                                         )}
                                     </div>
                                 )}
-
                                 <div className="equipo-grid">
                                     {miembrosEquipo.map(miembro => (
                                         <div className="equipo-card glass-effect" key={miembro.id}>
-                                            <div className="equipo-header">
-                                                <div className="equipo-avatar"><SvgUserCircle /></div>
-                                                <div className={`equipo-status-dot ${miembro.estado === 'Online' ? 'online' : 'offline'}`}></div>
-                                            </div>
-                                            <h3 className="equipo-name">{miembro.nombre}</h3>
-                                            <span className="equipo-role">{miembro.rol}</span>
-                                            <div className="equipo-details">
-                                                <p><strong>Email:</strong> {miembro.email}</p>
-                                                <p><strong>Esp:</strong> {miembro.especialidad || 'General'}</p>
-                                            </div>
-                                            {userRole === 'Super Admin' && miembro.email !== user?.email && (
-                                                <button className="btn-remove-member" onClick={() => eliminarMiembro(miembro.id, miembro.nombre)}>
-                                                    <SvgTrash /> Quitar del equipo
-                                                </button>
-                                            )}
+                                            <div className="equipo-header"><div className="equipo-avatar"><SvgUserCircle /></div><div className={`equipo-status-dot ${miembro.estado === 'Online' ? 'online' : 'offline'}`}></div></div>
+                                            <h3 className="equipo-name">{miembro.nombre}</h3><span className="equipo-role">{miembro.rol}</span>
+                                            <div className="equipo-details"><p><strong>Email:</strong> {miembro.email}</p><p><strong>Esp:</strong> {miembro.especialidad || 'General'}</p></div>
+                                            {userRole === 'Super Admin' && miembro.email !== user?.email && (<button className="btn-remove-member" onClick={() => eliminarMiembro(miembro.id, miembro.nombre)}><SvgTrash /> Quitar</button>)}
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        {subSeccionTaller === 'metricas' && (
-                            <div className="animate-fade-in" style={{ marginTop: '20px' }}>
-                                <MetricsView tickets={tickets} moneda={config.moneda || 'ARS'} />
-                            </div>
-                        )}
-
-                        {subSeccionTaller === 'funcionalidades' && (
-                            <div className="animate-fade-in" style={{ marginTop: '20px' }}>
-                                <FeaturesManager config={config} onUpdate={setConfig} />
-                            </div>
-                        )}
-
-                        {subSeccionTaller === 'configuracion_taller' && userRole === 'Super Admin' && (
-                            <div className="config-taller-container animate-fade-in">
-                                <div className="config-taller-section glass-effect">
-                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><SvgShield /> Delegación de Roles y Accesos</h3>
-                                    <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '0.9rem' }}>Controla qué pueden hacer los miembros de tu taller. Solo tú puedes borrar tickets.</p>
-
-                                    <div className="roles-table-wrapper">
-                                        <table className="roles-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Usuario</th>
-                                                    <th>Email</th>
-                                                    <th>Rol Actual</th>
-                                                    <th>Permisos</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {miembrosEquipo.map(miembro => (
-                                                    <tr key={miembro.id}>
-                                                        <td style={{ fontWeight: 'bold' }}>{miembro.nombre}</td>
-                                                        <td style={{ color: 'var(--text-secondary)' }}>{miembro.email}</td>
-                                                        <td>
-                                                            <select
-                                                                className="role-select-input"
-                                                                value={miembro.rol}
-                                                                onChange={(e) => cambiarRolMiembro(miembro.id, e.target.value)}
-                                                                disabled={miembro.email === user?.email}
-                                                            >
-                                                                <option value="Super Admin">Super Admin</option>
-                                                                <option value="Técnico Full">Técnico Full</option>
-                                                                <option value="Recepción">Recepción</option>
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            {miembro.rol === 'Super Admin' && <span className="permiso-badge admin">Acceso Total</span>}
-                                                            {miembro.rol === 'Técnico Full' && <span className="permiso-badge tech">Gestiona Tickets, no borra</span>}
-                                                            {miembro.rol === 'Recepción' && <span className="permiso-badge recep">Solo ingresa y cobra</span>}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <div className="config-taller-section glass-effect" style={{ marginTop: '20px' }}>
-                                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><SvgSettingsConfig /> Preferencias Internas</h3>
-                                    <div className="config-grid-2">
-                                        <div className="config-input-group">
-                                            <label>Prefijo Interno de Tickets</label>
-                                            <input type="text" value={tallerConfig.prefijoTickets} onChange={e => setTallerConfig({ ...tallerConfig, prefijoTickets: e.target.value.toUpperCase() })} maxLength={5} placeholder="Ej: WEP" />
-                                            <small>Los tickets nuevos saldrán como {tallerConfig.prefijoTickets}-001</small>
-                                        </div>
-                                        <div className="config-input-group">
-                                            <label>Moneda Local</label>
-                                            <select value={config.moneda || 'ARS'} onChange={e => setConfig({ ...config, moneda: e.target.value })}>
-                                                <option value="ARS">Peso Argentino (ARS $)</option>
-                                                <option value="USD">Dólar Estadounidense (USD US$)</option>
-                                                <option value="EUR">Euro (EUR €)</option>
-                                                <option value="BRL">Real Brasileño (BRL R$)</option>
-                                                <option value="CLP">Peso Chileno (CLP $)</option>
-                                                <option value="MXN">Peso Mexicano (MXN $)</option>
-                                                <option value="COP">Peso Colombiano (COP $)</option>
-                                                <option value="PEN">Sol Peruano (PEN S/)</option>
-                                                <option value="UYU">Peso Uruguayo (UYU $U)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <button className="btn-save-taller-config">Guardar Preferencias</button>
-                                </div>
-                            </div>
-                        )}
+                        {subSeccionTaller === 'metricas' && <div className="animate-fade-in" style={{ marginTop: '20px' }}><MetricsView tickets={tickets} moneda={config.moneda || 'ARS'} /></div>}
+                        {subSeccionTaller === 'funcionalidades' && <div className="animate-fade-in" style={{ marginTop: '20px' }}><FeaturesManager config={config} onUpdate={setConfig} /></div>}
                     </div>
                 )}
 
                 {seccionPrincipal === 'inventario' && <InventoryView moneda={config.moneda || 'ARS'} />}
                 {seccionPrincipal === 'herramientas' && <ToolsView moneda={config.moneda || 'ARS'} />}
                 {seccionPrincipal === 'comunidad' && <CommunityWiki />}
-                {/* 🚀 NUEVO: Configuraciones actualizadas para Editor y Perfil */}
-                {seccionPrincipal === 'ajustes_web' && <Settings config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />}
+
+                {/* 🚀 NUEVOS COMPONENTES DE CONFIGURACIÓN SEPARADOS */}
+                {seccionPrincipal === 'ajustes_perfil' && <Settings mode="perfil" config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />}
+                {seccionPrincipal === 'ajustes_vidriera' && <Settings mode="vidriera" config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} />}
 
             </main>
 
-            {/* 🚀 NUEVO: Pasamos setSeccionPrincipal a J.A.R.V.I.S */}
             <AIChatAssistant config={config} setConfig={setConfig} theme={theme} toggleTheme={toggleTheme} setSeccionPrincipal={setSeccionPrincipal} />
         </div>
     );
