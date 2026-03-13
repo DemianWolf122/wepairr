@@ -1,330 +1,1136 @@
-/* src/components/Settings.css */
+/* ==========================================================================
+   src/components/Settings.css
+   DISEÑO ULTRA-PREMIUM TIPO VERCEL / LINEAR (GLASSMORPHISM & FLUID SCALING)
+   ========================================================================== */
 
-.settings-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    animation: fadeIn 0.4s ease-out;
+:root {
+    /* MODO CLARO (Default / Fallback) */
+    --set-bg-main: #f8fafc;
+    --set-panel-bg: rgba(255, 255, 255, 0.85);
+    --set-panel-border: rgba(15, 23, 42, 0.08);
+    --set-input-bg: #ffffff;
+    --set-input-border: rgba(15, 23, 42, 0.15);
+    --set-input-focus: rgba(37, 99, 235, 0.2);
+    --set-text-primary: #0f172a;
+    --set-text-secondary: #64748b;
+    --set-accent: #2563eb;
+    --set-danger: #ef4444;
+    --set-success: #10b981;
+    --set-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --set-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --set-shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
+    --set-blur: blur(24px) saturate(150%);
+    --set-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.settings-header {
+.dark {
+    /* MODO OSCURO (Tu preferencia) */
+    --set-bg-main: #020617;
+    --set-panel-bg: rgba(15, 23, 42, 0.65);
+    --set-panel-border: rgba(255, 255, 255, 0.08);
+    --set-input-bg: rgba(0, 0, 0, 0.3);
+    --set-input-border: rgba(255, 255, 255, 0.12);
+    --set-input-focus: rgba(37, 99, 235, 0.4);
+    --set-text-primary: #f8fafc;
+    --set-text-secondary: #94a3b8;
+    --set-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.2);
+    --set-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4);
+    --set-shadow-lg: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   1. ESTRUCTURA PRINCIPAL (LAYOUT)
+   ========================================================================== */
+.settings-master-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    width: 100%;
+    height: calc(100vh - 70px);
+    /* Altura total menos navbar superior */
+    background: var(--set-bg-main);
+    color: var(--set-text-primary);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+    animation: masterFadeIn 0.5s ease-out forwards;
+}
+
+/* Columna 1: Menú Lateral (Sidebar) */
+.settings-sidebar-nav {
+    width: 260px;
+    min-width: 260px;
+    background: var(--set-panel-bg);
+    backdrop-filter: var(--set-blur);
+    -webkit-backdrop-filter: var(--set-blur);
+    border-right: 1px solid var(--set-panel-border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    z-index: 30;
+}
+
+/* Columna 2: Panel de Edición Activo */
+.settings-editor-panel {
+    width: 420px;
+    min-width: 420px;
+    background: var(--set-panel-bg);
+    backdrop-filter: var(--set-blur);
+    -webkit-backdrop-filter: var(--set-blur);
+    border-right: 1px solid var(--set-panel-border);
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02);
+}
+
+/* Columna 3: Lienzo de Vista Previa (Mockup) */
+.settings-preview-canvas {
+    flex: 1;
+    min-width: 0;
+    /* CRÍTICO: Previene que flexbox expanda más allá de la pantalla */
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05), transparent 70%);
+}
+
+/* ==========================================================================
+   2. NAVEGACIÓN LATERAL (SIDEBAR)
+   ========================================================================== */
+.sidebar-header {
+    margin-bottom: 30px;
     padding: 0 10px;
 }
 
-.settings-header h2 {
-    font-size: 2.2rem;
-    font-weight: 800;
+.sidebar-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin: 0 0 4px 0;
     letter-spacing: -0.5px;
-    color: var(--text-primary);
+}
+
+.sidebar-subtitle {
+    font-size: 0.85rem;
+    color: var(--set-text-secondary);
     margin: 0;
 }
 
-.settings-header p {
-    color: var(--text-secondary);
-    margin: 5px 0 0 0;
-    font-size: 1rem;
-}
-
-/* --- Layout Principal --- */
-.settings-layout {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-}
-
-/* --- Sidebar (Menú Lateral) --- */
-.settings-sidebar {
-    width: 280px;
-    padding: 25px 20px;
-    border-radius: 24px;
+.sidebar-menu {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    background: var(--bg-input-glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border-glass);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    gap: 6px;
+    flex: 1;
 }
 
-.settings-tab-btn {
+.sidebar-item {
     display: flex;
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 14px 18px;
-    border: none;
+    padding: 12px 14px;
     background: transparent;
-    color: var(--text-secondary);
-    font-size: 1rem;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    color: var(--set-text-secondary);
+    font-size: 0.95rem;
     font-weight: 600;
-    border-radius: 14px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--set-transition);
     text-align: left;
 }
 
-.settings-tab-btn:hover {
-    background: var(--bg-hover-glass);
-    color: var(--text-primary);
-    transform: translateX(5px);
+.sidebar-item:hover {
+    background: rgba(15, 23, 42, 0.04);
+    color: var(--set-text-primary);
 }
 
-.settings-tab-btn.active {
-    background: var(--accent-color);
-    color: white;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+.dark .sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.04);
 }
 
-/* --- Contenido Central --- */
-.settings-content {
+.sidebar-item.active {
+    background: var(--set-input-bg);
+    border-color: var(--set-panel-border);
+    color: var(--set-text-primary);
+    box-shadow: var(--set-shadow-sm);
+}
+
+.sidebar-item svg {
+    width: 18px;
+    height: 18px;
+    transition: var(--set-transition);
+}
+
+.sidebar-item.active svg {
+    color: var(--set-accent);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--set-panel-border);
+}
+
+/* ==========================================================================
+   3. PANEL DE EDICIÓN (FORMULARIOS)
+   ========================================================================== */
+.editor-panel-header {
+    padding: 24px 30px;
+    border-bottom: 1px solid var(--set-panel-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.editor-panel-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.editor-scroll-content {
     flex: 1;
-    padding: 40px;
-    border-radius: 24px;
-    background: var(--bg-input-glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border-glass);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-    min-height: 600px;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
 }
 
-.settings-section h3 {
-    font-size: 1.6rem;
-    color: var(--text-primary);
-    margin: 0 0 30px 0;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-glass);
+/* SCROLLBAR CUSTOM */
+.editor-scroll-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.editor-scroll-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.editor-scroll-content::-webkit-scrollbar-thumb {
+    background: var(--set-panel-border);
+    border-radius: 10px;
+}
+
+.editor-scroll-content::-webkit-scrollbar-thumb:hover {
+    background: var(--set-text-secondary);
+}
+
+/* Grupos de Formulario */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: slideInRight 0.3s ease-out forwards;
+}
+
+.section-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 800;
+    color: var(--set-text-secondary);
+    margin: 0 0 5px 0;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
-/* --- Formularios Minimalistas --- */
-.settings-form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-.settings-form-grid.full-width {
-    grid-template-columns: 1fr;
-}
-
-.settings-input-group {
+.input-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.settings-input-group label {
-    font-size: 0.9rem;
+.input-label {
+    font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-secondary);
-    margin-left: 5px;
+    color: var(--set-text-primary);
 }
 
-.settings-input-minimal {
+/* Inputs Premium Vercel-like */
+.premium-input {
     width: 100%;
-    padding: 14px 18px;
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid var(--border-glass);
-    border-radius: 14px;
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    outline: none;
+    padding: 12px 16px;
+    background: var(--set-input-bg);
+    border: 1px solid var(--set-input-border);
+    border-radius: 10px;
+    color: var(--set-text-primary);
+    font-size: 0.95rem;
     font-family: inherit;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
-.dark .settings-input-minimal {
-    background: rgba(255, 255, 255, 0.03);
+.premium-input:focus {
+    outline: none;
+    border-color: var(--set-accent);
+    box-shadow: 0 0 0 3px var(--set-input-focus);
 }
 
-.settings-input-minimal:focus {
-    border-color: var(--accent-color);
-    background: transparent;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-
-.settings-input-minimal:disabled {
-    opacity: 0.6;
+.premium-input:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    background: transparent;
 }
 
-textarea.settings-input-minimal {
+select.premium-input {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px auto;
+    padding-right: 40px;
+}
+
+textarea.premium-input {
     resize: vertical;
-    min-height: 100px;
+    min-height: 80px;
+    line-height: 1.5;
 }
 
-.settings-hint {
+.input-hint {
     font-size: 0.8rem;
-    color: var(--text-secondary);
-    margin-left: 5px;
+    color: var(--set-text-secondary);
+    margin-top: -4px;
 }
 
-/* --- Toggles y Switches Premium --- */
-.settings-toggle-row {
+/* Color Picker Moderno */
+.color-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.color-input-native {
+    appearance: none;
+    width: 44px;
+    height: 44px;
+    border: none;
+    padding: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.color-input-native::-webkit-color-swatch {
+    border-radius: 10px;
+    border: 1px solid var(--set-input-border);
+}
+
+.color-input-native::-moz-color-swatch {
+    border-radius: 10px;
+    border: 1px solid var(--set-input-border);
+}
+
+.color-palette {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.color-swatch:hover {
+    transform: scale(1.15);
+}
+
+.color-swatch.active {
+    border-color: var(--set-text-primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px var(--set-bg-main);
+}
+
+/* Toggles / Switches iOS Style */
+.premium-toggle-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.02);
-    border-radius: 16px;
-    border: 1px solid var(--border-glass);
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
+    padding: 16px;
+    background: var(--set-input-bg);
+    border: 1px solid var(--set-input-border);
+    border-radius: 12px;
+    transition: border-color 0.2s;
 }
 
-.dark .settings-toggle-row {
-    background: rgba(255, 255, 255, 0.02);
+.premium-toggle-row:hover {
+    border-color: var(--set-text-secondary);
 }
 
-.settings-toggle-row:hover {
-    border-color: var(--accent-color);
+.toggle-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.settings-toggle-row h4 {
-    margin: 0 0 5px 0;
-    font-size: 1.1rem;
-    color: var(--text-primary);
+.toggle-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--set-text-primary);
 }
 
-/* Switch Apple-style */
-.wepairr-switch {
+.toggle-desc {
+    font-size: 0.8rem;
+    color: var(--set-text-secondary);
+}
+
+.switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 28px;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
 }
 
-.wepairr-switch input {
+.switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-.wepairr-slider {
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--border-glass);
+    background-color: var(--set-input-border);
     transition: .4s;
     border-radius: 34px;
 }
 
-.wepairr-slider:before {
+.slider:before {
     position: absolute;
     content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
     background-color: white;
     transition: .4s;
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-input:checked+.wepairr-slider {
-    background-color: var(--accent-color);
+input:checked+.slider {
+    background-color: var(--set-accent);
 }
 
-input:checked+.wepairr-slider:before {
-    transform: translateX(22px);
+input:checked+.slider:before {
+    transform: translateX(20px);
 }
 
-/* --- Avatar Preview --- */
-.avatar-preview-container {
+/* File Upload Premium */
+.upload-group {
     display: flex;
-    align-items: center;
-    gap: 25px;
-    margin-bottom: 35px;
-    grid-column: span 2;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.02);
-    border-radius: 20px;
-    border: 1px solid var(--border-glass);
+    gap: 8px;
 }
 
-.dark .avatar-preview-container {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.avatar-circle {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-color), #8b5cf6);
+.upload-btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
+    padding: 0 16px;
+    background: var(--set-text-primary);
+    color: var(--set-bg-main);
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--set-shadow-md);
+}
+
+/* FAQ Items */
+.faq-card {
+    background: var(--set-input-bg);
+    border: 1px solid var(--set-input-border);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s;
+}
+
+.faq-card:hover {
+    border-color: var(--set-accent);
+}
+
+.faq-delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--set-danger);
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.faq-delete-btn:hover {
+    background: var(--set-danger);
     color: white;
-    font-size: 2.5rem;
+}
+
+/* Botones de Acción */
+.btn-primary-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
     font-weight: 800;
-    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
-    text-transform: uppercase;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.avatar-info h4 {
-    margin: 0 0 5px 0;
-    font-size: 1.4rem;
-    color: var(--text-primary);
+.btn-primary-action.active {
+    background: var(--set-accent);
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
-.avatar-info p {
-    margin: 0;
-    color: var(--text-secondary);
+.btn-primary-action.disabled {
+    background: var(--set-input-bg);
+    color: var(--set-text-secondary);
+    border: 1px solid var(--set-input-border);
+    cursor: default;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px dashed var(--set-text-secondary);
+    color: var(--set-text-primary);
+}
+
+/* Premium Gate Lock */
+.pro-lock-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.pro-blurred {
+    filter: blur(6px);
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+}
+
+.pro-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--set-panel-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--set-accent);
+    color: var(--set-accent);
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--set-shadow-lg);
+    z-index: 10;
+}
+
+/* ==========================================================================
+   4. LIENZO DE VISTA PREVIA & MOCKUPS PERFECTOS
+   ========================================================================== */
+.canvas-toolbar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    background: var(--set-panel-bg);
+    backdrop-filter: var(--set-blur);
+    padding: 6px;
+    border-radius: 99px;
+    border: 1px solid var(--set-panel-border);
+    z-index: 50;
+    box-shadow: var(--set-shadow-md);
+}
+
+.device-btn {
+    padding: 8px 20px;
+    border-radius: 99px;
+    border: none;
+    background: transparent;
+    color: var(--set-text-secondary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--set-transition);
+}
+
+.device-btn.active {
+    background: var(--set-text-primary);
+    color: var(--set-bg-main);
+    box-shadow: var(--set-shadow-sm);
+}
+
+/* El Contenedor que impide que el celular se corte */
+.preview-stage-wrapper {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 40px 40px 40px;
+    /* Espacio para el toolbar */
+    box-sizing: border-box;
+    overflow: hidden;
+    /* Prohíbe scroll externo */
+}
+
+.mockup-animator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mockup-animator.hidden {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+}
+
+/* --- MOCKUP IPHONE (Relación de aspecto estricta) --- */
+.iphone-frame {
+    height: 100%;
+    max-height: 850px;
+    aspect-ratio: 1 / 2.16;
+    /* Proporción exacta iPhone 14 Pro */
+    background: #000;
+    border-radius: 54px;
+    /* Bordes redondeados perfectos */
+    padding: 14px;
+    /* Grosor del bisel negro */
+    box-shadow:
+        inset 0 0 0 2px #444,
+        /* Marco metálico */
+        inset 0 0 0 14px #000,
+        /* Bisel interno */
+        0 40px 80px rgba(0, 0, 0, 0.4);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* Notch / Isla Dinámica */
+.iphone-notch {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 32px;
+    background: #000;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    z-index: 100;
+}
+
+/* --- MOCKUP MONITOR (MAC) --- */
+.desktop-frame {
+    width: 100%;
+    max-width: 1200px;
+    aspect-ratio: 16 / 9;
+    /* Formato pantalla ancha */
+    max-height: 100%;
+    background: var(--set-panel-bg);
+    border: 1px solid var(--set-panel-border);
+    border-radius: 16px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mac-titlebar {
+    height: 40px;
+    background: var(--set-input-bg);
+    border-bottom: 1px solid var(--set-panel-border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.mac-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* --- CONTENEDOR DE LA PANTALLA (Donde vive la web) --- */
+.screen-display {
+    flex: 1;
+    background: var(--shop-bg);
+    border-radius: 40px;
+    /* Redondeo interior iPhone */
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    scrollbar-width: none;
+    /* Ocultar scrollbar para realismo */
+}
+
+.desktop-frame .screen-display {
+    border-radius: 0;
+}
+
+.screen-display::-webkit-scrollbar {
+    display: none;
+}
+
+/* Status Bar de iOS pintada sobre el contenido */
+.ios-status-bar {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 24px;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--shop-text);
+    pointer-events: none;
+    background: transparent;
+}
+
+
+/* ==========================================================================
+   5. ESTILOS INTERNOS DE LA VIDRIERA (CSS SCOPED)
+   ========================================================================== */
+.live-preview-shop {
+    min-height: 100%;
+    background: var(--shop-bg);
+    color: var(--shop-text);
+    font-family: var(--shop-font);
+    display: flex;
+    flex-direction: column;
+}
+
+.lp-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(var(--shop-bg-rgb), 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--shop-border);
+}
+
+.desktop-frame .lp-nav {
+    padding: 20px 60px;
+}
+
+.lp-logo {
+    font-weight: 900;
+    font-size: 1.2rem;
+    letter-spacing: -0.5px;
+}
+
+.lp-links {
+    display: flex;
+    gap: 24px;
+    font-weight: 600;
     font-size: 0.95rem;
 }
 
-/* Responsive */
-@media (max-width: 950px) {
-    .settings-layout {
+.lp-hero {
+    padding: 60px 20px;
+    text-align: center;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--shop-bg-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.desktop-frame .lp-hero {
+    padding: 120px 40px;
+    min-height: 400px;
+}
+
+.lp-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--hero-overlay);
+    z-index: 1;
+}
+
+.lp-hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.lp-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    background: var(--shop-accent);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.desktop-frame .lp-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 30px;
+}
+
+.lp-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 0 0 16px 0;
+    color: var(--hero-text-color);
+    max-width: 90%;
+}
+
+.desktop-frame .lp-title {
+    font-size: 4.5rem;
+    max-width: 800px;
+}
+
+.lp-desc {
+    font-size: 1rem;
+    color: var(--hero-subtext-color);
+    line-height: 1.5;
+    margin: 0 0 32px 0;
+    max-width: 85%;
+}
+
+.desktop-frame .lp-desc {
+    font-size: 1.4rem;
+    max-width: 600px;
+}
+
+.lp-btn {
+    background: var(--shop-accent);
+    color: var(--shop-btn-text);
+    padding: 16px 32px;
+    border: none;
+    border-radius: var(--shop-radius);
+    font-weight: 800;
+    font-size: 1.05rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.desktop-frame .lp-btn {
+    padding: 20px 40px;
+    font-size: 1.2rem;
+}
+
+.lp-section {
+    padding: 50px 20px;
+    border-top: 1px solid var(--shop-border);
+}
+
+.desktop-frame .lp-section {
+    padding: 100px 40px;
+}
+
+.lp-tracking-card {
+    background: var(--shop-bg-secondary);
+    border: 1px solid var(--shop-border);
+    padding: 24px;
+    border-radius: var(--shop-radius);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    margin: -40px auto 40px auto;
+    position: relative;
+    z-index: 10;
+    max-width: 90%;
+    text-align: left;
+}
+
+.desktop-frame .lp-tracking-card {
+    max-width: 800px;
+    padding: 40px;
+}
+
+.lp-tracking-card h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.2rem;
+}
+
+.lp-input-group {
+    display: flex;
+    gap: 12px;
+}
+
+.lp-input-group input {
+    flex: 1;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--shop-border);
+    background: var(--shop-bg);
+    color: var(--shop-text);
+    font-family: inherit;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.lp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.desktop-frame .lp-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.lp-card {
+    background: var(--shop-bg-secondary);
+    border: 1px solid var(--shop-border);
+    padding: 24px;
+    border-radius: var(--shop-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   MODAL DE PLANTILLAS Y EXTRAS
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: var(--set-bg-main);
+    width: 95%;
+    max-width: 1100px;
+    max-height: 90vh;
+    border-radius: 24px;
+    padding: 40px;
+    border: 1px solid var(--set-panel-border);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.tpl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+.tpl-card {
+    border-radius: 20px;
+    padding: 24px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tpl-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border-color: var(--set-text-secondary);
+}
+
+.tpl-preview {
+    width: 100%;
+    height: 140px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tpl-mock-nav {
+    height: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tpl-mock-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tpl-line-1 {
+    width: 60%;
+    height: 12px;
+    border-radius: 6px;
+}
+
+.tpl-line-2 {
+    width: 40%;
+    height: 8px;
+    border-radius: 4px;
+}
+
+.tpl-btn {
+    width: 50%;
+    height: 20px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+/* ==========================================================================
+   RESPONSIVE EXTREMO (El que nunca falla)
+   ========================================================================== */
+@media (max-width: 1200px) {
+    .settings-master-container {
         flex-direction: column;
+        overflow-y: auto;
+        height: auto;
     }
 
-    .settings-sidebar {
+    .settings-sidebar-nav {
         width: 100%;
-        min-height: auto;
+        min-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--set-panel-border);
+        padding: 16px;
+    }
+
+    .sidebar-menu {
         flex-direction: row;
         overflow-x: auto;
-        padding: 15px;
+        padding-bottom: 10px;
     }
 
-    .settings-tab-btn {
+    .sidebar-item {
         width: auto;
         white-space: nowrap;
     }
 
-    .settings-form-grid {
-        grid-template-columns: 1fr;
+    .settings-editor-panel {
+        width: 100%;
+        min-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--set-panel-border);
     }
 
-    .avatar-preview-container {
-        grid-column: span 1;
-        flex-direction: column;
-        text-align: center;
+    .settings-preview-canvas {
+        min-height: 900px;
+    }
+
+    /* Altura fija para que el celular quepa abajo */
+}
+
+@media (max-width: 600px) {
+    .preview-stage-wrapper {
+        padding: 60px 20px 20px 20px;
+    }
+
+    .iphone-frame {
+        border-radius: 40px;
+        border-width: 10px;
+    }
+
+    .screen-display {
+        border-radius: 30px;
+    }
+
+    .desktop-frame {
+        transform: scale(0.35);
+        transform-origin: top center;
+        margin-bottom: -400px;
     }
 }
 
-@keyframes fadeIn {
+@keyframes masterFadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
 }
