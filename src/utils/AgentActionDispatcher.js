@@ -79,7 +79,7 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
                         cliente: { nombre: payload[0], telefono: payload[1], email: '' },
                         dispositivo: payload[2],
                         problema: payload[3],
-                        presupuestoInicial: '0',
+                        presupuesto: '0',
                         tipo: 'reparacion'
                     });
                     responseMessage = `Ingresé el equipo de ${payload[0]} (${payload[2]}) al sistema.`;

@@ -53,6 +53,22 @@ export const TicketProvider = ({ children }) => {
         }
     }, [user, isInitialized]);
 
+    // COLUMNAS VÁLIDAS: Solo estos campos se envían a Supabase para evitar errores PGRST204
+    const VALID_COLUMNS = [
+        'id', 'user_id', 'fecha', 'estado', 'tipo', 'borrado',
+        'cliente', 'dispositivo', 'problema', 'prioridad', 'presupuesto',
+        'codigo_interno', 'tecnico_asignado', 'nota_interna', 'tiempoGarantia'
+    ];
+
+    const sanitizeForDB = (obj) => {
+        const clean = {};
+        for (const key of VALID_COLUMNS) {
+            if (key in obj) clean[key] = obj[key];
+        }
+        return clean;
+    };
+
+
     // 3. FUNCIONES CRUD SINCRONIZADAS CON LA NUBE
 
     const agregarTicket = async (ticketData) => {
@@ -71,8 +87,8 @@ export const TicketProvider = ({ children }) => {
         setTickets(prev => [nuevoTicket, ...prev]);
 
         // Guardado en Backend
-        const { error } = await supabase.from('tickets').insert([nuevoTicket]);
-        if (error) console.error("Error insertando consulta:", error);
+        const { error } = await supabase.from('tickets').insert([sanitizeForDB(nuevoTicket)]);
+        if (error) console.error("❌ Error insertando consulta:", error.message, error.details, error);
     };
 
     const agregarTicketManual = async (ticketData) => {
@@ -89,8 +105,8 @@ export const TicketProvider = ({ children }) => {
 
         setTickets(prev => [nuevoTicket, ...prev]);
 
-        const { error } = await supabase.from('tickets').insert([nuevoTicket]);
-        if (error) console.error("Error insertando ticket manual:", error);
+        const { error } = await supabase.from('tickets').insert([sanitizeForDB(nuevoTicket)]);
+        if (error) console.error("❌ Error insertando ticket manual:", error.message, error.details, error);
     };
 
     const convertirATicket = async (id) => {

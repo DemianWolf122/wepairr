@@ -15,7 +15,7 @@ function NewTicketForm({ onTicketCreated }) {
     const { agregarTicketManual } = useContext(TicketContext);
 
     const [formData, setFormData] = useState({
-        cliente: '', telefonoContacto: '', dispositivo: '', modeloDetallado: '', problema: '', prioridad: 'Normal', presupuestoInicial: '',
+        cliente: '', telefonoContacto: '', dispositivo: '', modeloDetallado: '', problema: '', prioridad: 'Normal', presupuesto: '',
         codigoInterno: '', tecnicoAsignado: '' // INYECTADO: Nuevos campos
     });
 
@@ -77,7 +77,7 @@ function NewTicketForm({ onTicketCreated }) {
                 dispositivo: formData.dispositivo + (formData.modeloDetallado ? ` (${formData.modeloDetallado})` : ''),
                 problema: formData.problema,
                 prioridad: formData.prioridad,
-                presupuestoInicial: formData.presupuestoInicial,
+                presupuesto: formData.presupuesto,
                 codigo_interno: formData.codigoInterno, // INYECTADO
                 tecnico_asignado: formData.tecnicoAsignado // INYECTADO
             });
@@ -85,7 +85,7 @@ function NewTicketForm({ onTicketCreated }) {
             setShowSuccess(true);
             setTimeout(() => {
                 setShowSuccess(false);
-                setFormData({ cliente: '', telefonoContacto: '', dispositivo: '', modeloDetallado: '', problema: '', prioridad: 'Normal', presupuestoInicial: '', codigoInterno: '', tecnicoAsignado: '' });
+                setFormData({ cliente: '', telefonoContacto: '', dispositivo: '', modeloDetallado: '', problema: '', prioridad: 'Normal', presupuesto: '', codigoInterno: '', tecnicoAsignado: '' });
                 if (onTicketCreated) onTicketCreated();
             }, 1500);
 
@@ -161,7 +161,7 @@ function NewTicketForm({ onTicketCreated }) {
                     <div className="form-row">
                         <div className="form-group" style={{ flex: 1 }}>
                             <label className="input-label">Presupuesto ($)</label>
-                            <input type="number" name="presupuestoInicial" value={formData.presupuestoInicial} onChange={handleChange} placeholder="Ej. 15000" min="0" />
+                            <input type="number" name="presupuesto" value={formData.presupuesto} onChange={handleChange} placeholder="Ej. 15000" min="0" />
                         </div>
                         <div className="form-group" style={{ flex: 1 }}>
                             <label className="input-label">Nivel de Urgencia</label>

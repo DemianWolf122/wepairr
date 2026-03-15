@@ -91,7 +91,7 @@ function ChatBox() {
                     cliente: { nombre: nombre.trim(), telefono: telefono.trim(), email: '' },
                     dispositivo: equipo.trim(),
                     problema: falla.trim(),
-                    presupuestoInicial: '0',
+                    presupuesto: '0',
                     tipo: 'consulta'
                 });
                 setTicketCreated(true);
