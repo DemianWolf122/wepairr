@@ -87,7 +87,10 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow: hidden;
     position: relative;
-    animation: masterFadeIn var(--set-transition-bounce) forwards;
+    /* FIX ANTI-FLICKER: Animación simple y aceleración de GPU */
+    animation: masterFadeIn 0.3s ease-out forwards;
+    transform: translateZ(0);
+    will-change: opacity;
 }
 
 /* --- ESTADO: MODO PERFIL (Vercel/Stripe Account Style) --- */
@@ -121,7 +124,6 @@
 
 .mode-perfil .settings-preview-canvas {
     display: none !important;
-    /* Extermina el canvas visual en el perfil */
 }
 
 /* --- COLUMNAS DEL LAYOUT --- */
@@ -137,6 +139,10 @@
     padding: 32px 20px;
     z-index: 40;
     transition: width var(--set-transition-normal);
+    /* FIX ANTI-FLICKER: Evita el repintado del panel lateral */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
 .settings-editor-panel {
@@ -151,14 +157,16 @@
     z-index: 30;
     box-shadow: 15px 0 40px rgba(0, 0, 0, 0.03);
     position: relative;
+    /* FIX ANTI-FLICKER: Evita el repintado al escribir inputs */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
 .settings-preview-canvas {
     flex: 1;
     min-width: 0;
-    /* CRÍTICO: Previene el desbordamiento horizontal en Flexbox */
     min-height: 0;
-    /* CRÍTICO: Previene el desbordamiento vertical del Mockup */
     display: flex;
     flex-direction: column;
     position: relative;
@@ -222,10 +230,11 @@
     font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--set-transition-fast);
     text-align: left;
     position: relative;
     overflow: hidden;
+    /* FIX: Transición específica para no laggear la interfaz */
+    transition: background-color var(--set-transition-fast), color var(--set-transition-fast), border-color var(--set-transition-fast), transform var(--set-transition-fast);
 }
 
 .sidebar-item::before {
@@ -311,9 +320,10 @@
     font-size: 1rem;
     border: none;
     cursor: pointer;
-    transition: all var(--set-transition-bounce);
     position: relative;
     overflow: hidden;
+    /* FIX */
+    transition: background-color var(--set-transition-fast), transform var(--set-transition-fast), box-shadow var(--set-transition-fast);
 }
 
 .btn-primary-action.active {
@@ -388,7 +398,8 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
-    animation: slideInUp 0.4s var(--set-transition-bounce) forwards;
+    /* FIX: Animación sutil solo de opacidad y desplazamiento leve para no saturar CPU */
+    animation: sectionFadeIn 0.25s ease-out forwards;
 }
 
 .section-heading {
@@ -421,6 +432,7 @@
     align-items: center;
 }
 
+/* FIX: Input optimizado para que el focus no mueva los elementos ni cause titileo */
 .premium-input {
     width: 100%;
     padding: 14px 18px;
@@ -430,9 +442,9 @@
     color: var(--set-text-primary);
     font-size: 1rem;
     font-family: inherit;
-    transition: all var(--set-transition-fast);
     box-sizing: border-box;
     box-shadow: var(--set-shadow-inner);
+    transition: border-color var(--set-transition-fast), box-shadow var(--set-transition-fast), background-color var(--set-transition-fast);
 }
 
 .premium-input:hover:not(:disabled) {
@@ -453,7 +465,6 @@
     background: rgba(128, 128, 128, 0.05);
 }
 
-/* Componentes Especiales de Formulario */
 select.premium-input {
     appearance: none;
     cursor: pointer;
@@ -478,7 +489,7 @@ textarea.premium-input {
 }
 
 /* ==========================================================================
-   5. CONTROLES AVANZADOS Y TOGGLES (APPLE / VERCEL STYLE)
+   5. CONTROLES AVANZADOS Y TOGGLES
    ========================================================================== */
 .premium-toggle-row {
     display: flex;
@@ -489,7 +500,7 @@ textarea.premium-input {
     background: var(--set-input-bg);
     border: 1px solid var(--set-input-border);
     border-radius: 16px;
-    transition: all var(--set-transition-normal);
+    transition: border-color var(--set-transition-fast), transform var(--set-transition-fast), box-shadow var(--set-transition-fast);
     box-shadow: var(--set-shadow-xs);
 }
 
@@ -542,7 +553,7 @@ textarea.premium-input {
     right: 0;
     bottom: 0;
     background-color: var(--set-text-muted);
-    transition: 0.4s var(--set-transition-bounce);
+    transition: background-color 0.3s ease;
     border-radius: 34px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -555,7 +566,7 @@ textarea.premium-input {
     left: 3px;
     bottom: 3px;
     background-color: white;
-    transition: 0.4s var(--set-transition-bounce);
+    transition: transform 0.3s var(--set-transition-bounce);
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -573,7 +584,7 @@ input:disabled+.slider {
     cursor: not-allowed;
 }
 
-/* Range Slider Físico */
+/* Range Slider */
 input[type=range] {
     -webkit-appearance: none;
     width: 100%;
@@ -604,7 +615,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     background: var(--set-text-secondary);
 }
 
-/* Color Picker Moderno y Swatches */
+/* Color Picker */
 .color-picker-container {
     display: flex;
     align-items: center;
@@ -650,7 +661,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: all var(--set-transition-bounce);
+    transition: transform var(--set-transition-bounce), border-color var(--set-transition-fast);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -665,10 +676,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 /* ==========================================================================
-   6. COMPONENTES ESPECIALES: PERFIL, SEGURIDAD Y DANGER ZONE
+   6. COMPONENTES ESPECIALES: PERFIL Y DANGER ZONE
    ========================================================================== */
-
-/* Tarjeta de Avatar Premium */
 .avatar-upload-zone {
     display: flex;
     align-items: center;
@@ -686,7 +695,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     border-radius: 50%;
     background: linear-gradient(135deg, var(--set-accent), #8b5cf6, #ec4899);
     background-size: 200% 200%;
-    animation: gradientShift 5s ease infinite;
     color: white;
     display: flex;
     justify-content: center;
@@ -697,7 +705,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Sesiones Activas */
 .session-card {
     padding: 20px;
     border: 1px solid var(--set-input-border);
@@ -720,7 +727,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     gap: 6px;
 }
 
-/* Danger Zone (Estilo Linear/Vercel) */
 .danger-zone-box {
     border: 1px solid rgba(239, 68, 68, 0.5);
     background: var(--set-danger-bg);
@@ -765,7 +771,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     border-radius: 12px;
     font-weight: 800;
     cursor: pointer;
-    transition: all var(--set-transition-bounce);
+    transition: background-color var(--set-transition-fast), color var(--set-transition-fast), transform var(--set-transition-bounce);
     width: fit-content;
 }
 
@@ -779,8 +785,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 /* ==========================================================================
    7. COMPONENTES EXTRA Y MODALES
    ========================================================================== */
-
-/* File Upload Premium */
 .upload-group {
     display: flex;
     gap: 10px;
@@ -798,7 +802,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     border-radius: 12px;
     font-weight: 800;
     cursor: pointer;
-    transition: all var(--set-transition-bounce);
+    transition: background-color var(--set-transition-fast), transform var(--set-transition-bounce);
     white-space: nowrap;
 }
 
@@ -809,7 +813,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     color: white;
 }
 
-/* Modal Plantillas */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -852,7 +855,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     justify-content: center;
     color: var(--set-text-primary);
     cursor: pointer;
-    transition: 0.2s;
+    transition: background-color var(--set-transition-fast), transform var(--set-transition-bounce);
 }
 
 .btn-close-modal:hover {
@@ -877,7 +880,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    transition: all var(--set-transition-bounce);
+    transition: transform var(--set-transition-bounce), border-color var(--set-transition-fast), box-shadow var(--set-transition-fast);
     background: var(--set-panel-bg);
 }
 
@@ -888,7 +891,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 /* ==========================================================================
-   8. CANVAS DE VISTA PREVIA (MOCKUPS FÍSICOS INDESTRUCTIBLES)
+   8. CANVAS DE VISTA PREVIA Y MOCKUPS
    ========================================================================== */
 .canvas-toolbar {
     position: absolute;
@@ -918,7 +921,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: var(--set-transition-normal);
+    transition: background-color var(--set-transition-fast), color var(--set-transition-fast);
 }
 
 .device-btn.active {
@@ -927,8 +930,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     box-shadow: var(--set-shadow-sm);
 }
 
-/* --- EL CONTENEDOR ANTI-CORTES --- */
-/* Esta regla es matemáticamente perfecta. Obliga a flexbox a no crecer más allá del 100% */
 .preview-stage-wrapper {
     flex: 1;
     width: 100%;
@@ -937,10 +938,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     justify-content: center;
     align-items: center;
     padding: 100px 40px 40px 40px;
-    /* Margen superior para el toolbar */
     box-sizing: border-box;
     overflow: hidden;
-    /* CRÍTICO: Ningún hijo puede causar scroll aquí */
 }
 
 .mockup-animator {
@@ -949,43 +948,31 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     align-items: center;
     width: 100%;
     height: 100%;
-    transition: opacity 0.4s ease, transform 0.5s var(--set-transition-bounce);
+    /* FIX: Transición limpia para cambiar de mockup */
+    transition: opacity 0.3s ease, transform 0.4s var(--set-transition-bounce);
 }
 
 .mockup-animator.hidden {
     opacity: 0;
-    transform: scale(0.85) translateY(40px);
+    transform: scale(0.92);
 }
 
-/* --- MOCKUP iPHONE 14 PRO (Hardware CSS Puro) --- */
+/* MOCKUP iPHONE */
 .iphone-frame {
     height: 100%;
-    /* Escala hasta chocar con el padding del padre */
     max-height: 850px;
-    /* Límite razonable para monitores muy grandes */
     aspect-ratio: 1 / 2.16;
-    /* 375x812 Exacto */
     max-width: 100%;
-    /* Si la pantalla es muy angosta, se achica de ancho (y por lo tanto de alto) */
     background: #0f0f11;
     border-radius: 54px;
     padding: 14px;
-    /* Bisel negro de la pantalla */
-    box-shadow:
-        inset 0 0 0 2px #5a5a5c,
-        /* Marco de Titanio */
-        inset 0 0 0 14px #000000,
-        /* Grosor del Bisel */
-        0 40px 80px rgba(0, 0, 0, 0.5),
-        /* Sombra contra la mesa */
-        0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 0 2px #5a5a5c, inset 0 0 0 14px #000000, 0 40px 80px rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.2);
     position: relative;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
 }
 
-/* Botones Físicos Laterales del iPhone */
 .iphone-frame::before {
     content: '';
     position: absolute;
@@ -1007,10 +994,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     background: #5a5a5c;
     border-radius: 4px 0 0 4px;
     box-shadow: 0 75px 0 #5a5a5c;
-    /* Segundo botón de volumen */
 }
 
-/* Isla Dinámica / Notch */
 .iphone-notch {
     position: absolute;
     top: 24px;
@@ -1022,10 +1007,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     border-radius: 20px;
     z-index: 100;
     box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.1);
-    /* Reflejo del sensor */
 }
 
-/* Barra de Inicio (Home Indicator) */
 .iphone-home-indicator {
     position: absolute;
     bottom: 20px;
@@ -1039,12 +1022,11 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     pointer-events: none;
 }
 
-/* --- MOCKUP MONITOR MACBOOK --- */
+/* MOCKUP MONITOR MACBOOK */
 .desktop-frame {
     width: 100%;
     max-width: 1200px;
     aspect-ratio: 16 / 9;
-    /* Formato panorámico estricto */
     max-height: 100%;
     background: var(--set-panel-bg);
     border: 1px solid var(--set-panel-border);
@@ -1056,7 +1038,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     position: relative;
 }
 
-/* Barra Superior de Mac */
 .mac-titlebar {
     height: 44px;
     background: var(--set-input-bg);
@@ -1075,14 +1056,11 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Contenedor de Pantalla (Donde carga la web real) */
 .screen-display {
     flex: 1;
     min-height: 0;
-    /* Previene el corte interno */
     background: var(--shop-bg);
     border-radius: 38px;
-    /* Curva interior del iPhone */
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
@@ -1091,7 +1069,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 
 .desktop-frame .screen-display {
     border-radius: 0;
-    /* Pantalla cuadrada en Monitor */
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
 }
@@ -1100,7 +1077,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     display: none;
 }
 
-/* Status Bar simulada de iOS */
 .ios-status-bar {
     position: sticky;
     top: 0;
@@ -1129,10 +1105,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     display: flex;
     flex-direction: column;
     padding-bottom: 40px;
-    /* Espacio para el home indicator */
 }
 
-/* Navbar de Vidriera */
 .lp-nav {
     display: flex;
     justify-content: space-between;
@@ -1143,7 +1117,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     z-index: 50;
     background: rgba(var(--shop-bg-rgb), 0.85);
     backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--shop-border);
 }
 
@@ -1165,7 +1138,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     color: var(--shop-text-secondary);
 }
 
-/* Hero Section */
 .lp-hero {
     padding: 80px 24px;
     text-align: center;
@@ -1265,7 +1237,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     font-size: 1.25rem;
 }
 
-/* Secciones Internas */
 .lp-section {
     padding: 60px 24px;
     border-top: 1px solid var(--shop-border);
@@ -1345,10 +1316,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 /* ==========================================================================
-   10. RESPONSIVE DESIGN ABSOLUTO (Anti-Desplomes)
+   10. RESPONSIVE DESIGN ABSOLUTO
    ========================================================================== */
-
-/* Breakpoint 1: Tablets Landscape y Monitores Pequeños */
 @media (max-width: 1300px) {
 
     .settings-master-container,
@@ -1385,16 +1354,12 @@ input[type=range]:focus::-webkit-slider-runnable-track {
         border-bottom: 1px solid var(--set-panel-border);
     }
 
-    /* En móvil, le damos al canvas una altura fija para que el celular exista */
     .settings-preview-canvas {
         min-height: 1000px;
-        /* Espacio para que el mockup viva tranquilo */
         display: flex !important;
-        /* Fuerza visualización si lo necesitas en móvil */
     }
 }
 
-/* Breakpoint 2: Teléfonos (Smartphones) */
 @media (max-width: 768px) {
     .preview-stage-wrapper {
         padding: 80px 20px 30px 20px;
@@ -1406,7 +1371,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     }
 
     .desktop-frame {
-        /* Usamos CSS Transform para encoger el monitor gigante y que quepa en un teléfono */
         transform: scale(0.35);
         transform-origin: top center;
         margin-bottom: -400px;
@@ -1425,25 +1389,33 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     }
 }
 
-/* ==========================================================================
-   11. ANIMACIONES DE RENDIMIENTO
-   ========================================================================== */
+/* FIX ANTI-FLICKER: Animaciones sutiles sin Blur */
 @keyframes masterFadeIn {
     from {
         opacity: 0;
-        filter: blur(10px);
     }
 
     to {
         opacity: 1;
-        filter: blur(0);
+    }
+}
+
+@keyframes sectionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
 @keyframes slideInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(10px);
     }
 
     to {
@@ -1455,25 +1427,11 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 @keyframes slideInRight {
     from {
         opacity: 0;
-        transform: translateX(20px);
+        transform: translateX(10px);
     }
 
     to {
         opacity: 1;
         transform: translateX(0);
-    }
-}
-
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
     }
 }
