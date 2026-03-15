@@ -36,6 +36,26 @@ export const executeAgentAction = async (actionType, payload, appContext) => {
                 break;
 
             // ==========================================
+            // 🛠️ APERTURA DE HERRAMIENTAS ESPECÍFICAS
+            // ==========================================
+            case 'TOOL_OPEN':
+                if (payload.length > 0) {
+                    const tool = payload[0].toLowerCase().trim().replace(/['"]/g, '');
+                    // Forzamos la apertura de la sección de herramientas
+                    if (setSeccionPrincipal) setSeccionPrincipal('herramientas');
+
+                    // Si en el futuro ToolsView maneja qué herramienta está abierta 
+                    // mediante un parámetro en la URL, aquí se actualizaría la navegación:
+                    // if (navigate) navigate(`/dashboard?tool=${tool}`);
+
+                    responseMessage = `He abierto la sección de herramientas enfocada en: ${tool.toUpperCase()}.`;
+                } else {
+                    responseMessage = `No me especificaste qué herramienta abrir.`;
+                    isSuccess = false;
+                }
+                break;
+
+            // ==========================================
             // 🎨 INTERFAZ Y AJUSTES VISUALES
             // ==========================================
             case 'UI_THEME':

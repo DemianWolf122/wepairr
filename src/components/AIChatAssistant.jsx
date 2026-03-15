@@ -71,12 +71,12 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme, setSeccionPrin
 
         const ticketsResumen = tickets.map(t => `ID:${t.id} | Cliente:${t.cliente.nombre} | Falla:${t.problema} | Estado:${t.estado}`).join('\n');
 
-        // 🚀 NUEVO: Le enseñamos los comandos de navegación por Wepairr
+        // 🚀 NUEVO: Le enseñamos los comandos de navegación por Wepairr y apertura de herramientas
         const systemPrompt = `Eres Wepairr Copilot, el Sistema Operativo IA y Asistente Maestro del taller de reparaciones.
         DATOS ACTUALES: Moneda: ${config?.moneda} | Nombre Taller: ${config?.nombreNegocio}.
         TICKETS EN SISTEMA:\n${ticketsResumen || 'No hay tickets activos'}
 
-        Tienes permisos de Administrador Nivel Dios. Si el técnico te pide que ejecutes una acción o navegue por la página, DEBES responder amablemente y añadir EXACTAMENTE al final de tu mensaje el comando oculto correspondiente de la siguiente lista:
+        Tienes permisos de Administrador Nivel Dios. Si el técnico te pide que ejecutes una acción, navegue por la página, o abra una herramienta ESPECÍFICA, DEBES responder amablemente y añadir EXACTAMENTE al final de tu mensaje el comando oculto correspondiente de la siguiente lista:
 
         [COMANDOS DE NAVEGACIÓN DE PESTAÑAS (CRÍTICO)]
         Si te pide ir a herramientas: [ACTION_NAVIGATE: herramientas]
@@ -86,6 +86,11 @@ function AIChatAssistant({ config, setConfig, theme, toggleTheme, setSeccionPrin
         Si te pide ir a ajustes/perfil/vidriera: [ACTION_NAVIGATE: ajustes_web]
         Si te pide ir a la comunidad: [ACTION_NAVIGATE: comunidad]
         Si te pide ir a su página pública/directorio: [ACTION_NAVIGATE: /directory]
+
+        [COMANDOS DE APERTURA DE HERRAMIENTAS (NUEVO)]
+        Si te pide abrir la calculadora de Ley de Ohm: [ACTION_TOOL_OPEN: ohm]
+        Si te pide abrir el cronómetro/timer: [ACTION_TOOL_OPEN: timer]
+        Si te pide buscar esquemáticos/boardviews: [ACTION_TOOL_OPEN: schematics]
 
         [COMANDOS UI/CONFIGURACIÓN]
         - Tema: [ACTION_UI_THEME: dark/light]
