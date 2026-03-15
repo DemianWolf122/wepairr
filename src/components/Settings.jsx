@@ -46,6 +46,7 @@ const CURRENCY_OPTIONS = [
     { code: 'BRL', label: 'Real Brasileño', symbol: 'R$' }
 ];
 
+// 🎨 PALETA DE COLORES SEGURAS (WCAG AA) - Prohíbe inputs libres por SEO
 const ACCENT_COLORS = ['#2563eb', '#10b981', '#8b5cf6', '#e11d48', '#f97316', '#334155', '#06b6d4', '#eab308', '#000000', '#ffffff'];
 
 const FONTS = [
@@ -55,9 +56,9 @@ const FONTS = [
 ];
 
 const TEMPLATES = [
-    { id: 'dark-tech', name: 'Dark Tech Pro', color: '#0f172a', border: '#2563eb', config: { shopDarkMode: true, colorTema: '#2563eb', colorTitulo: '#ffffff', colorSubtitulo: '#94a3b8', borderRadius: '16px', fontFamily: '"Inter", system-ui, sans-serif' } },
-    { id: 'light-apple', name: 'Minimalist Clean', color: '#f8fafc', border: '#334155', config: { shopDarkMode: false, colorTema: '#000000', colorTitulo: '#0f172a', colorSubtitulo: '#64748b', borderRadius: '24px', fontFamily: '"Helvetica Neue", Helvetica, sans-serif' } },
-    { id: 'neon-cyber', name: 'Neon Cyberpunk', color: '#000000', border: '#10b981', config: { shopDarkMode: true, colorTema: '#10b981', colorTitulo: '#10b981', colorSubtitulo: '#a7f3d0', borderRadius: '8px', fontFamily: '"Inter", system-ui, sans-serif' } }
+    { id: 'dark-tech', name: 'Dark Tech Pro', color: '#0f172a', border: '#2563eb', config: { shopDarkMode: true, colorTema: '#2563eb', fontFamily: '"Inter", system-ui, sans-serif' } },
+    { id: 'light-apple', name: 'Minimalist Clean', color: '#f8fafc', border: '#334155', config: { shopDarkMode: false, colorTema: '#000000', fontFamily: '"Helvetica Neue", Helvetica, sans-serif' } },
+    { id: 'neon-cyber', name: 'Neon Cyberpunk', color: '#000000', border: '#10b981', config: { shopDarkMode: true, colorTema: '#10b981', fontFamily: '"Inter", system-ui, sans-serif' } }
 ];
 
 // ==========================================================================
@@ -102,8 +103,6 @@ const PremiumGate = ({ children, isPremium }) => {
 export default function Settings({ mode, config, setConfig, onUpdate }) {
     // Definimos el entorno real (Perfil vs Vidriera)
     const isModePerfil = mode === 'perfil';
-
-    // El plan lo seguimos guardando por compatibilidad futura
     const isPremium = config?.plan === 'premium' || true;
 
     // Estado del Mockup (Solo usado en modo Vidriera)
@@ -146,6 +145,7 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
                 setPerfil(p);
                 setPerfilInicial(p);
 
+                // Cargar sesiones (Simulación de seguridad para la UI)
                 setSesionesActivas([
                     { id: 1, device: 'Mac OS - Chrome', location: 'Buenos Aires, AR', current: true, time: 'Ahora mismo' },
                     { id: 2, device: 'iPhone 14 - Safari', location: 'Buenos Aires, AR', current: false, time: 'Hace 2 horas' }
@@ -266,14 +266,17 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
         }
     };
 
-    // GENERADOR DE ESTILOS CSS EN VIVO (MOCKUP)
+    // GENERADOR DE ESTILOS CSS EN VIVO (MOCKUP) - 100% Automático para SEO
     const shopStyles = useMemo(() => {
         if (isModePerfil) return {};
 
         const c = localConfig;
         const isDark = c.shopDarkMode;
-        const text = c.colorTitulo || (isDark ? '#ffffff' : '#0f172a');
-        const subtext = c.colorSubtitulo || (isDark ? '#94a3b8' : '#64748b');
+
+        // 🎨 TEXTOS AUTOMÁTICOS POR SEO: Ya no se eligen a mano, garantizan contraste perfecto.
+        const text = isDark ? '#ffffff' : '#0f172a';
+        const subtext = isDark ? '#94a3b8' : '#64748b';
+
         const accent = c.colorTema || '#2563eb';
         const bg = isDark ? '#090e17' : '#ffffff';
         const btnText = getLuminance(accent) > 0.179 ? '#000000' : '#ffffff';
@@ -295,7 +298,6 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
             '--shop-bg-rgb': isDark ? '9, 14, 23' : '255, 255, 255'
         };
     }, [localConfig, isModePerfil]);
-
     // ==========================================
     // RENDERIZADO DEL COMPONENTE
     // ==========================================
@@ -390,7 +392,9 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
                     </h3>
                 </header>
 
-                <div className="editor-scroll-content">{/* ============================================================== */}
+                <div className="editor-scroll-content">
+
+                    {/* ============================================================== */}
                     {/* ZONA DE PESTAÑAS: MODO PERFIL                                  */}
                     {/* ============================================================== */}
 
@@ -616,7 +620,6 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
                             <div className="input-group">
                                 <label className="input-label">Color Principal (Acento)</label>
                                 <div className="color-picker-container">
-                                    <input type="color" name="colorTema" value={localConfig.colorTema || '#2563eb'} onChange={handleChange} className="color-input-native" />
                                     <div className="color-palette">
                                         {ACCENT_COLORS.map(hex => (
                                             <div key={hex} onClick={() => setLocalConfig({ ...localConfig, colorTema: hex })} className={`color-swatch ${localConfig.colorTema === hex ? 'active' : ''}`} style={{ backgroundColor: hex }} />
@@ -626,17 +629,6 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
                             </div>
 
                             <PremiumGate isPremium={isPremium}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '10px' }}>
-                                    <div className="input-group">
-                                        <label className="input-label">Color de Títulos</label>
-                                        <input type="color" name="colorTitulo" value={localConfig.colorTitulo || '#ffffff'} onChange={handleChange} className="color-input-native" style={{ width: '100%' }} />
-                                    </div>
-                                    <div className="input-group">
-                                        <label className="input-label">Color de Textos</label>
-                                        <input type="color" name="colorSubtitulo" value={localConfig.colorSubtitulo || '#94a3b8'} onChange={handleChange} className="color-input-native" style={{ width: '100%' }} />
-                                    </div>
-                                </div>
-
                                 <h4 className="section-heading" style={{ marginTop: '20px' }}>Estructura Tipográfica</h4>
                                 <div className="input-group">
                                     <label className="input-label">Fuente Principal</label>
@@ -743,7 +735,7 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
                             </div>
                             <div className="input-group" style={{ marginTop: '10px' }}>
                                 <label className="input-label">Meta Descripción (Para Google)</label>
-                                <textarea name="metaDescripcion" value={localConfig.metaDescripcion || ''} onChange={handleChange} className="premium-input" maxLength={160} placeholder="Escribe un breve resumen de tu taller para que los clientes te encuentren..." />
+                                <textarea name="metaDescripcion" value={localConfig.metaDescripcion || ''} onChange={handleChange} className="premium-input" maxLength={160} placeholder="Escribe un breve resumen de tu taller..." />
                             </div>
                         </div>
                     )}
@@ -792,7 +784,9 @@ export default function Settings({ mode, config, setConfig, onUpdate }) {
                     )}
 
                 </div>
-            </section>{/* --- COLUMNA 3: LIENZO Y MOCKUP (ESCALADO PERFECTO) --- */}
+            </section>
+
+            {/* --- COLUMNA 3: LIENZO Y MOCKUP (ESCALADO PERFECTO) --- */}
             {/* Solo se renderiza si no estamos en Modo Perfil */}
             {!isModePerfil && (
                 <section className="settings-preview-canvas">
